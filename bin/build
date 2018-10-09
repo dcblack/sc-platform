@@ -1,0 +1,16 @@
+#!/bin/bash
+
+OPTS=""
+if [[ "$1" == "-v" ]]; then
+  OPTS="${OPTS} VERBOSE=1"
+  shift
+fi
+
+printf "|\n|\n|\n"
+clear;
+ruler '*'
+rm -f make.log run.log
+if [[ -r CMakeLists.txt ]]; then cmake .; fi
+echo "make $@$OPTS 2>&1 | tee make.log"
+make "$@""$OPTS" 2>&1 | tee -a make.log
+# The end
