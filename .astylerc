@@ -1,0 +1,88 @@
+#!sh
+
+--style=stroustrup
+--indent=spaces=2
+#-indent=tab=8
+#-indent-classes
+--indent-switches
+--indent-cases
+--indent-namespaces
+--indent-labels
+--indent-preprocessor
+--indent-col1-comments
+--pad-oper
+--unpad-paren
+--pad-header
+--pad-paren-in
+--pad-oper
+#-delete-empty-lines
+#-add-one-line-brackets
+--align-pointer=type
+--lineend=linux
+#-lineend=windows
+--add-brackets
+--break-blocks
+--break-closing-brackets
+
+# Styles: allman, java, kr, stroustrup, whitesmith, banner, gnu, linux,
+#         horstmann, 1tbs, google, pico, lisp
+
+# Details
+#-------------------------------------------------------------------------------
+#   --style=allman  OR  --style=ansi   OR  --style=bsd
+#                   OR  --style=break  OR  -A1
+#   Allman style formatting/indenting.
+#   Broken brackets.
+#-------------------------------------------------------------------------------
+#   --style=java  OR  --style=attach  OR  -A2
+#   Java style formatting/indenting.
+#   Attached brackets.
+#-------------------------------------------------------------------------------
+#   --style=kr  OR  --style=k&r  OR  --style=k/r  OR  -A3
+#   Kernighan & Ritchie style formatting/indenting.
+#   Linux brackets.
+#-------------------------------------------------------------------------------
+#   --style=stroustrup  OR  -A4
+#   Stroustrup style formatting/indenting.
+#   Stroustrup brackets.
+#-------------------------------------------------------------------------------
+#   --style=whitesmith  OR  -A5
+#   Whitesmith style formatting/indenting.
+#   Broken, indented brackets.
+#   Indented class blocks and switch blocks.
+#-------------------------------------------------------------------------------
+#   --style=banner  OR  -A6
+#   Banner style formatting/indenting.
+#   Attached, indented brackets.
+#   Indented class blocks and switch blocks.
+#-------------------------------------------------------------------------------
+#   --style=gnu  OR  -A7
+#   GNU style formatting/indenting.
+#   Broken brackets, indented blocks.
+#-------------------------------------------------------------------------------
+#   --style=linux  OR  --style=knf  OR  -A8
+#   Linux style formatting/indenting.
+#   Linux brackets, minimum conditional indent is one-half indent.
+#-------------------------------------------------------------------------------
+#   --style=horstmann  OR  -A9
+#   Horstmann style formatting/indenting.
+#   Run-in brackets, indented switches.
+#-------------------------------------------------------------------------------
+#   --style=1tbs  OR  --style=otbs  OR  -A10
+#   One True Brace Style formatting/indenting.
+#   Linux brackets, add brackets to all conditionals.
+#-------------------------------------------------------------------------------
+#   --style=google  OR  -A14
+#   Google style formatting/indenting.
+#   Attached brackets, indented class modifiers.
+#-------------------------------------------------------------------------------
+#   --style=pico  OR  -A11
+#   Pico style formatting/indenting.
+#   Run-in opening brackets and attached closing brackets.
+#   Uses keep one line blocks and keep one line statements.
+#-------------------------------------------------------------------------------
+#   --style=lisp  OR  -A12
+#   Lisp style formatting/indenting.
+#   Attached opening brackets and attached closing brackets.
+#   Uses keep one line statements.
+#-------------------------------------------------------------------------------
