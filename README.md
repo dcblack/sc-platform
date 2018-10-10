@@ -5,6 +5,8 @@ Index
 + [The Grand Design](#GrandDesign)
   - [Block Diagram](#BlkDiag)
   - [Memory Map](#MemMap)
+  - [Design Notes](#DNotes)
+  - [To Do List](#ToDo)
 + [Rules, Conventions, and Guidelines](#CRules)
 + [Instructions for Building](#HowTo)
 + [About Markdown](#Mrkdown)
@@ -109,8 +111,7 @@ Top
 | sth   | 0x4000'0000  |  -  |  64K |  -  | Bus      |
 | cache | n/a          |  -  |    - |  -  | Cache    |
 
-Notes
------
+## <a name="DNotes"></a>Design Notes
 
 - Main buses are designated as North (nth), and South (sth)
 - North bus is closest to the "main" processor (cpu)
@@ -134,6 +135,23 @@ Notes
 - Eventually Video or Wifi may become a hierarchical sub-system
 - Eventually one of the buses will become customized
 - Order of development is TBD, but simplest first
+
+## <a name="ToDo"></a>To Do List
+
+In order of priority:
+
+1. Refactor `Cpu_module` to use PIMPL and separate API and tests.
+1. Refactor `Memory_module` to use PIMPL
+1. Add `Timer_module` and South Bus instantiation. Will include `no_clock`.
+   2. Create base timer
+   2. Add base no_clock
+   2. Add South Bus
+1. Add `Global` class to replace `g_` variables
+1. Add `Pic_module`
+1. Add reset capability
+1. Add power-down capability (?use CCI?)
+1. Add timing to AT mode of `Bus_module` with analysis port support
+1. Add yaml support for configuration
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
@@ -169,6 +187,7 @@ Notes
 | `_port`   | sc_port                     |
 | `m_`      | class member attributes     |
 | `s_`      | class static attributes     |
+| `g_`      | global variables            |
 | `get_`    | const accessor method       |
 | `set_`    | modifying accessor method   |
 
