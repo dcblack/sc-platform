@@ -24,61 +24,7 @@ namespace {
   const char* const RCSID="$Id$";
 }
 
-struct Top_module::Impl
-{
-  // Modules
-  std::unique_ptr<Cpu_module   > cpu;
-  std::unique_ptr<Bus_module   > nth;
-  std::unique_ptr<Memory_module> rom;
-  std::unique_ptr<Memory_module> ram;
-
-  // Constructor
-  Impl( void )
-  {
-    config();
-    cpu = std::make_unique<Cpu_module>( "cpu" );
-    nth = std::make_unique<Bus_module>( "nth" );
-    rom = std::make_unique<Memory_module>( "rom"
-        , ROM_DEPTH, ROM_BASE,  Access::RO, 16, 32, DMI::enabled
-        );
-    ram = std::make_unique<Memory_module>( "ram"
-        , RAM_DEPTH, RAM_BASE,  Access::RW, 16,  8, DMI::enabled
-        );
-    // Connectivity
-    switch( m_configuration ) {
-      case Configuration::TRIVIAL:
-        cpu->init_socket.bind(ram->targ_socket);
-        break;
-      default:
-        cpu->init_socket.bind(nth->targ_socket);
-        nth->init_socket.bind(rom->targ_socket);
-        nth->init_socket.bind(ram->targ_socket);
-        break;
-    }
-  }
-
-  ~Impl( void ) = default;
-
-  // Helper methods
-  void config( void )
-  {
-    for( int i=1; i<sc_argc(); ++i) {
-      string arg{sc_argv()[i]};
-      if( arg == "-trivial" ) {
-        m_configuration = Configuration::TRIVIAL;
-      }
-    }
-  }
-
-  // Attributes
-  enum class Configuration
-  { DEFAULT
-  , TRIVIAL
-  }
-  m_configuration;
-};
-
-////////////////////////////////////////////////////////////////////////////>>/
+///////////////////////////////////////////////////////////////////////////////
 // Constructor
 Top_module::Top_module(sc_module_name instance_name)
 : pImpl{ std::make_unique<Impl>() }
@@ -154,12 +100,66 @@ Top_module::Top_module(sc_module_name instance_name)
   if( g_error_at_target ) INFO( ALWAYS, "Reporting errors at target." );
 }//endconstructor
 
-////////////////////////////////////////////////////////////////////////////>>/
+///////////////////////////////////////////////////////////////////////////////
 // Destructor <<
 Top_module::~Top_module(void)
 {
   // Nothing to do :)
 }
+
+struct Top_module::Impl
+{
+  // Modules
+  std::unique_ptr<Cpu_module   > cpu;
+  std::unique_ptr<Bus_module   > nth;
+  std::unique_ptr<Memory_module> rom;
+  std::unique_ptr<Memory_module> ram;
+
+  // Constructor
+  Impl( void )
+  {
+    config();
+    cpu = std::make_unique<Cpu_module>( "cpu" );
+    nth = std::make_unique<Bus_module>( "nth" );
+    rom = std::make_unique<Memory_module>( "rom"
+        , ROM_DEPTH, ROM_BASE,  Access::RO, 16, 32, DMI::enabled
+        );
+    ram = std::make_unique<Memory_module>( "ram"
+        , RAM_DEPTH, RAM_BASE,  Access::RW, 16,  8, DMI::enabled
+        );
+    // Connectivity
+    switch( m_configuration ) {
+      case Configuration::TRIVIAL:
+        cpu->init_socket.bind(ram->targ_socket);
+        break;
+      default:
+        cpu->init_socket.bind(nth->targ_socket);
+        nth->init_socket.bind(rom->targ_socket);
+        nth->init_socket.bind(ram->targ_socket);
+        break;
+    }
+  }
+
+  ~Impl( void ) = default;
+
+  // Helper methods
+  void config( void )
+  {
+    for( int i=1; i<sc_argc(); ++i) {
+      string arg{sc_argv()[i]};
+      if( arg == "-trivial" ) {
+        m_configuration = Configuration::TRIVIAL;
+      }
+    }
+  }
+
+  // Attributes
+  enum class Configuration
+  { DEFAULT
+  , TRIVIAL
+  }
+  m_configuration;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Copyright 2018 by Doulos. All rights reserved.
