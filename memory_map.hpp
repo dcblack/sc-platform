@@ -1,8 +1,6 @@
 #ifndef MEMORY_MAP_HPP
 #define MEMORY_MAP_HPP
 
-// Crude approach (port of NA means currently *UNDEFINED*)
-
 #define NA MAX_ADDR
 
 enum Memory_map : uint64_t
