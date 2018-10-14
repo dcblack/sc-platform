@@ -178,13 +178,14 @@ In order of priority:
 
 | Pre/Suf   | Use                         |
 | -------   | ---                         |
-| `_module` | sc_module                   |
-| `_extn`   | tlm_extension               |
+| `_module` | `sc_module`                 |
+| `_extn`   | `tlm_extension`             |
 | `_t`      | typedef                     |
-| `_thread` | SC_THREAD                   |
-| `_method` | SC_METHOD                   |
+| `_thread` | `SC_THREAD`                 |
+| `_method` | `SC_METHOD`                 |
 | `_socket` | TLM socket                  |
-| `_port`   | sc_port                     |
+| `_port`   | `sc_port`                   |
+| `_xport`  | `sc_export`                 |
 | `m_`      | class member attributes     |
 | `s_`      | class static attributes     |
 | `g_`      | global variables            |
