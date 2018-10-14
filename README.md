@@ -140,8 +140,6 @@ Top
 
 In order of priority:
 
-1. Refactor `Cpu_module` to use PIMPL and separate API and tests.
-1. Refactor `Memory_module` to use PIMPL
 1. Add `Timer_module` and South Bus instantiation. Will include `no_clock`.
    2. Create base timer
    2. Add base no_clock
@@ -152,6 +150,11 @@ In order of priority:
 1. Add power-down capability (?use CCI?)
 1. Add timing to AT mode of `Bus_module` with analysis port support
 1. Add yaml support for configuration
+
+Optional:
+
+1. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
+1. Consider refactor `Memory_module` to use PIMPL
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
