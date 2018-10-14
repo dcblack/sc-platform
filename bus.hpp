@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  #####                                                                        
-//  #    #                                                                       
-//  #    #         ####                                                          
-//  #####  #    # #                                                              
-//  #    # #    #  ####                                                          
-//  #    # #    #      #                                                         
-//  #####   #####  ####                                                          
+//  #####  #    #  ####         #     # ####   #                                 
+//  #    # #    # #    #        ##   ## #   #  #                                 
+//  #    # #    # #             # # # # #    # #                                 
+//  #####  #    #  ####         #  #  # #    # #                                 
+//  #    # #    #      #        #     # #    # #                                 
+//  #    # #    # #    #        #     # #   #  #                                 
+//  #####   ####   ####  ###### #     # ####   #####                             
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef BUS_H
-#define BUS_H
+#ifndef BUS_MODULE_H
+#define BUS_MODULE_H
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 #endif
@@ -65,4 +65,4 @@ private:
   Memory_manager<>&                       m_mm; // for managing generic payload
 };
 
-#endif /*BUS_H*/
+#endif /*BUS_MODULE_H*/
