@@ -1,21 +1,22 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  #     # ##### #     #  ####  #####  #     #        #     # ####   #           
-//  ##   ## #     ##   ## #    # #    #  #   #         ##   ## #   #  #           
-//  # # # # #     # # # # #    # #    #   # #          # # # # #    # #           
-//  #  #  # ##### #  #  # #    # #####     #           #  #  # #    # #           
-//  #     # #     #     # #    # #  #      #           #     # #    # #           
-//  #     # #     #     # #    # #   #     #           #     # #   #  #           
-//  #     # ##### #     #  ####  #    #    #    ###### #     # ####   #####       
+//  ####### ### #     # ##### #####         #     # ####   #                     
+//     #     #  ##   ## #     #    #        ##   ## #   #  #                     
+//     #     #  # # # # #     #    #        # # # # #    # #                     
+//     #     #  #  #  # ##### #####         #  #  # #    # #                     
+//     #     #  #     # #     #  #          #     # #    # #                     
+//     #     #  #     # #     #   #         #     # #   #  #                     
+//     #    ### #     # ##### #    # ###### #     # ####   #####                 
 //
 ////////////////////////////////////////////////////////////////////////////////
-#include "memory.hpp"
+#include "timer.hpp"
+#include "timer_regs.hpp"
 #include "report.hpp"
 #include "util.hpp"
 #include "config_extn.hpp"
 #include <algorithm>
 namespace {
-  const char* MSGID{"/Doulos/Example/TLM-Memory"};
+  const char* MSGID{"/Doulos/Example/TLM-Timer"};
 }
 using namespace sc_core;
 using namespace sc_dt;
@@ -23,61 +24,68 @@ using namespace tlm;
 using namespace std;
 
 //------------------------------------------------------------------------------
-Memory_module::Memory_module // Constructor
+Timer_module::Timer_module // Constructor
 ( sc_module_name instance_name
 , Depth_t        target_depth
 , Addr_t         target_start
-, Access         access    
-, size_t         max_burst
-, size_t         alignment
-, Feature        dmi_allowed
-, Feature        byte_enables
+, size_t         timer_quantity // Number of timers
 , uint32_t       addr_clocks
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
 : m_target_depth            { target_depth    }
 //m_target_start not needed
-, m_dmi_allowed             { dmi_allowed     }
-, m_access                  { access          }
-, m_byte_enables            { byte_enables    }
-, m_alignment               { alignment       }
-, m_max_burst               { max_burst       }
 , m_addr_clocks             { addr_clocks     }
 , m_read_clocks             { read_clocks     }
 , m_write_clocks            { write_clocks    }
-, m_targ_peq                { this, &Memory_module::targ_peq_cb }
+, m_targ_peq                { this, &Timer_module::targ_peq_cb }
 {
-  SC_HAS_PROCESS( Memory_module );
+  SC_HAS_PROCESS( Timer_module );
+  SC_THREAD( timer_thread );
+  m_reg_vec.size( timer_qty * TIMER_SIZE );
+  m_timer_vec.size( timer_qty );
+  SC_HAS_PROCESS( Timer_module );
   SC_METHOD( execute_transaction_process );
     sensitive << m_target_done_event;
     dont_initialize();
-  targ_socket.register_b_transport        ( this, &Memory_module::b_transport );
-  targ_socket.register_nb_transport_fw    ( this, &Memory_module::nb_transport_fw );
-  targ_socket.register_get_direct_mem_ptr ( this, &Memory_module::get_direct_mem_ptr );
-  targ_socket.register_transport_dbg      ( this, &Memory_module::transport_dbg );
+  targ_socket.register_b_transport        ( this, &Timer_module::b_transport );
+  targ_socket.register_nb_transport_fw    ( this, &Timer_module::nb_transport_fw );
+  targ_socket.register_transport_dbg      ( this, &Timer_module::transport_dbg );
   m_config.set( "name",         string(name())  );
   m_config.set( "kind",         string(kind())  );
   m_config.set( "object_ptr",   uintptr_t(this) );
   m_config.set( "target_start", target_start    );
   m_config.set( "target_depth", target_depth    );
-  m_config.set( "dmi_allowed",  dmi_allowed     );
-  m_config.set( "access",       access          );
-  m_config.set( "byte_enables", byte_enables    );
-  m_config.set( "alignment",    alignment       );
-  m_config.set( "max_burst",    max_burst       );
   m_config.set( "addr_clocks",  addr_clocks     );
   m_config.set( "read_clocks",  read_clocks     );
   m_config.set( "write_clocks", write_clocks    );
   m_config.set( "coding_style", Style::AT       );
-  INFO( ALWAYS, "Constructed " << name() << " with config:\n" << m_config );
-}
+  INFO( ALWAYS, "Constructed " << name() << " with config:\n" << m_config ); }
 
 //------------------------------------------------------------------------------
 // Destructor
-Memory_module::~Memory_module( void )
+Timer_module::~Timer_module( void )
 {
   INFO( ALWAYS, "Destroyed " << name() );
+}
+
+//------------------------------------------------------------------------------
+void Timer_module::timer_thread( void )
+{
+  // Setup events to monitor
+  sc_event_or_list events;
+  for( auto& v : m_timer_vec ) {
+    events |= v.timeout_event() | v.pulse_width_event();
+  }
+  for(;;) {
+    wait( events );
+    for( auto& v : m_timer_vec ) {
+      if( sc_time_stamp() == v.get_load_time() ) {
+      }
+      if( sc_time_stamp() == v.get_pulse_time() ) {
+      }
+    }
+  }//endforever
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,8 +93,8 @@ Memory_module::~Memory_module( void )
 
 //------------------------------------------------------------------------------
 void
-Memory_module::b_transport
-( Memory_module::tlm_payload_t& trans
+Timer_module::b_transport
+( Timer_module::tlm_payload_t& trans
 , sc_time& delay
 )
 {
@@ -101,16 +109,12 @@ Memory_module::b_transport
 
 //------------------------------------------------------------------------------
 Depth_t
-Memory_module::transport_dbg
-( Memory_module::tlm_payload_t& trans
+Timer_module::transport_dbg
+( Timer_module::tlm_payload_t& trans
 )
 {
   INFO( DEBUG, "Executing " << name() << "." << __func__ << "::transport_dbg" );
   bool config_only{config(trans)};
-  // shrink as needed
-  if( m_target_depth < m_mem_vec.size() ) {
-    resize( m_target_depth );
-  }
   if( config_only ) {
     INFO( DEBUG, "config_only" );
     trans.set_response_status( TLM_OK_RESPONSE );
@@ -132,7 +136,7 @@ Memory_module::transport_dbg
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Memory_module::config ( tlm_payload_t& trans)
+bool Timer_module::config ( tlm_payload_t& trans)
 {
   Config_extn* extn{trans.get_extension<Config_extn>()};
   if( extn != nullptr ) {
@@ -144,11 +148,6 @@ bool Memory_module::config ( tlm_payload_t& trans)
       m_config.update( extn->config );
       // Update local copies
       extn->config.get( "target_depth", m_target_depth );
-      extn->config.get( "dmi_allowed ", m_dmi_allowed  );
-      extn->config.get( "access"      , m_access       );
-      extn->config.get( "byte_enables", m_byte_enables );
-      extn->config.get( "alignment"   , m_alignment    );
-      extn->config.get( "max_burst"   , m_max_burst    );
       extn->config.get( "addr_clocks" , m_addr_clocks  );
       extn->config.get( "read_clocks" , m_read_clocks  );
       extn->config.get( "write_clocks", m_write_clocks );
@@ -160,15 +159,7 @@ bool Memory_module::config ( tlm_payload_t& trans)
 }
 
 //------------------------------------------------------------------------------
-void Memory_module::resize( int depth, int pattern )
-{
-  sc_assert( depth > 0 and depth <= m_target_depth );
-  m_mem_vec.resize( depth, pattern );
-  m_used_vec.resize( depth, false );
-}
-
-//------------------------------------------------------------------------------
-void Memory_module::execute_transaction( Memory_module::tlm_payload_t& trans )
+void Timer_module::execute_transaction( Timer_module::tlm_payload_t& trans )
 {
   Depth_t len = trans.get_data_length();
   if( not payload_is_ok( trans, len, Style::AT ) ) {
@@ -180,8 +171,8 @@ void Memory_module::execute_transaction( Memory_module::tlm_payload_t& trans )
 
 //------------------------------------------------------------------------------
 tlm_sync_enum
-Memory_module::nb_transport_fw
-( Memory_module::tlm_payload_t& trans
+Timer_module::nb_transport_fw
+( Timer_module::tlm_payload_t& trans
 , tlm_phase& phase
 , sc_time& delay
 )
@@ -192,39 +183,14 @@ Memory_module::nb_transport_fw
   return TLM_ACCEPTED;
 }
 
-//------------------------------------------------------------------------------
-bool
-Memory_module::get_direct_mem_ptr
-( tlm_generic_payload& trans
-, tlm_dmi& dmi_data
-)
-{
-  dmi_data.init();
-  if( m_dmi_allowed == DMI::none ) {
-    return false;
-  }
-  m_dmi_granted = true;
-  dmi_data.set_dmi_ptr( m_mem_vec.data() );
-  dmi_data.set_start_address( 0 );
-  dmi_data.set_end_address( m_target_depth - 1 );
-  dmi_data.set_read_latency( clk.clocks( m_read_clocks ) );
-  dmi_data.set_write_latency( clk.clocks( m_write_clocks ) );
-  if( m_access == Access::RO ) {
-    dmi_data.allow_read();
-  } else {
-    dmi_data.allow_read_write();
-  }
-  return true;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Helpers
 
 //------------------------------------------------------------------------------
 void
-Memory_module::targ_peq_cb
-( Memory_module::tlm_payload_t& trans
-, const Memory_module::tlm_phase_t& phase
+Timer_module::targ_peq_cb
+( Timer_module::tlm_payload_t& trans
+, const Timer_module::tlm_phase_t& phase
 )
 {
   sc_time delay;
@@ -279,9 +245,9 @@ Memory_module::targ_peq_cb
 
 //------------------------------------------------------------------------------
 void 
-Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )
+Timer_module::send_end_req( Timer_module::tlm_payload_t& trans )
 {
-  Memory_module::tlm_phase_t bw_phase;
+  Timer_module::tlm_phase_t bw_phase;
   sc_time delay;
 
   // Queue the acceptance and the response with the appropriate latency
@@ -301,10 +267,10 @@ Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )
 
 //------------------------------------------------------------------------------
 void
-Memory_module::send_response( Memory_module::tlm_payload_t& trans )
+Timer_module::send_response( Timer_module::tlm_payload_t& trans )
 {
   tlm_sync_enum status;
-  Memory_module::tlm_phase_t bw_phase;
+  Timer_module::tlm_phase_t bw_phase;
   sc_time delay;
 
   m_response_in_progress = true;
@@ -329,7 +295,7 @@ Memory_module::send_response( Memory_module::tlm_payload_t& trans )
 //------------------------------------------------------------------------------
 // Method process that runs on target_done_event
 void
-Memory_module::execute_transaction_process( void )
+Timer_module::execute_transaction_process( void )
 {
   // Execute the read or write commands
   execute_transaction( *m_transaction_in_progress );
@@ -348,7 +314,7 @@ Memory_module::execute_transaction_process( void )
 }
 
 //------------------------------------------------------------------------------
-bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t len, Style coding_style )
+bool Timer_module::payload_is_ok( Timer_module::tlm_payload_t& trans, Depth_t len, Style coding_style )
 {
   tlm_command cmd = trans.get_command();
   Addr_t      adr = trans.get_address();
@@ -356,7 +322,7 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
 
-  if( ( adr+len ) >= m_target_depth ) {
+  if( ( adr+len ) >= m_target_depth or (addr & 3) != 0) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -374,7 +340,7 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
     }
     return false;
   }
-  else if( coding_style == Style::AT and m_max_burst > 0 and len > m_max_burst ) {
+  else if(  (len & 3) != 0 or coding_style == Style::AT and m_max_burst > 0 and len > m_max_burst ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Attempt to burst " << len << " bytes to " << name() << " with address " << adr << " when max burst size is " << m_max_burst );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -392,7 +358,7 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
     }
     return false;
   }
-  else if( m_access == Access::RO and cmd == TLM_WRITE_COMMAND ) { // No extended commands
+  else if( cmd == TLM_WRITE_COMMAND ) { // No extended commands
     if( g_error_at_target ) {
       REPORT( ERROR, "Attempt to write read-only device " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -407,46 +373,151 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
 
 //------------------------------------------------------------------------------
 Depth_t
-Memory_module::transport
-( Memory_module::tlm_payload_t& trans
-, sc_time& delay
-, Depth_t  len
+Timer_module::transport
+( Timer_module::tlm_payload_t& trans
+  , sc_time& delay
+  , Depth_t  len
 )
 {
   Addr_t     adr = trans.get_address();
   uint8_t*   ptr = trans.get_data_ptr();
-  Depth_t    sbw = targ_socket.get_bus_width()/8;
-  sc_assert( adr+len < m_target_depth );
-  if( m_mem_vec.size() < (adr+len) ) {
-    // Expand to nearest 1K
-    Depth_t new_size = (adr+len) + 1*KB;
-    // Limited by configured size
-    new_size = std::min( new_size, m_target_depth );
-    resize( new_size );
-  }
-  uint8_t*   mem = m_mem_vec.data();
+  Depth_t    sbw = targ_socket.get_bus_width() / 8;
+  sc_assert( adr + len < m_target_depth );
+  uint8_t*   reg = m_reg_vec.data();
   delay += clk.clocks( m_addr_clocks );
-  if( trans.is_read() ) {
-    // TODO: Add byte enable support
-    INFO( DEBUG, "Reading " << HEX << adr << "..." << (adr+len-1) );
-    memcpy( ptr, mem+adr, len );
-    delay += clk.clocks( m_read_clocks ) * ( ( len+sbw-1 )/sbw );
+
+  if ( trans.is_write() ) {
+    INFO( DEBUG, "Writing " << HEX << adr << "..." << ( adr + len - 1 ) );
+    memcpy( reg + adr, ptr, len );
+    delay += clk.clocks( m_write_clocks ) * ( ( len + sbw - 1 ) / sbw );
+    write_actions( adr, ptr, len );
   }
-  else if( trans.is_write() ) {
-    // TODO: Add byte enable support
-    INFO( DEBUG, "Writing " << HEX << adr << "..." << (adr+len-1) );
-    memcpy( mem+adr, ptr, len );
-    delay += clk.clocks( m_write_clocks ) * ( ( len+sbw-1 )/sbw );
-    if( m_used_vec.size() ) {
-      for( auto a=adr; a<( adr+len ); ++a ) {
-        m_used_vec[a] = true;
-      }
-    }
-  } else {
+  else if ( trans.is_read() ) {
+    read_actions( adr, ptr, len );
+    INFO( DEBUG, "Reading " << HEX << adr << "..." << ( adr + len - 1 ) );
+    memcpy( ptr, reg + adr, len );
+    delay += clk.clocks( m_read_clocks ) * ( ( len + sbw - 1 ) / sbw );
+  }
+  else {
     len = 0;
   }
+
   trans.set_response_status( TLM_OK_RESPONSE );
   return len;
+}
+
+//------------------------------------------------------------------------------
+void write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len )
+{
+  int index           { int(address/TIMER_SIZE) }; 
+  Addr_t base_address { TIMER_SIZE*index };
+  Addr_t reg_address  { address - base_address };
+  if( base_address == TIMER_GLOBAL_REG ) {
+  } else {
+    Timer_reg& timer_reg { reinterpret_cast<Timer_ address - base_address>(data_ptr[ base_address ]) };
+    if( len == sizeof(uint32_t) ) {
+      switch ( reg_address ) {
+        case TIMER_STATUS_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_CTRLSET_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_CTRLCLR_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_LOAD_LO_REG:
+          timer_reg.load_hi = 0;
+          sc_time load_time = clock_period*(timer_reg.load_lo);
+          m_timer_vec[index].set_load_time( load_time );
+          break;
+        case TIMER_LOAD_HI_REG:
+          sc_time load_time = clock_period*((uint64_t(timer_reg.load_hi)<<32) + timer_reg.load_lo);
+          m_timer_vec[index].set_load_time( load_time );
+          break;
+        case TIMER_CURR_LO_REG:
+          timer_reg.curr_hi = 0;
+          sc_time curr_time = clock_period*(timer_reg.curr_lo);
+          m_timer_vec[index].set_timeout_time( curr_time );
+          break;
+        case TIMER_CURR_HI_REG:
+          sc_time curr_time = clock_period*((uint64_t(timer_reg.curr_hi)<<32) + timer_reg.curr_lo);
+          m_timer_vec[index].set_timeout_time( curr_time );
+          break;
+        case TIMER_PULSE_REG:
+          sc_time pulse_time = clock_period*timer_reg.pulse;
+          break;
+      }
+    } else {
+      sc_assert( len == 2*sizeof(uint32_t) );
+      switch ( reg_address ) {
+        case TIMER_LOAD_LO_REG:
+          sc_time load_time = clock_period*((uint64_t(timer_reg.load_hi)<<32) + timer_reg.load_lo);
+          m_timer_vec[index].set_load_time( load_time );
+          break;
+        case TIMER_CURR_LO_REG:
+          sc_time curr_time = clock_period*((uint64_t(timer_reg.curr_hi)<<32) + timer_reg.curr_lo);
+          m_timer_vec[index].set_timeout_time( curr_time );
+          break;
+        default:
+          break;
+      }
+    }
+  }//endif
+}
+
+//------------------------------------------------------------------------------
+void read_actions ( Addr_t address, uint8_t* data_ptr, Depth_t len )
+{
+  Addr_t base_address { int(address/TIMER_SIZE) };
+  Addr_t reg_address  { address - base_address };
+  if( base_address == TIMER_GLOBAL_REG ) {
+  } else {
+    Timer_reg& timer_reg { reinterpret_cast<Timer_ address - base_address>(data_ptr[ base_address ]) };
+    sc_time load_time = m_timer_vec[index].get_timeout_time();
+    uint64_t load_clocks = load_time/clock_period;
+    sc_time curr_time = m_timer_vec[index].get_load_time();
+    uint64_t curr_clocks = (m_timer_vec[index].curr_time() - m_timer_vec[index].get_start_time())/clock_period;
+    NOT_YET_IMPLEMENTED();
+    if( len = sizeof(uint32_t) ) {
+      switch ( reg_address ) {
+        case TIMER_STATUS_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_CTRLSET_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_CTRLCLR_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_LOAD_LO_REG:
+          break;
+        case TIMER_LOAD_HI_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_CURR_LO_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_CURR_HI_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_PULSE_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+      }
+    } else {
+      switch ( reg_address ) {
+        case TIMER_LOAD_LO_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        case TIMER_CURR_LO_REG:
+          NOT_YET_IMPLEMENTED();
+          break;
+        default:
+          break;
+      }
+    }
+  }//endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////

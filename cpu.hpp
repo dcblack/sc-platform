@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  ###                                                                           
-//   #             #              #                                               
-//   #         #   #    #         #                                               
-//   #  ####      ###       ###  ###   ####  # ###                                
-//   #  #   # ##   #   ##  #   #  #   #    # ##                                   
-//   #  #   #  #   # #  #  #  ##  # # #    # #                                    
-//  ### #   # ###   #  ###  ## #   #   ####  #                                    
+//   ####  #####  #    #        #     # ####   #                                 
+//  #    # #    # #    #        ##   ## #   #  #                                 
+//  #      #    # #    #        # # # # #    # #                                 
+//  #      #####  #    #        #  #  # #    # #                                 
+//  #      #      #    #        #     # #    # #                                 
+//  #    # #      #    #        #     # #   #  #                                 
+//   ####  #       ####  ###### #     # ####   #####                             
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef CPU_H
-#define CPU_H
+#ifndef CPU_MODULE_H
+#define CPU_MODULE_H
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 #endif
@@ -20,6 +20,7 @@
 #include <tlm_utils/peq_with_cb_and_phase.h>
 #include "report.hpp"
 #include "common.hpp"
+#include "no_clock.hpp"
 #include "memory_manager.hpp"
 #include <map>
 using sc_core::sc_time;
@@ -30,7 +31,7 @@ struct Cpu_module: sc_core::sc_module
   using tlm_payload_t = tlm::tlm_generic_payload;
   using tlm_phase_t   = tlm::tlm_phase;
   using tlm_peq_t     = tlm_utils::peq_with_cb_and_phase<Cpu_module>;
-  tlm_utils::simple_initiator_socket<Cpu_module> init_socket;
+  tlm_utils::simple_initiator_socket<Cpu_module> init_socket{ "init_socket" };
 
   // Fundamentals
   SC_CTOR( Cpu_module );
@@ -100,7 +101,8 @@ private:
   void get( Addr_t address, Depth_t depth, std::vector<uint8_t>& vec );
 
   // Attributes
-  Style                        m_coding_style;
+  no_clock&                    clk { no_clock::global( "system_clock" ) };
+  Style                        m_coding_style{ Style::LT };
   tlm_utils::tlm_quantumkeeper m_qk;
   std::vector<tlm::tlm_dmi>    dmi_table; // Table of valid DMI regions
   Memory_manager<>&            m_mm; // for managing generic payload
@@ -146,4 +148,4 @@ Cpu_module::transport_dbg
   }
 }
 
-#endif /*CPU_H*/
+#endif /*CPU_MODULE_H*/

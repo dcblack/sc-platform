@@ -3,6 +3,7 @@
 
 #include <tlm>
 #include <cstdint>
+
 #include "require_cxx11.hpp"
 #include "sc_cxx11.hpp"
 
@@ -14,10 +15,10 @@
 #define MB (KB*KB)
 #define GB (KB*MB)
 
-typedef uint64_t Addr_t;
 #define MAX_ADDR (~Addr_t(0))
-typedef uint32_t Depth_t; //< accommodate address map
-namespace { const sc_core::sc_time default_period( 10.0_ns ); }
+using Addr_t  = uint64_t;
+using Depth_t = uint32_t; //< accommodate address map
+using byte_t  = uint8_t;
 enum class Feature { none, enabled };
 using DMI = Feature;
 using Byte_enables = Feature;

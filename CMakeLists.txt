@@ -20,6 +20,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable( plat
   common.cpp
+  no_clock.cpp
   main.cpp
   top.cpp
   wallclock.cpp

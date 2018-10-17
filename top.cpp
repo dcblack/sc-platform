@@ -10,6 +10,7 @@
 // header for high-level description.
 //
 ////////////////////////////////////////////////////////////////////////////>>>
+#include "no_clock.hpp"
 #include "top.hpp"
 #include "report.hpp"
 #include "common.hpp"
@@ -109,6 +110,9 @@ Top_module::~Top_module(void)
 
 struct Top_module::Impl
 {
+  // Clock
+  no_clock& clk { no_clock::global("system_clock", 100_MHz) };
+
   // Modules
   std::unique_ptr<Cpu_module   > cpu;
   std::unique_ptr<Bus_module   > nth;
