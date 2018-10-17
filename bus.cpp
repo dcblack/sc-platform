@@ -26,9 +26,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 // Constructor
 Bus_module::Bus_module( sc_module_name instance_name )
-  : targ_socket{ "targ_socket" }
-  , init_socket{ "init_socket" }
-  , m_mm       { Memory_manager<>::instance() }
+  : m_mm       { Memory_manager<>::instance() }
 {
   targ_socket.register_b_transport( this, &Bus_module::b_transport );
   targ_socket.register_nb_transport_fw( this, &Bus_module::nb_transport_fw );

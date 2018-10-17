@@ -25,8 +25,8 @@
 struct Bus_module: sc_core::sc_module
 {
   using tlm_payload_t = tlm::tlm_generic_payload;
-  tlm_utils::multi_passthrough_target_socket<Bus_module>    targ_socket;
-  tlm_utils::multi_passthrough_initiator_socket<Bus_module> init_socket;
+  tlm_utils::multi_passthrough_target_socket<Bus_module>    targ_socket{ "targ_socket" };
+  tlm_utils::multi_passthrough_initiator_socket<Bus_module> init_socket{ "init_socket" };
 
   SC_CTOR( Bus_module );
   virtual ~Bus_module( void );
