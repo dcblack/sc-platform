@@ -37,6 +37,7 @@ struct no_clock_if
   virtual double             frequency           ( void ) const = 0;
   // Special conveniences
   virtual Clock_count_t      cycles              ( void ) const = 0; // Number of clock cycles since start
+  virtual Clock_count_t      cycles              ( sc_core::sc_time t ) const = 0;
   virtual Clock_count_t      frequency_changes   ( void ) const = 0; // Number of times frequency was changed
   // Calculate the delay till... (use for temporal offset)...may return SC_ZERO_TIME if already on the edge
   virtual sc_core::sc_time   until_posedge       ( Clock_count_t cycles = 0U ) const = 0;
@@ -76,6 +77,5 @@ struct no_clock_if
   // Utility
   virtual sc_core::sc_time delay( sc_core::sc_time tPERIOD, sc_core::sc_time tOFFSET=sc_core::SC_ZERO_TIME , sc_core::sc_time tSHIFT=sc_core::SC_ZERO_TIME) const = 0;
   virtual Clock_count_t clocks( sc_core::sc_time tPERIOD, sc_core::sc_time tZERO=sc_core::SC_ZERO_TIME, sc_core::sc_time tSHIFT=sc_core::SC_ZERO_TIME) const = 0;
-  virtual sc_core::sc_time clocks( Clock_count_t n ) = 0;
 };
 #endif

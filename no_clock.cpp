@@ -26,7 +26,7 @@
 using namespace sc_core;
 using namespace std;
 
-const char*  no_clock::MSGID = "/Doulos/no_clock";
+const char* no_clock::MSGID = "/Doulos/no_clock";
 no_clock::clock_map_t no_clock::s_global;
 
 no_clock& no_clock::global // Global clock accessor
@@ -72,7 +72,7 @@ no_clock& no_clock::global
     string message("Missing definition for global clock '");
     message += clock_name;
     message += "'";
-    SC_REPORT_FATAL("/Doulos/no_clock/global",message.c_str());
+    SC_REPORT_FATAL(MSGID,message.c_str());
   }//endif
   return *(clock_it->second);
 }

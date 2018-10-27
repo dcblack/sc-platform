@@ -132,7 +132,7 @@ Memory_module::transport_dbg
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Memory_module::config ( tlm_payload_t& trans)
+bool Memory_module::config( tlm_payload_t& trans )
 {
   Config_extn* extn{trans.get_extension<Config_extn>()};
   if( extn != nullptr ) {
@@ -207,8 +207,8 @@ Memory_module::get_direct_mem_ptr
   dmi_data.set_dmi_ptr( m_mem_vec.data() );
   dmi_data.set_start_address( 0 );
   dmi_data.set_end_address( m_target_depth - 1 );
-  dmi_data.set_read_latency( clk.clocks( m_read_clocks ) );
-  dmi_data.set_write_latency( clk.clocks( m_write_clocks ) );
+  dmi_data.set_read_latency( clk.period( m_read_clocks ) );
+  dmi_data.set_write_latency( clk.period( m_write_clocks ) );
   if( m_access == Access::RO ) {
     dmi_data.allow_read();
   } else {
@@ -425,18 +425,18 @@ Memory_module::transport
     resize( new_size );
   }
   uint8_t*   mem = m_mem_vec.data();
-  delay += clk.clocks( m_addr_clocks );
+  delay += clk.period( m_addr_clocks );
   if( trans.is_read() ) {
     // TODO: Add byte enable support
     INFO( DEBUG, "Reading " << HEX << adr << "..." << (adr+len-1) );
     memcpy( ptr, mem+adr, len );
-    delay += clk.clocks( m_read_clocks ) * ( ( len+sbw-1 )/sbw );
+    delay += clk.period( m_read_clocks ) * ( ( len+sbw-1 )/sbw );
   }
   else if( trans.is_write() ) {
     // TODO: Add byte enable support
     INFO( DEBUG, "Writing " << HEX << adr << "..." << (adr+len-1) );
     memcpy( mem+adr, ptr, len );
-    delay += clk.clocks( m_write_clocks ) * ( ( len+sbw-1 )/sbw );
+    delay += clk.period( m_write_clocks ) * ( ( len+sbw-1 )/sbw );
     if( m_used_vec.size() ) {
       for( auto a=adr; a<( adr+len ); ++a ) {
         m_used_vec[a] = true;

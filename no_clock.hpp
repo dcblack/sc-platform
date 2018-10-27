@@ -72,7 +72,7 @@
 
 #include "no_clock_if.hpp"
 #include <systemc>
-#include <map>
+#include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -201,6 +201,7 @@ struct no_clock
   sc_core::sc_time time_shift ( void ) const { return m_tSHIFT; }
   // Special conveniences
   Clock_count_t    cycles ( void ) const; // Number of clock cycles since start
+  Clock_count_t    cycles ( sc_core::sc_time t ) const;
   void             reset  ( void ); // Clears count & frequency change base (not yet implemented -- specification issues remain)
   Clock_count_t    frequency_changes ( void ) const { return m_freq_count; } // Number of times frequency was changed
   // Calculate the delay till... (use for temporal offset)...may return SC_ZERO_TIME if already on the edge
@@ -243,7 +244,6 @@ struct no_clock
   virtual void write( const bool& ) { SC_REPORT_ERROR(MSGID,"write() not allowed on clock"); }
   virtual sc_core::sc_time delay( sc_core::sc_time tPERIOD, sc_core::sc_time tOFFSET, sc_core::sc_time tSHIFT) const;
   virtual Clock_count_t clocks( sc_core::sc_time tPERIOD, sc_core::sc_time tZERO, sc_core::sc_time tSHIFT) const;
-  virtual sc_core::sc_time clocks( Clock_count_t n );
 
 private:
   // Don't allow copying
@@ -273,7 +273,7 @@ private:
   Clock_count_t       m_freq_count{0ul};    // counts how many times frequency was changed
   Clock_count_t       m_base_count{0ul};    // cycles up to last frequency change
   sc_core::sc_time    m_tSHIFT{sc_core::SC_ZERO_TIME};  // temporal shift
-  using clock_map_t = std::map<const char*,no_clock*>;
+  using clock_map_t = std::unordered_map<const char*,no_clock*>;
   static clock_map_t  s_global;
   static const char*  MSGID;
 };
@@ -325,10 +325,6 @@ inline Clock_count_t no_clock::clocks
   // TODO: Factor in frequency changes
   return (Clock_count_t)(( sc_core::sc_time_stamp() + tSHIFT - tZERO ) / tPERIOD);
 }
-inline sc_core::sc_time no_clock::clocks( Clock_count_t n )
-{
-  return n*m_tPERIOD;
-}
 
 //------------------------------------------------------------------------------
 // Accessors
@@ -344,6 +340,11 @@ inline double           no_clock::frequency ( void ) const { return sc_core::sc_
 inline Clock_count_t    no_clock::cycles ( void ) const // Number of clock cycles since start
 {
   return m_base_count + clocks(m_tPERIOD,m_frequency_set,m_tSHIFT);
+}
+
+inline Clock_count_t    no_clock::cycles ( sc_core::sc_time t ) const // Number of clock cycles since start
+{
+  return static_cast<Clock_count_t>( t / m_tPERIOD );
 }
 
 // Calculate the delay till... (use for temporal offset)

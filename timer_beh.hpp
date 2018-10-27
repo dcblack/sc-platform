@@ -1,69 +1,65 @@
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef TIMER_BEH_HPP
+#define TIMER_BEH_HPP
+
 #include <systemc>
-// NOTE: This class may be constructed at any time
-class Timer { //< Private to hold data
-public:
 
-  Timer( void ) = default; //< Default constructor
-  Timer( const Timer& ) = delete; //< Copy constructor
-  Timer( Timer&& ) = delete;//< Move constructor
-  Timer& operator=( const Timer& ) = delete; //< Copy assignment
-  Timer& operator=( Timer&& ) = delete; //< Move assignment
-  ~Timer( void ) = default; //< Destructor
+struct Timer
+  : sc_core::sc_module {
+  Timer( sc_core::sc_module_name nm );   //< Constructor
+  ~Timer( void );                        //< Destructor
 
-  // Accessors
-  void set_curr_time    ( sc_core::sc_time t ) { m_curr_time    = t; }
-  void set_load_time    ( sc_core::sc_time t ) { m_load_time    = t; }
-  void set_start_time   ( sc_core::sc_time t ) { m_start_time   = t; }
-  void set_pulse_time   ( sc_core::sc_time t ) { m_pulse_time   = t; }
-  void set_timeout_time ( sc_core::sc_time t ) { m_timeout_time = t; }
-  sc_core::sc_time get_curr_time    ( void ) const { return m_curr_time;   }
-  sc_core::sc_time get_load_time    ( void ) const { return m_load_time;   }
-  sc_core::sc_time get_start_time   ( void ) const { return m_start_time;  }
-  sc_core::sc_time get_pulse_time   ( void ) const { return m_pulse_time;  }
-  sc_core::sc_time get_timeout_time ( void ) const { return m_timeout_time; }
-  void set_expired    ( bool v ) { m_expired    = v; }
-  void set_reload     ( bool v ) { m_reload     = v; }
-  void set_continuous ( bool v ) { m_continuous = v; }
-  void set_count_up   ( bool v ) { m_count_up   = v; }
-  void set_overflowed ( bool v ) { m_overflowed = v; }
-  void set_paused     ( bool v ) { m_paused     = v; }
-  bool get_expired    ( void ) const { return m_expired;    }
-  bool get_reload     ( void ) const { return m_reload;     }
-  bool get_continuous ( void ) const { return m_continuous; }
-  bool get_count_up   ( void ) const { return m_count_up;   }
-  bool get_overflowed ( void ) const { return m_overflowed; }
-  bool get_paused     ( void ) const { return m_paused;     }
+  // Processes
+  void trigger_thread( void );
 
-  sc_core::sc_time Timer::curr_time( void );
-  void start( void );
-  void stop( void );
-  void pause( void );
-  void resume( void );
-  const sc_core::sc_event& timeout_event ( void ) const { return m_timeout_event; } //< triggered when timer expires
-  const sc_core::sc_event& pulse_event ( void ) const { return m_pulse_event; } //< triggered when timer expires
+  // Inline accessors
+  void set_trig_delay( sc_core::sc_time t ) { m_trig_delay = t; }
+  void set_start_time( sc_core::sc_time t ) { m_start_time = t; }
+  void set_pulse_time( sc_core::sc_time t ) { m_pulse_time = t; }
+  void set_trigger_time( sc_core::sc_time t ) { m_trigger_time = t; }
+  sc_core::sc_time get_trig_delay( void ) const { return m_trig_delay; }
+  sc_core::sc_time get_start_time( void ) const { return m_start_time; }
+  sc_core::sc_time get_pulse_time( void ) const { return m_pulse_time; }
+  sc_core::sc_time get_trigger_time( void ) const { return m_trigger_time; }
+  void set_triggered( bool v ) { m_triggered = v; }
+  void set_reload( bool v ) { m_reload = v; }
+  void set_continuous( bool v ) { m_continuous = v; }
+  bool get_triggered( void ) const { return m_triggered; }
+  bool get_reload( void ) const { return m_reload; }
+  bool get_continuous( void ) const { return m_continuous; }
+  bool is_paused( void ) const { return m_paused; }
 
-  sc_core::sc_time get_time_left ( sc_core::sc_time tLOCAL ) const; //< how much time remains
+  // Fundamental behaviors of model
+  sc_core::sc_time curr_time( sc_core::sc_time delay = sc_core::SC_ZERO_TIME ) const;
+  void start ( sc_core::sc_time delay = sc_core::SC_ZERO_TIME );
+  void stop  ( sc_core::sc_time delay = sc_core::SC_ZERO_TIME );
+  void pause ( sc_core::sc_time delay = sc_core::SC_ZERO_TIME );
+  void resume( sc_core::sc_time delay = sc_core::SC_ZERO_TIME );
+  const sc_core::sc_event& trigger_event( void ) const
+  {
+    return m_trigger_event;  //< triggered when timer expires
+  }
 
-  bool timeout(void); //< checks for expiration and notifies event if exact time
+  sc_core::sc_time get_time_left( sc_core::sc_time delay = sc_core::SC_ZERO_TIME ) const;  //< how much time remains
+  bool is_running( sc_core::sc_time delay = sc_core::SC_ZERO_TIME );
 
-  bool timed_out ( void ) const { return m_expired; } //< indicates if timeout event was noted
+  bool triggered( void ) //< indicates if trigger event was noted, but only does so once per trigger
+  {
+    bool result = m_triggered;
+    m_triggered = false;
+    return result;
+  }
 
 private:
-  sc_core::sc_time  m_curr_time    { SC_ZERO_TIME };
-  sc_core::sc_time  m_load_time    { SC_ZERO_TIME };
-  sc_core::sc_time  m_start_time   { SC_ZERO_TIME };
-  sc_core::sc_time  m_pulse_time   { SC_ZERO_TIME };
-  sc_core::sc_time  m_resume_delay { SC_ZERO_TIME };
-  sc_core::sc_time  m_timeout_time { SC_ZERO_TIME }; //< 0=>stopped
-  bool              m_expired      { false }; //< indicates timer has expired
-  bool              m_reload       { false }; // set to cause automatic reload of initial delay
-  bool              m_continuous   { false };
-  bool              m_count_up     { false };
-  bool              m_overflowed   { false };
-  bool              m_paused       { false };
-  sc_core::sc_event m_timeout_event;
-  sc_core::sc_event m_pulse_event;
+  sc_core::sc_time   m_trig_delay   { sc_core::SC_ZERO_TIME }; // trigger_time - start_time
+  sc_core::sc_time   m_start_time   { sc_core::SC_ZERO_TIME }; // when timer started
+  sc_core::sc_time   m_pulse_time   { sc_core::SC_ZERO_TIME }; // nominally one clock period, but could change for PWM
+  sc_core::sc_time   m_resume_delay { sc_core::SC_ZERO_TIME };
+  sc_core::sc_time   m_trigger_time { sc_core::SC_ZERO_TIME }; //< start_time + trig_delay // (0 => stopped)
+  bool               m_triggered    { false }; //< indicates timer has triggered
+  bool               m_reload       { false }; // set to cause automatic retrigger computation on trigger
+  bool               m_continuous   { false }; // set to keep timer going after trigger
+  bool               m_paused       { false };
+  sc_core::sc_event  m_trigger_event;
+  static const char* MSGID;
 };
-#endif
+#endif /* TIMER_BEH_HPP */

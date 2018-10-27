@@ -21,6 +21,7 @@
 #include "report.hpp"
 #include "common.hpp"
 #include "no_clock.hpp"
+#include "interrupt.hpp"
 #include "memory_manager.hpp"
 #include <map>
 using sc_core::sc_time;
@@ -31,7 +32,11 @@ struct Cpu_module: sc_core::sc_module
   using tlm_payload_t = tlm::tlm_generic_payload;
   using tlm_phase_t   = tlm::tlm_phase;
   using tlm_peq_t     = tlm_utils::peq_with_cb_and_phase<Cpu_module>;
-  tlm_utils::simple_initiator_socket<Cpu_module> init_socket{ "init_socket" };
+  // Ports
+  tlm_utils::simple_initiator_socket<Cpu_module>  init_socket { "init_socket" };
+  sc_core::sc_export<Interrupt_send_if>           intrq_xport { "intrq_xport" };
+  // Local signals
+  Interrupt                                       intrq_chan  { "intrq_signal" };
 
   // Fundamentals
   SC_CTOR( Cpu_module );
@@ -40,6 +45,7 @@ struct Cpu_module: sc_core::sc_module
 
   // Processes
   void cpu_thread( void );
+  void irq_thread( void );
 
   // Backward interface
   tlm::tlm_sync_enum nb_transport_bw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );

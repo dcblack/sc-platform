@@ -14,6 +14,10 @@
 #include "common.hpp"
 #include "util.hpp"
 #include "hexfile.hpp"
+#include "memory_map.hpp"
+#include "timer_api.hpp"
+#include "interrupt.hpp"
+
 #include <string>
 namespace {
   const char* MSGID{ "/Doulos/Example/TLM-cpu" };
@@ -32,16 +36,16 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
 {
   SC_HAS_PROCESS( Cpu_module );
   SC_THREAD( cpu_thread );
+  SC_THREAD( irq_thread );
   init_socket.register_nb_transport_bw           ( this, &Cpu_module::nb_transport_bw );
   init_socket.register_invalidate_direct_mem_ptr ( this, &Cpu_module::invalidate_direct_mem_ptr );
+  intrq_xport.bind( intrq_chan );
   m_qk.reset();
   INFO( ALWAYS, "Constructed " << name() );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Processes
-
-#include "memory_map.hpp"
 
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,6 +70,7 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
   MEND( MEDIUM );\
 } while(0)
 
+//------------------------------------------------------------------------------
 void
 Cpu_module::cpu_thread( void )
 {
@@ -99,6 +104,16 @@ Cpu_module::cpu_thread( void )
   hexfile::dump( a, v3 );
 
   sc_stop();
+}
+
+//------------------------------------------------------------------------------
+void
+Cpu_module::irq_thread( void )
+{
+  for(;;) {
+    intrq_chan.wait();
+    INFO( MEDIUM, "Received interrupt at " << sc_time_stamp() );
+  }//endforever
 }
 
 ////////////////////////////////////////////////////////////////////////////////

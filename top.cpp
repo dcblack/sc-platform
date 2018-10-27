@@ -18,6 +18,7 @@
 #include "bus.hpp"
 #include "memory.hpp"
 #include "memory_map.hpp"
+#include "timer.hpp"
 using namespace sc_core;
 using namespace std;
 namespace {
@@ -27,97 +28,112 @@ namespace {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Constructor
-Top_module::Top_module(sc_module_name instance_name)
-: pImpl{ std::make_unique<Impl>() }
+Top_module::Top_module( sc_module_name instance_name )
+  : pImpl{ std::make_unique<Impl>() }
 {
-  for(int i=1; i<sc_core::sc_argc(); ++i) {
-    std::string arg(sc_core::sc_argv()[i]);
+  for ( int i = 1; i < sc_core::sc_argc(); ++i ) {
+    std::string arg( sc_core::sc_argv()[i] );
 
     //--------------------------------------------------------------------------
     // Brief help
-    if (arg == "-help" or arg == "--help" or arg == "-h" ) {
-      RULER('-');
+    if ( arg == "-help" or arg == "--help" or arg == "-h" ) {
+      RULER( '-' );
       MESSAGE( "\n"
-        << "Syntax:\n"
-        << "\n"
-        << "  "<< string( sc_argv()[0] ) << " OPTIONS\n"
-        << "\n"
-        << "Options:\n"
-        << "\n"
-        << "  -help        \n"
-        << "  -hyper       \n"
-        << "  -debug+1     \n"
-        << "  -debug       \n"
-        << "  -full        \n"
-        << "  -high        \n"
-        << "  -medium      \n"
-        << "  -low         \n"
-        << "  -none        \n"
-        << "  -AT          \n"
-        << "  -LT          \n"
-        << "  -error-at-target\n"
-        << "\n"
-        );
-      RULER('-');
+               << "Syntax:\n"
+               << "\n"
+               << "  " << string( sc_argv()[0] ) << " OPTIONS\n"
+               << "\n"
+               << "Options:\n"
+               << "\n"
+               << "  -help        \n"
+               << "  -hyper       \n"
+               << "  -debug+1     \n"
+               << "  -debug       \n"
+               << "  -full        \n"
+               << "  -high        \n"
+               << "  -medium      \n"
+               << "  -low         \n"
+               << "  -none        \n"
+               << "  -AT          \n"
+               << "  -LT          \n"
+               << "  -error-at-target\n"
+               << "\n"
+             );
+      RULER( '-' );
       MEND( ALWAYS );
 
-    //--------------------------------------------------------------------------
-    // Information message verbosity
-    } else if (arg == "-hyper") {
+      //--------------------------------------------------------------------------
+      // Information message verbosity
+    }
+    else if ( arg == "-hyper" ) {
       sc_core::sc_report_handler::set_verbosity_level( SC_HYPER );
-    } else if (arg == "-debug+1") {
-      sc_core::sc_report_handler::set_verbosity_level( SC_DEBUG+1 );
-    } else if (arg == "-debug") {
+    }
+    else if ( arg == "-debug+1" ) {
+      sc_core::sc_report_handler::set_verbosity_level( SC_DEBUG + 1 );
+    }
+    else if ( arg == "-debug" ) {
       sc_core::sc_report_handler::set_verbosity_level( SC_DEBUG );
-    } else if (arg == "-full") {
+    }
+    else if ( arg == "-full" ) {
       sc_core::sc_report_handler::set_verbosity_level( SC_FULL );
-    } else if (arg == "-high") {
+    }
+    else if ( arg == "-high" ) {
       sc_core::sc_report_handler::set_verbosity_level( SC_HIGH );
-    } else if (arg == "-medium") {
+    }
+    else if ( arg == "-medium" ) {
       sc_core::sc_report_handler::set_verbosity_level( SC_MEDIUM );
-    } else if (arg == "-low") {
+    }
+    else if ( arg == "-low" ) {
       sc_core::sc_report_handler::set_verbosity_level( SC_LOW );
-    } else if (arg == "-none" ) {
+    }
+    else if ( arg == "-none" ) {
       sc_core::sc_report_handler::set_verbosity_level( SC_NONE );
 
-    //--------------------------------------------------------------------------
-    // Coding style for initiators
-    } else if (arg == "-AT") {
+      //--------------------------------------------------------------------------
+      // Coding style for initiators
+    }
+    else if ( arg == "-AT" ) {
       g_coding_style = Style::AT;
-    } else if (arg == "-LT") {
+    }
+    else if ( arg == "-LT" ) {
       g_coding_style = Style::LT;
 
-    //--------------------------------------------------------------------------
-    // Display error messages at point of detection rather than returning
-    // an error response. Helpful during debug.
-    } else if (arg == "-error-at-target" or arg == "-eat") {
+      //--------------------------------------------------------------------------
+      // Display error messages at point of detection rather than returning
+      // an error response. Helpful during debug.
+    }
+    else if ( arg == "-error-at-target" or arg == "-eat" ) {
       g_error_at_target = true;
     }
   }
+
   sc_report_handler::set_actions( SC_ERROR, SC_DISPLAY | SC_LOG );
   INFO( ALWAYS, "Verbosity is "
-    << verbosity2str( sc_report_handler::get_verbosity_level() )
-    << "." );
-  if( g_error_at_target ) INFO( ALWAYS, "Reporting errors at target." );
+        << verbosity2str( sc_report_handler::get_verbosity_level() )
+        << "." );
+
+  if ( g_error_at_target ) {
+    INFO( ALWAYS, "Reporting errors at target." );
+  }
 }//endconstructor
 
 ///////////////////////////////////////////////////////////////////////////////
 // Destructor <<
-Top_module::~Top_module(void)
+Top_module::~Top_module( void )
 {
   // Nothing to do :)
 }
 
-struct Top_module::Impl
-{
+struct Top_module::Impl {
   // Clock
-  no_clock& clk { no_clock::global("system_clock", 100_MHz) };
+  no_clock& clk { no_clock::global( "system_clock", 100_MHz ) };
 
   // Modules
   std::unique_ptr<Cpu_module   > cpu;
   std::unique_ptr<Bus_module   > nth;
   std::unique_ptr<Memory_module> rom;
   std::unique_ptr<Memory_module> ram;
+  std::unique_ptr<Timer_module>  tmr;
 
   // Constructor
   Impl( void )
@@ -126,20 +142,37 @@ struct Top_module::Impl
     cpu = std::make_unique<Cpu_module>( "cpu" );
     nth = std::make_unique<Bus_module>( "nth" );
     rom = std::make_unique<Memory_module>( "rom"
-        , ROM_DEPTH, ROM_BASE,  Access::RO, 16, 32, DMI::enabled
-        );
+                                           , ROM_DEPTH, ROM_BASE,  Access::RO, 16, 32, DMI::enabled
+                                         );
     ram = std::make_unique<Memory_module>( "ram"
-        , RAM_DEPTH, RAM_BASE,  Access::RW, 16,  8, DMI::enabled
-        );
+                                           , RAM_DEPTH, RAM_BASE,  Access::RW, 16,  8, DMI::enabled
+                                         );
+    tmr = std::make_unique<Timer_module>( "tmr"
+                                          , 2, TMR_BASE, 1, 2, 2
+                                        );
+
     // Connectivity
-    switch( m_configuration ) {
+    switch ( m_configuration ) {
       case Configuration::TRIVIAL:
-        cpu->init_socket.bind(ram->targ_socket);
+        cpu->init_socket.bind( ram->targ_socket );
         break;
+
+      case Configuration::MEMORY:
+        cpu->init_socket.bind( nth->targ_socket );
+        nth->init_socket.bind( rom->targ_socket );
+        nth->init_socket.bind( ram->targ_socket );
+        break;
+
+      case Configuration::TIMER:
+        cpu->init_socket.bind( nth->targ_socket );
+        nth->init_socket.bind( rom->targ_socket );
+        nth->init_socket.bind( ram->targ_socket );
+        nth->init_socket.bind( tmr->targ_socket );
+        tmr->intrq_port.bind( cpu->intrq_xport );
+        break;
+
       default:
-        cpu->init_socket.bind(nth->targ_socket);
-        nth->init_socket.bind(rom->targ_socket);
-        nth->init_socket.bind(ram->targ_socket);
+        REPORT( FATAL, "Missing configuration." );
         break;
     }
   }
@@ -149,18 +182,31 @@ struct Top_module::Impl
   // Helper methods
   void config( void )
   {
-    for( int i=1; i<sc_argc(); ++i) {
+    // Establish default
+    m_configuration = Configuration::MEMORY;
+
+    for ( int i = 1; i < sc_argc(); ++i ) {
       string arg{sc_argv()[i]};
-      if( arg == "-trivial" ) {
+
+      if ( arg == "-trivial" ) {
         m_configuration = Configuration::TRIVIAL;
+      }
+      else if ( arg == "-memory" ) {
+        m_configuration = Configuration::MEMORY;
+      }
+      else if ( arg == "-timer" ) {
+        m_configuration = Configuration::TIMER;
       }
     }
   }
 
   // Attributes
-  enum class Configuration
-  { DEFAULT
-  , TRIVIAL
+  enum class Configuration {
+    DEFAULT
+    , MEMORY
+    , TIMER
+    , PIC
+    , TRIVIAL
   }
   m_configuration;
 };

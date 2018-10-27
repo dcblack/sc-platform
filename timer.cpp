@@ -1,18 +1,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  ####### ### #     # ##### #####         #     # ####   #                     
-//     #     #  ##   ## #     #    #        ##   ## #   #  #                     
-//     #     #  # # # # #     #    #        # # # # #    # #                     
-//     #     #  #  #  # ##### #####         #  #  # #    # #                     
-//     #     #  #     # #     #  #          #     # #    # #                     
-//     #     #  #     # #     #   #         #     # #   #  #                     
-//     #    ### #     # ##### #    # ###### #     # ####   #####                 
+//  ####### ### #     # ##### #####         #     # ####   #
+//     #     #  ##   ## #     #    #        ##   ## #   #  #
+//     #     #  # # # # #     #    #        # # # # #    # #
+//     #     #  #  #  # ##### #####         #  #  # #    # #
+//     #     #  #     # #     #  #          #     # #    # #
+//     #     #  #     # #     #   #         #     # #   #  #
+//     #    ### #     # ##### #    # ###### #     # ####   #####
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "timer.hpp"
-#include "timer_regs.hpp"
 #include "report.hpp"
 #include "util.hpp"
+#include "log2.hpp"
 #include "config_extn.hpp"
 #include <algorithm>
 namespace {
@@ -26,41 +26,43 @@ using namespace std;
 //------------------------------------------------------------------------------
 Timer_module::Timer_module // Constructor
 ( sc_module_name instance_name
-, Depth_t        target_depth
-, Addr_t         target_start
-, size_t         timer_quantity // Number of timers
-, uint32_t       addr_clocks
-, uint32_t       read_clocks
-, uint32_t       write_clocks
+  , size_t         timer_quantity // Number of timers
+  , Addr_t         target_start
+  , uint32_t       addr_clocks
+  , uint32_t       read_clocks
+  , uint32_t       write_clocks
 )
-: m_target_depth            { target_depth    }
-//m_target_start not needed
-, m_addr_clocks             { addr_clocks     }
-, m_read_clocks             { read_clocks     }
-, m_write_clocks            { write_clocks    }
-, m_targ_peq                { this, &Timer_module::targ_peq_cb }
+  : m_target_depth            { Depth_t( timer_quantity * TIMER_SIZE + sizeof( uint32_t ) ) }
+    //m_target_start not needed
+  , m_timer_quantity          { timer_quantity  }
+  , m_addr_clocks             { addr_clocks     }
+  , m_read_clocks             { read_clocks     }
+  , m_write_clocks            { write_clocks    }
+  , m_timer_vec               { "timer"         }
+  , m_targ_peq                { this, &Timer_module::targ_peq_cb }
 {
   SC_HAS_PROCESS( Timer_module );
   SC_THREAD( timer_thread );
-  m_reg_vec.size( timer_qty * TIMER_SIZE );
-  m_timer_vec.size( timer_qty );
+  m_register_vec.resize( timer_quantity * TIMER_SIZE );
+  m_timer_vec.init( timer_quantity );
   SC_HAS_PROCESS( Timer_module );
   SC_METHOD( execute_transaction_process );
-    sensitive << m_target_done_event;
-    dont_initialize();
-  targ_socket.register_b_transport        ( this, &Timer_module::b_transport );
-  targ_socket.register_nb_transport_fw    ( this, &Timer_module::nb_transport_fw );
-  targ_socket.register_transport_dbg      ( this, &Timer_module::transport_dbg );
-  m_config.set( "name",         string(name())  );
-  m_config.set( "kind",         string(kind())  );
-  m_config.set( "object_ptr",   uintptr_t(this) );
-  m_config.set( "target_start", target_start    );
-  m_config.set( "target_depth", target_depth    );
-  m_config.set( "addr_clocks",  addr_clocks     );
-  m_config.set( "read_clocks",  read_clocks     );
-  m_config.set( "write_clocks", write_clocks    );
-  m_config.set( "coding_style", Style::AT       );
-  INFO( ALWAYS, "Constructed " << name() << " with config:\n" << m_config ); }
+  sensitive << m_target_done_event;
+  dont_initialize();
+  targ_socket.register_b_transport( this, &Timer_module::b_transport );
+  targ_socket.register_nb_transport_fw( this, &Timer_module::nb_transport_fw );
+  targ_socket.register_transport_dbg( this, &Timer_module::transport_dbg );
+  m_config.set( "name",         string( name() ) );
+  m_config.set( "kind",         string( kind() ) );
+  m_config.set( "object_ptr",   uintptr_t( this ) );
+  m_config.set( "target_start", target_start );
+  m_config.set( "target_depth", m_target_depth );
+  m_config.set( "addr_clocks",  addr_clocks );
+  m_config.set( "read_clocks",  read_clocks );
+  m_config.set( "write_clocks", write_clocks );
+  m_config.set( "coding_style", Style::AT );
+  INFO( ALWAYS, "Constructed " << name() << " with config:\n" << m_config );
+}
 
 //------------------------------------------------------------------------------
 // Destructor
@@ -70,21 +72,58 @@ Timer_module::~Timer_module( void )
 }
 
 //------------------------------------------------------------------------------
+void Timer_module::end_of_elaboration( void )
+{
+  // What use is a timer module if not connected to something?
+  int connections = intrq_port.size() + pulse_port.size();
+  MESSAGE( "Timer " << name() << " has " 
+    << (intrq_port.size() ? "connected" : "no") << " interrupt ports"
+    << " and " << pulse_port.size() << " pulse ports connected."
+  );
+  if( connections == 0 ) {
+    REPORT( WARNING, " Did you forget something?" );
+  } else {
+    MEND( ALWAYS );
+  }
+}
+
+//------------------------------------------------------------------------------
 void Timer_module::timer_thread( void )
 {
+  sc_event_or_list trigger_events;
   // Setup events to monitor
-  sc_event_or_list events;
-  for( auto& v : m_timer_vec ) {
-    events |= v.timeout_event() | v.pulse_width_event();
+  for ( auto& v : m_timer_vec ) {
+    trigger_events |= v.trigger_event();
   }
+
   for(;;) {
-    wait( events );
-    for( auto& v : m_timer_vec ) {
-      if( sc_time_stamp() == v.get_load_time() ) {
-      }
-      if( sc_time_stamp() == v.get_pulse_time() ) {
+
+    wait( trigger_events );
+
+    if( intrq_port.size() == 1 ) {
+      // Generate interrupt if any enabled timers has triggered
+      for( int iIrq=0; iIrq!=intrq_port.size(); ++iIrq ) {
+        if( m_timer_vec[iIrq].get_triggered() and irq_enabled(iIrq) ) {
+          timer_reg_vec(iIrq).status |= TIMER_IRQ(iIrq);
+          intrq_port->notify();
+          break;
+        }
       }
     }
+
+    // Generate pulse for connected ports
+    for( int iPulse=0; iPulse!=pulse_port.size(); ++iPulse ) {
+      if( m_timer_vec[iPulse].triggered() ) {
+        sc_spawn( [&]() 
+          {
+            pulse_port[iPulse]->write(true);
+            wait( m_timer_vec[iPulse].get_pulse_time() );
+            pulse_port[iPulse]->write(false);
+          }
+        );
+      }
+    }//end pulse
+
   }//endforever
 }
 
@@ -94,77 +133,88 @@ void Timer_module::timer_thread( void )
 //------------------------------------------------------------------------------
 void
 Timer_module::b_transport
-( Timer_module::tlm_payload_t& trans
-, sc_time& delay
+( tlm_payload_t& trans
+  , sc_time& delay
 )
 {
 
   Depth_t len = trans.get_data_length();
 
-  if( not payload_is_ok( trans, len, Style::LT ) ) {
+  if ( not payload_is_ok( trans, len, Style::LT ) ) {
     return;
   }
+
   transport( trans, delay, len );
 }
 
 //------------------------------------------------------------------------------
 Depth_t
 Timer_module::transport_dbg
-( Timer_module::tlm_payload_t& trans
+( tlm_payload_t& trans
 )
 {
   INFO( DEBUG, "Executing " << name() << "." << __func__ << "::transport_dbg" );
-  bool config_only{config(trans)};
-  if( config_only ) {
+  bool config_only{config( trans )};
+
+  if ( config_only ) {
     INFO( DEBUG, "config_only" );
     trans.set_response_status( TLM_OK_RESPONSE );
     return 0;
   }
+
   // Allow for length beyond end by truncating
   Addr_t  adr = trans.get_address();
   Depth_t len = trans.get_data_length();
-  if( ( adr + len - 1 ) > m_target_depth ) {
+
+  if ( ( adr + len - 1 ) > m_target_depth ) {
     len -= ( adr + len - 1 ) - m_target_depth;
   }
 
-  if( not payload_is_ok( trans, len, Style::LT ) ) {
+  if ( not payload_is_ok( trans, len, Style::LT ) ) {
     return 0;
   }
+
   sc_time delay( SC_ZERO_TIME );
   return transport( trans, delay, len );
 }
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Timer_module::config ( tlm_payload_t& trans)
+bool Timer_module::config( tlm_payload_t& trans )
 {
   Config_extn* extn{trans.get_extension<Config_extn>()};
-  if( extn != nullptr ) {
+
+  if ( extn != nullptr ) {
     INFO( DEBUG, "Configuring " << name() );
-    if (extn->config.empty()) {
+
+    if ( extn->config.empty() ) {
       NOINFO( DEBUG, "Sending config:\n" << m_config );
       extn->config = m_config;
-    } else {                                   
+    }
+    else {
       m_config.update( extn->config );
       // Update local copies
       extn->config.get( "target_depth", m_target_depth );
-      extn->config.get( "addr_clocks" , m_addr_clocks  );
-      extn->config.get( "read_clocks" , m_read_clocks  );
+      extn->config.get( "addr_clocks" , m_addr_clocks );
+      extn->config.get( "read_clocks" , m_read_clocks );
       extn->config.get( "write_clocks", m_write_clocks );
       INFO( DEBUG, "Updated config " << m_config );
     }
   }
+
   trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
   return trans.get_command() == TLM_IGNORE_COMMAND;
 }
 
 //------------------------------------------------------------------------------
-void Timer_module::execute_transaction( Timer_module::tlm_payload_t& trans )
+void Timer_module::execute_transaction( tlm_payload_t& trans )
 {
   Depth_t len = trans.get_data_length();
-  if( not payload_is_ok( trans, len, Style::AT ) ) {
+
+  if ( not payload_is_ok( trans, len, Style::AT ) ) {
     return;
   }
+
   sc_time delay( SC_ZERO_TIME );
   transport( trans, delay, len );
 }
@@ -172,9 +222,9 @@ void Timer_module::execute_transaction( Timer_module::tlm_payload_t& trans )
 //------------------------------------------------------------------------------
 tlm_sync_enum
 Timer_module::nb_transport_fw
-( Timer_module::tlm_payload_t& trans
-, tlm_phase& phase
-, sc_time& delay
+( tlm_payload_t& trans
+  , tlm_phase& phase
+  , sc_time& delay
 )
 {
 
@@ -189,76 +239,82 @@ Timer_module::nb_transport_fw
 //------------------------------------------------------------------------------
 void
 Timer_module::targ_peq_cb
-( Timer_module::tlm_payload_t& trans
-, const Timer_module::tlm_phase_t& phase
+( tlm_payload_t& trans
+  , const tlm_phase_t& phase
 )
 {
   sc_time delay;
 
   switch ( phase ) {
-  case BEGIN_REQ:
+    case BEGIN_REQ: {
 
-    // Increment the transaction reference count
-    trans.acquire();
+        // Increment the transaction reference count
+        trans.acquire();
 
-    if( m_transaction_in_progress != nullptr )
-      send_end_req( trans );
-    else
-      // Put back-pressure on initiator by deferring END_REQ until pipeline is clear
-      m_end_req_pending = &trans;
+        if ( m_transaction_in_progress != nullptr ) {
+          send_end_req( trans );
+        }
+        else
+          // Put back-pressure on initiator by deferring END_REQ until pipeline is clear
+        {
+          m_end_req_pending = &trans;
+        }
 
-    break;
+        break;
+      }
 
-  case END_RESP:
-    // On receiving END_RESP, the target can release the transaction
-    // and allow other pending transactions to proceed
+    case END_RESP: {
+        // On receiving END_RESP, the target can release the transaction
+        // and allow other pending transactions to proceed
 
-    if( not m_response_in_progress )
-      REPORT( FATAL, "Illegal transaction phase END_RESP received by target" );
+        if ( not m_response_in_progress ) {
+          REPORT( FATAL, "Illegal transaction phase END_RESP received by target" );
+        }
 
-    // Flag must only be cleared when END_RESP is sent
-    m_transaction_in_progress = nullptr;
+        // Flag must only be cleared when END_RESP is sent
+        m_transaction_in_progress = nullptr;
 
-    // Target itself is now clear to issue the next BEGIN_RESP
-    m_response_in_progress = false;
-    if( m_next_response_pending != nullptr )
-    {
-      send_response( *m_next_response_pending );
-      m_next_response_pending = nullptr;
-    }
+        // Target itself is now clear to issue the next BEGIN_RESP
+        m_response_in_progress = false;
 
-    // ... and to unblock the initiator by issuing END_REQ
-    if( m_end_req_pending != nullptr )
-    {
-      send_end_req( *m_end_req_pending );
-      m_end_req_pending = nullptr;
-    }
+        if ( m_next_response_pending != nullptr ) {
+          send_response( *m_next_response_pending );
+          m_next_response_pending = nullptr;
+        }
 
-    break;
+        // ... and to unblock the initiator by issuing END_REQ
+        if ( m_end_req_pending != nullptr ) {
+          send_end_req( *m_end_req_pending );
+          m_end_req_pending = nullptr;
+        }
 
-  case END_REQ:
-  case BEGIN_RESP:
-    REPORT( FATAL, "Illegal transaction phase received by target" );
-    break;
-  }
+        break;
+      }
+
+    case END_REQ:
+    case BEGIN_RESP: {
+        REPORT( FATAL, "Illegal transaction phase received by target" );
+        break;
+      }
+  }//endswitch
 }
 
 //------------------------------------------------------------------------------
-void 
-Timer_module::send_end_req( Timer_module::tlm_payload_t& trans )
+void
+Timer_module::send_end_req( tlm_payload_t& trans )
 {
-  Timer_module::tlm_phase_t bw_phase;
+  tlm_phase_t bw_phase;
   sc_time delay;
 
   // Queue the acceptance and the response with the appropriate latency
   bw_phase = END_REQ;
-  delay = rand_ps(5); // Accept delay
+  delay = clk.period( 1 ); // Accept delay
 
   tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
-  delay = delay + rand_ps(5); // Latency
+  delay += clk.period( 1 ); // Latency
   m_target_done_event.notify( delay );
 
   assert( m_transaction_in_progress == nullptr );
@@ -267,10 +323,10 @@ Timer_module::send_end_req( Timer_module::tlm_payload_t& trans )
 
 //------------------------------------------------------------------------------
 void
-Timer_module::send_response( Timer_module::tlm_payload_t& trans )
+Timer_module::send_response( tlm_payload_t& trans )
 {
   tlm_sync_enum status;
-  Timer_module::tlm_phase_t bw_phase;
+  tlm_phase_t bw_phase;
   sc_time delay;
 
   m_response_in_progress = true;
@@ -278,17 +334,16 @@ Timer_module::send_response( Timer_module::tlm_payload_t& trans )
   delay = SC_ZERO_TIME;
   status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
 
-  if( status == TLM_UPDATED )
-  {
+  if ( status == TLM_UPDATED ) {
     // The timing annotation must be honored
     m_targ_peq.notify( trans, bw_phase, delay );
   }
-  else if( status == TLM_COMPLETED )
-  {
+  else if ( status == TLM_COMPLETED ) {
     // The initiator has terminated the transaction
     m_transaction_in_progress = nullptr;
     m_response_in_progress = false;
   }
+
   trans.release();
 }
 
@@ -302,10 +357,12 @@ Timer_module::execute_transaction_process( void )
 
   // Target must honor BEGIN_RESP/END_RESP exclusion rule
   // i.e. must not send BEGIN_RESP until receiving previous END_RESP or BEGIN_REQ
-  if( m_response_in_progress ) {
+  if ( m_response_in_progress ) {
     // Target allows only two transactions in-flight
-    if( m_next_response_pending != nullptr )
+    if ( m_next_response_pending != nullptr ) {
       REPORT( FATAL, "Attempt to have two pending responses in target" );
+    }
+
     m_next_response_pending = m_transaction_in_progress;
   }
   else {
@@ -314,7 +371,7 @@ Timer_module::execute_transaction_process( void )
 }
 
 //------------------------------------------------------------------------------
-bool Timer_module::payload_is_ok( Timer_module::tlm_payload_t& trans, Depth_t len, Style coding_style )
+bool Timer_module::payload_is_ok( tlm_payload_t& trans, Depth_t len, Style coding_style )
 {
   tlm_command cmd = trans.get_command();
   Addr_t      adr = trans.get_address();
@@ -322,51 +379,62 @@ bool Timer_module::payload_is_ok( Timer_module::tlm_payload_t& trans, Depth_t le
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
 
-  if( ( adr+len ) >= m_target_depth or (addr & 3) != 0) {
-    if( g_error_at_target ) {
+  if ( ( adr + len ) >= m_target_depth or ( adr & 3 ) != 0 ) {
+    if ( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
-    } else {
+    }
+    else {
       trans.set_response_status( TLM_ADDRESS_ERROR_RESPONSE );
     }
+
     return false;
-  } 
-  else if( byt != 0 ) { 
-    if( g_error_at_target ) {
+  }
+  else if ( byt != 0 ) {
+    if ( g_error_at_target ) {
       REPORT( ERROR, "Attempt to unsupported use byte enables " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
-    } else {
+    }
+    else {
       trans.set_response_status( TLM_BYTE_ENABLE_ERROR_RESPONSE );
     }
+
     return false;
   }
-  else if(  (len & 3) != 0 or coding_style == Style::AT and m_max_burst > 0 and len > m_max_burst ) {
-    if( g_error_at_target ) {
+  else if ( ( ( len & 3 ) != 0 ) or ( coding_style == Style::AT and m_max_burst > 0 and len > m_max_burst ) ) {
+    if ( g_error_at_target ) {
       REPORT( ERROR, "Attempt to burst " << len << " bytes to " << name() << " with address " << adr << " when max burst size is " << m_max_burst );
       trans.set_response_status( TLM_OK_RESPONSE );
-    } else {
+    }
+    else {
       trans.set_response_status( TLM_BURST_ERROR_RESPONSE );
     }
+
     return false;
   }
-  else if( wid < len ) { // No streaming
-    if( g_error_at_target ) {
+  else if ( wid < len ) { // No streaming
+    if ( g_error_at_target ) {
       REPORT( ERROR, "Attempt to stream to " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
-    } else {
+    }
+    else {
       trans.set_response_status( TLM_GENERIC_ERROR_RESPONSE );
     }
+
     return false;
   }
-  else if( cmd == TLM_WRITE_COMMAND ) { // No extended commands
-    if( g_error_at_target ) {
+  else if ( cmd == TLM_WRITE_COMMAND ) { // No extended commands
+    if ( g_error_at_target ) {
       REPORT( ERROR, "Attempt to write read-only device " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
-    } else {
+    }
+    else {
       trans.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
     }
+
     return false;
-  } else {
+  }
+  else {
     return true;
   }
 }
@@ -374,7 +442,7 @@ bool Timer_module::payload_is_ok( Timer_module::tlm_payload_t& trans, Depth_t le
 //------------------------------------------------------------------------------
 Depth_t
 Timer_module::transport
-( Timer_module::tlm_payload_t& trans
+( tlm_payload_t& trans
   , sc_time& delay
   , Depth_t  len
 )
@@ -383,20 +451,20 @@ Timer_module::transport
   uint8_t*   ptr = trans.get_data_ptr();
   Depth_t    sbw = targ_socket.get_bus_width() / 8;
   sc_assert( adr + len < m_target_depth );
-  uint8_t*   reg = m_reg_vec.data();
-  delay += clk.clocks( m_addr_clocks );
+  uint8_t*   reg = m_register_vec.data();
+  delay += clk.period( m_addr_clocks );
 
   if ( trans.is_write() ) {
     INFO( DEBUG, "Writing " << HEX << adr << "..." << ( adr + len - 1 ) );
     memcpy( reg + adr, ptr, len );
-    delay += clk.clocks( m_write_clocks ) * ( ( len + sbw - 1 ) / sbw );
-    write_actions( adr, ptr, len );
+    delay += clk.period( m_write_clocks ) * ( ( len + sbw - 1 ) / sbw );
+    write_actions( adr, reg, len, delay );
   }
   else if ( trans.is_read() ) {
-    read_actions( adr, ptr, len );
+    read_actions( adr, reg, len, delay );
     INFO( DEBUG, "Reading " << HEX << adr << "..." << ( adr + len - 1 ) );
     memcpy( ptr, reg + adr, len );
-    delay += clk.clocks( m_read_clocks ) * ( ( len + sbw - 1 ) / sbw );
+    delay += clk.period( m_read_clocks ) * ( ( len + sbw - 1 ) / sbw );
   }
   else {
     len = 0;
@@ -404,61 +472,176 @@ Timer_module::transport
 
   trans.set_response_status( TLM_OK_RESPONSE );
   return len;
+}//end Timer_module::transport
+
+////////////////////////////////////////////////////////////////////////////////
+// Timer Helpers
+
+//------------------------------------------------------------------------------
+// Map Timer_reg structure onto respective registers
+Timer_reg& Timer_module::timer_reg_vec( int index )
+{
+  uint8_t* base_ptr    { m_register_vec.data() + index * TIMER_SIZE };
+  Timer_reg* timer_reg { reinterpret_cast<Timer_reg*>( base_ptr ) };
+  return *timer_reg;
 }
 
 //------------------------------------------------------------------------------
-void write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len )
+uint32_t Timer_module::get_timer_status( unsigned int index )
 {
-  int index           { int(address/TIMER_SIZE) }; 
-  Addr_t base_address { TIMER_SIZE*index };
-  Addr_t reg_address  { address - base_address };
-  if( base_address == TIMER_GLOBAL_REG ) {
-  } else {
-    Timer_reg& timer_reg { reinterpret_cast<Timer_ address - base_address>(data_ptr[ base_address ]) };
-    if( len == sizeof(uint32_t) ) {
+  uint32_t status { ( uint32_t( m_timer_quantity ) << TIMER_QTY_LSB ) };
+  sc_assert( status <= TIMER_QTY_MASK ); // Make sure it fits
+  status |= timer_reg_vec( index ).status & TIMER_SCALE_MASK; // Preserve
+
+  if ( m_timer_vec[index].get_reload() ) {
+    status |= TIMER_RELOAD;
+  }
+
+  if ( m_timer_vec[index].get_continuous() ) {
+    status |= TIMER_CONTINUOUS;
+  }
+
+  if ( m_timer_vec[index].is_running() ) {
+    status |= TIMER_START;
+  }
+
+  status |= timer_reg_vec( index ).status & TIMER_INTERRUPT_MASK; // Preserve
+
+  if ( not m_timer_vec[index].is_paused() ) {
+    status |= TIMER_NORMAL;
+  }
+
+  status |= timer_reg_vec( index ).status & TIMER_IRQ_MASK; // Preserve
+  return status;
+}
+
+//------------------------------------------------------------------------------
+void Timer_module::set_timer_status( unsigned int index, const sc_time& delay )
+{
+  // Read current
+  volatile uint32_t& next_status {
+    timer_reg_vec( index ).status
+  };
+  // Update new values
+  next_status &= ~TIMER_QTY_MASK; // ignore
+  // Handle interrupt enable
+  // - nothing to do
+  // Handle reload
+  m_timer_vec[index].set_reload( ( next_status & TIMER_RELOAD_MASK ) == TIMER_RELOAD );
+  // Handle continuous/one-shot
+  m_timer_vec[index].set_continuous( ( next_status & TIMER_STATE_MASK ) == TIMER_CONTINUOUS );
+
+  if ( m_timer_vec[index].is_running() ) {
+    // Handle start/stop
+    if ( ( next_status & TIMER_STARTED_MASK ) == TIMER_STOP ) {
+      m_timer_vec[index].stop( delay );
+    }
+  }
+  else {
+    // Handle pause/run
+    if ( ( m_timer_vec[index].is_paused() )
+         and ( ( next_status & TIMER_PAUSED_MASK ) != TIMER_PAUSED )
+       ) {
+      m_timer_vec[index].resume( delay );
+    }
+
+    if ( ( next_status & TIMER_STARTED_MASK ) == TIMER_START ) {
+      m_timer_vec[index].start( delay );
+    }
+
+    // Handle pause/run
+    if ( ( next_status & TIMER_PAUSED_MASK ) == TIMER_PAUSED ) {
+      m_timer_vec[index].pause( delay );
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
+{
+  unsigned int index   { static_cast<unsigned int>( address >> clog2(TIMER_SIZE) ) };
+  Addr_t base_address  { index << clog2(TIMER_SIZE) };
+  Addr_t reg_address   { address - base_address };
+  Timer_reg& timer_reg { timer_reg_vec(index) };
+  Timer&     timer     { m_timer_vec[index] };
+
+  if ( base_address == TIMER_GLOBAL_REG ) {
+  }
+  else {
+    if ( len == sizeof( uint32_t ) ) {
       switch ( reg_address ) {
-        case TIMER_STATUS_REG:
+        case /*write*/ TIMER_STATUS_REG:
+        {
+          set_timer_status( index, delay );
+          break;
+        }
+        case /*write*/ TIMER_CTRLSET_REG:
+        {
+          timer_reg.status  = get_timer_status( index );
+          timer_reg.status |= (timer_reg.ctrlset & ~TIMER_QTY_MASK);
+          set_timer_status( index, delay );
+          break;
+        }
+        case /*write*/ TIMER_CTRLCLR_REG:
+        {
+          timer_reg.status = get_timer_status( index );
+          timer_reg.status &= ~(timer_reg.ctrlset & ~TIMER_QTY_MASK);
+          set_timer_status( index, delay );
+          break;
+        }
+        case /*write*/ TIMER_TRIG_LO_REG:
+        {
+          timer_reg.trig_hi = 0;
+          sc_time trig_delay = clk.period( scale(timer_reg.status) * timer_reg.trig_lo );
+          timer.set_trig_delay( trig_delay );
+          break;
+        }
+        case /*write*/ TIMER_TRIG_HI_REG:
+        {
+          sc_time trig_delay = clk.period( scale(timer_reg.status) * (( uint64_t( timer_reg.trig_hi ) << 32 ) + timer_reg.trig_lo ));
+          timer.set_trig_delay( trig_delay );
+          break;
+        }
+        case /*write*/ TIMER_CURR_LO_REG:
+        {
           NOT_YET_IMPLEMENTED();
-          break;
-        case TIMER_CTRLSET_REG:
-          NOT_YET_IMPLEMENTED();
-          break;
-        case TIMER_CTRLCLR_REG:
-          NOT_YET_IMPLEMENTED();
-          break;
-        case TIMER_LOAD_LO_REG:
-          timer_reg.load_hi = 0;
-          sc_time load_time = clock_period*(timer_reg.load_lo);
-          m_timer_vec[index].set_load_time( load_time );
-          break;
-        case TIMER_LOAD_HI_REG:
-          sc_time load_time = clock_period*((uint64_t(timer_reg.load_hi)<<32) + timer_reg.load_lo);
-          m_timer_vec[index].set_load_time( load_time );
-          break;
-        case TIMER_CURR_LO_REG:
           timer_reg.curr_hi = 0;
-          sc_time curr_time = clock_period*(timer_reg.curr_lo);
-          m_timer_vec[index].set_timeout_time( curr_time );
+          //uint64_t prev_count =  ( curr_time(delay) - get_start_time() )/clk.period(scale(timer_reg.status));
+          //uint64_t next_count = timer_reg.curr_lo;
+          //timer.set_start_time( curr_time );
           break;
-        case TIMER_CURR_HI_REG:
-          sc_time curr_time = clock_period*((uint64_t(timer_reg.curr_hi)<<32) + timer_reg.curr_lo);
-          m_timer_vec[index].set_timeout_time( curr_time );
+        }
+        case /*write*/ TIMER_CURR_HI_REG:
+        {
+          NOT_YET_IMPLEMENTED();
+          //uint64_t prev_count =  ( curr_time(delay) - get_start_time() )/clk.period(scale(timer_reg.status));
+          //uint64_t next_count = ( uint64_t( timer_reg.curr_hi ) << 32 ) + timer_reg.curr_lo;
+          //timer.set_start_time( curr_time );
           break;
-        case TIMER_PULSE_REG:
-          sc_time pulse_time = clock_period*timer_reg.pulse;
+        }
+        case /*write*/ TIMER_PULSE_REG:
+        {
+          // - nothing to do
           break;
+        }
       }
-    } else {
-      sc_assert( len == 2*sizeof(uint32_t) );
+    }
+    else {
+      sc_assert( len == 2 * sizeof( uint32_t ) );
+
       switch ( reg_address ) {
-        case TIMER_LOAD_LO_REG:
-          sc_time load_time = clock_period*((uint64_t(timer_reg.load_hi)<<32) + timer_reg.load_lo);
-          m_timer_vec[index].set_load_time( load_time );
+        case /*write*/ TIMER_TRIG_LO_REG:
+        {
+          sc_time trig_delay = clk.period( ( uint64_t( timer_reg.trig_hi ) << 32 ) + timer_reg.trig_lo );
+          timer.set_trig_delay( trig_delay );
           break;
-        case TIMER_CURR_LO_REG:
-          sc_time curr_time = clock_period*((uint64_t(timer_reg.curr_hi)<<32) + timer_reg.curr_lo);
-          m_timer_vec[index].set_timeout_time( curr_time );
+        }
+        case /*write*/ TIMER_CURR_LO_REG:
+        {
+          sc_time curr_time = clk.period( ( uint64_t( timer_reg.curr_hi ) << 32 ) + timer_reg.curr_lo );
+          timer.set_trigger_time( curr_time );
           break;
+        }
         default:
           break;
       }
@@ -467,52 +650,77 @@ void write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len )
 }
 
 //------------------------------------------------------------------------------
-void read_actions ( Addr_t address, uint8_t* data_ptr, Depth_t len )
+void Timer_module::read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
 {
-  Addr_t base_address { int(address/TIMER_SIZE) };
-  Addr_t reg_address  { address - base_address };
-  if( base_address == TIMER_GLOBAL_REG ) {
-  } else {
-    Timer_reg& timer_reg { reinterpret_cast<Timer_ address - base_address>(data_ptr[ base_address ]) };
-    sc_time load_time = m_timer_vec[index].get_timeout_time();
-    uint64_t load_clocks = load_time/clock_period;
-    sc_time curr_time = m_timer_vec[index].get_load_time();
-    uint64_t curr_clocks = (m_timer_vec[index].curr_time() - m_timer_vec[index].get_start_time())/clock_period;
-    NOT_YET_IMPLEMENTED();
-    if( len = sizeof(uint32_t) ) {
+  unsigned int index   { static_cast<unsigned int>( address >> clog2(TIMER_SIZE) ) };
+  Addr_t base_address  { index << clog2(TIMER_SIZE) };
+  Addr_t reg_address   { address - base_address };
+  Timer_reg& timer_reg { timer_reg_vec(index) };
+  Timer&     timer     { m_timer_vec[index] };
+
+  if ( base_address == TIMER_GLOBAL_REG ) {
+  }
+  else {
+    sc_time trig_delay = timer.get_trigger_time();
+    sc_time curr_time = timer.get_trig_delay();
+
+    if ( len == sizeof( uint32_t ) ) {
       switch ( reg_address ) {
-        case TIMER_STATUS_REG:
-          NOT_YET_IMPLEMENTED();
+        case /*read*/ TIMER_STATUS_REG:
+        case /*read*/ TIMER_CTRLSET_REG:
+        case /*read*/ TIMER_CTRLCLR_REG:
+        {
+          timer_reg.status = get_timer_status( index );
           break;
-        case TIMER_CTRLSET_REG:
-          NOT_YET_IMPLEMENTED();
+        }
+        case /*read*/ TIMER_TRIG_LO_REG:
+        {
+          // - nothing to do
           break;
-        case TIMER_CTRLCLR_REG:
-          NOT_YET_IMPLEMENTED();
+        }
+        case /*read*/ TIMER_TRIG_HI_REG:
+        {
+          // - nothing to do
           break;
-        case TIMER_LOAD_LO_REG:
+        }
+        case /*read*/ TIMER_CURR_LO_REG:
+        {
+          sc_assert( timer.curr_time(delay) > timer.get_start_time() );
+          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(scale(timer_reg.status));
+          timer_reg.curr_lo = uint32_t(curr_count);
           break;
-        case TIMER_LOAD_HI_REG:
-          NOT_YET_IMPLEMENTED();
+        }
+        case /*read*/ TIMER_CURR_HI_REG:
+        {
+          sc_assert( timer.curr_time(delay) > timer.get_start_time() );
+          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(scale(timer_reg.status));
+          timer_reg.curr_hi = uint32_t(curr_count >> 32);
           break;
-        case TIMER_CURR_LO_REG:
-          NOT_YET_IMPLEMENTED();
+        }
+        case /*read*/ TIMER_PULSE_REG:
+        {
+          // - nothing to do
           break;
-        case TIMER_CURR_HI_REG:
-          NOT_YET_IMPLEMENTED();
-          break;
-        case TIMER_PULSE_REG:
-          NOT_YET_IMPLEMENTED();
-          break;
+        }
       }
-    } else {
+    }
+    else {
       switch ( reg_address ) {
-        case TIMER_LOAD_LO_REG:
-          NOT_YET_IMPLEMENTED();
+        case /*read*/ TIMER_TRIG_LO_REG:
+        {
+          // - nothing to do
           break;
-        case TIMER_CURR_LO_REG:
-          NOT_YET_IMPLEMENTED();
+        }
+
+        case /*read*/ TIMER_CURR_LO_REG:
+        {
+          sc_assert( timer.curr_time(delay) > timer.get_start_time() );
+          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(scale(timer_reg.status));
+          timer_reg.curr_hi = uint32_t(curr_count >> 32);
+          timer_reg.curr_lo = uint32_t(curr_count);
           break;
+        }
+
         default:
           break;
       }

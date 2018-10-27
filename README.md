@@ -13,14 +13,21 @@ Index
 
 # <a name="AbtMe"></a>About the Project
 
-This directory contains a basic empty SystemC design with a single top-level
-module and minimal main implementation that provides an execution summary.
+This directory contains a basic SystemC design using TLM-2.0 with a single
+top-level module and a practical main implementation that validates each step,
+and provides an execution summary including timing/performance information.
+If errors are detected, main exists with a non-zero status.
 
 This project has several goals:
 
-1. Provide an example of a complete TLM-2 virtual platform for study.
+1. Provide an example of a complete TLM-2 virtual platform for study using modern C++.
 2. Provide examples of different techniques of modeling.
+  1. Loosely-timed and Approximately-timed models of initiators, interconnect and targets
+  2. The absence of real clocks using the `no_clock` channel and the global distribution mechanism
+  3. Resets and Power domain modeling
+  4. Processor implementation with an ISS and support for interrupts
 3. Provide the basis for "Easier SystemC" templates.
+4. Several approaches to configuration
 
 At any point in time, this project represents a set of ideas in the making, and
 not expected to be complete. Various authors may contribute to this effort, and
@@ -30,55 +37,51 @@ make it easy to understand. Comment blocks are highly encouraged.
 
 # <a name="GrandDesign"></a>The Grand Design
 
-Several extras have been added including:
-
-- `report.h` is provided to simplify message reporting. See `report.h` comments
-  for more information.
-- `config.h` and `config.cpp` provide a generalized configuration mechanism that
-  may be used to configure memory maps and other features.
-- `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `config`
-  built in.
-
 ## <a name="BlkDiag"></a>Block Diagram
 
 - Names inside the boxes are instance names.
 - Names outside the boxes are part of a module name.
+- Blocks with an exclamation mark (`!`), either generate or receive interrupts.
+- Dotted boxes indicate a power or reset domain
   
 ```
 Top
-+-------------------------------------------------------------+
-|                                                             |
-|  Cpu       Dma       IrqCtrl   Gpio      Console            |
-|  +-----+   +-----+   +-----+   +-----+   +-----+            |
-|  | cpu |   | dma !   | pic !   | gio !   | con !            |
-|  +--v--+   +-v-^-+   +--^--+   +--^--+   +--^--+            |
-|     |        | |        |         |         |               |
-|  Mmu|        | |        |         |         |      Environ  |
-|  +--v--+     | |        |         |         |      +-----+  |
-|  ! mmu <-----' '--------x---------x----x----x    .-> env |  |
-|  +--v--+                |         |    |    |    | +-----+  |
-|     |      Mouse        |         |    |    |    |          |
-|  +--v--+   +-----+   +--v--+   +--v--+ |    |    |          |
-|  |cache|   | ptr |   | ddr |   |flash| |    |    |          |
-|  +--v--+ | +--^--+   +-----+   +-----+ |    |    |          |
-|     |    |    |      Memory    Flash   |    |    |          |
-|     |    |    |                        |    |    |          |
-|  Bus|    | Usb|      Disk      Bus     |    |    | Gps      |
-|  +--v--+ | +--^--+   +-----+   +-----+ | +--v--+ | +-----+  | 
-|  | nth | | | usb !   | dsk !   | sth >-x ! spi >-'-> gps |  | 
-|  +--v--+ | +--^--+   +--^--+   +--^--+ | +-----+   +-----+  | 
-|     |    |    |         |         |    | SBus               |
-|     |    |    |         |         |    |                    |
-|     x----x----x---------x---------x    '----x---------.     |
-|     |         |         |         |         |         |     |
-|     |         |         |         |         |         |     |
-|     |         |         |         |         |         |     |
-|  +--v--+   +--v--+   +--v--+   +--v--+   +--v--+   +--v--+  |
-|  | ram |   | rom |   | net !   | vid !   | tmr !   | ser !  |
-|  +-----+   +-----+   +-----+   +-----+   +-----+   +-----+  |
-|  Memory    Memory    Wifi      Video     Timer     Usart    |
-|                                                             |
-+-------------------------------------------------------------+
++--------------------------------------------------------------+
+|                                                              |
+|   Cpu       Dma       IrqCtrl   Gpio      Console            |
+|   +-----+   +-----+   +-----+   +-----+   +-----+            |
+|   | cpu !   | dma !   | pic !   | gio !   | con !            |
+|   +--v--+   +-v-^-+   +--^--+   +--^--+   +--^--+            |
+|      |        | |        |         |         |               |
+|   Mmu|<-------' |        |         |         |      Environ  |
+|   +--v--+       |        |         |         |      +-----+  |
+|   ! mmu |       '--------x---------x----x----x    .-> env |  |
+|   +v-v--+                |         |    |    |    | +-----+  |
+|    | |                   |         |    |    |    |          |
+| .--' |    ...........    |         |    |    |    |          |
+| |    |    : Mouse   :    |         |    |    |    |          |
+| | +--v--+ : +-----+ : +--v--+   +--v--+ |    |    |          |
+| | |cache| : | ptr | : | ddr |   |flash| |    |    |          |
+| | +--v--+ : +--^--+ : +-----+   +-----+ |    |    |          |
+| |    |    :....|....: Memory    Flash   |    |    |          |
+| '--->|         |                        |    |    |          |
+|   Bus|      Usb|      Disk      Bus     |    |    | Gps      |
+|   +--v--+   +--^--+   +-----+   +-----+ | +--v--+ | +-----+  | 
+|   | nth |   | usb !   | dsk !   | sth >-x ! spi >-'-> gps |  | 
+|   +--v--+   +--^--+   +--^--+   +--^--+ | +-----+   +-----+  | 
+|      |         |         |         |    | SBus               |
+|      |         |         |         |    |                    |
+|      x---------x---------x---------x    '----x---------.     |
+|      |         |         |         |         |         |     |
+|      |         |    .....|.........|.....    |         |     |
+|      |         |    :    |         |    :    |         |     |
+|   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+   +--v--+  |
+|   | ram |   | rom | : | net !   | vid ! : | tmr !   | ser !  |
+|   +-----+   +-----+ : +-----+   +-----+ : +-----+   +-----+  |
+|   Memory    Memory  : Wifi      Video   : Timer     Usart    |
+|                     :...................:                    |
+|                                                              |
++--------------------------------------------------------------+
 ```
 
 ## <a name="MemMap"></a>Memory Map
@@ -142,17 +145,19 @@ In order of priority:
 
 1. Add `Timer_module` and South Bus instantiation. Will include `no_clock`.
    2. Create base timer
-   2. Add base no_clock
+   2. Add base `no_clock`
    2. Add South Bus
 1. Add `Global` class to replace `g_` variables
 1. Add `Pic_module`
-1. Add reset capability
-1. Add power-down capability (?use CCI?)
+1. Add power-down capability (?use CCI?) with reset
 1. Add timing to AT mode of `Bus_module` with analysis port support
-1. Add yaml support for configuration
+1. Add yaml or jason support for configuration
+1. Implement proxy interconnect
 
 Optional:
 
+1. Add fancy report handler with XML option and expectations for error injection
+1. Implement one module as RTL and provide an example adaptor
 1. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
 1. Consider refactor `Memory_module` to use PIMPL
 
@@ -181,22 +186,44 @@ Optional:
 
 | Pre/Suf   | Use                         |
 | -------   | ---                         |
-| `_module` | sc_module                   |
-| `_extn`   | tlm_extension               |
-| `_t`      | typedef                     |
-| `_thread` | SC_THREAD                   |
-| `_method` | SC_METHOD                   |
+| `_module` | `sc_module`                 |
+| `_extn`   | `tlm_extension`             |
+| `_t`      | `typedef`                   |
+| `_thread` | `SC_THREAD`                 |
+| `_method` | `SC_METHOD`                 |
 | `_socket` | TLM socket                  |
-| `_port`   | sc_port                     |
+| `_port`   | `sc_port`                   |
 | `m_`      | class member attributes     |
 | `s_`      | class static attributes     |
 | `g_`      | global variables            |
 | `get_`    | const accessor method       |
 | `set_`    | modifying accessor method   |
 
+## Extras
+
+Several extras have been added including:
+
+- `report.h` is provided to simplify message reporting. See `report.h` comments
+  for more information.
+- `config.h` and `config.cpp` provide a generalized configuration mechanism that
+  may be used to configure memory maps and other features.
+- `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `config`
+  built in.
+
 # <a name="HowTo"></a>Instructions for Building
 
-Cmake is used to configure.
+Dependencies
+------------
+
++ Cmake is used to configure.
++ SystemC version 2.3.2 or better
++ C++14 or better
++ Boost libraries
+
+If you would like to contribute, you should also have:
+
++ git
++ astyle
 
 Linux/OSX
 ---------
@@ -206,6 +233,10 @@ Linux/OSX
 4. Alternately, build and run with `make run`
 5. To pass arguments to run, use `env ARGS="-your args" make run`
 6. To cleanup after running, use `make clean`
+
+Windows
+-------
+*To be determined*
 
 # <a name="Mrkdown"></a>About Markdown
 

@@ -20,19 +20,22 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable( plat
   common.cpp
+  util.cpp
+  log2.cpp
   no_clock.cpp
   main.cpp
   top.cpp
   wallclock.cpp
   config.cpp
   config_extn.cpp
-  util.cpp
+  config_proxy.cpp
   hexfile.cpp
   cpu.cpp
 # program.cpp
   memory.cpp
   bus.cpp
-# timer.cpp
+  timer_beh.cpp
+  timer.cpp
 # pic.cpp
 # gpio.cpp
 # dma.cpp
