@@ -41,6 +41,7 @@ struct Bus_module: sc_core::sc_module
   // Backward interface
   tlm::tlm_sync_enum nb_transport_bw( int id, tlm_payload_t& trans, tlm::tlm_phase& phase, sc_core::sc_time& delay );
   void invalidate_direct_mem_ptr( int id, sc_dt::uint64 start_range, sc_dt::uint64 end_range );
+
 private:
   // Helpers
   unsigned int decode_address( uint64_t address, uint64_t& masked_address );
