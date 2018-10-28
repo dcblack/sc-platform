@@ -15,10 +15,13 @@
 #include "util.hpp"
 #include "hexfile.hpp"
 #include "memory_map.hpp"
-#include "timer_api.hpp"
 #include "interrupt.hpp"
+#include "timer_reg.hpp"
+#include "timer_api.hpp"
 
 #include <string>
+#include <mutex>
+
 namespace {
   const char* MSGID{ "/Doulos/Example/TLM-cpu" };
 }
@@ -60,14 +63,22 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#define TESTRAM(w,addr,value) do {\
-  write##w( RAM_BASE+addr, value );\
-  data##w = int##w##_t(~value);\
-  read##w ( RAM_BASE+addr, data##w );\
-  if( value != data##w ) REPORT( WARNING, "Data mismatch!" );\
-  MESSAGE( "wrote " << addr << ":0x" << HEX <<  value );\
-  MESSAGE( "read "  << addr << ":0x" << HEX << int(data##w) );\
-  MEND( MEDIUM );\
+#define TEST_RAM(w,addr,value) do {                             \
+  write##w( RAM_BASE+addr, value );                             \
+  data##w = int##w##_t(~value);                                 \
+  read##w ( RAM_BASE+addr, data##w );                           \
+  if( value != data##w ) REPORT( WARNING, "Data mismatch!" );   \
+  MESSAGE( "wrote " << addr << ":0x" << HEX <<  value );        \
+  MESSAGE( "read "  << addr << ":0x" << HEX << int(data##w) );  \
+  MEND( MEDIUM );                                               \
+} while(0)
+
+#define TEST_TIMER(t) do {                                        \
+  MESSAGE( "Timer " << t.timer()                                  \
+    << " is " << (t.is_running()?"":" not") << " running.\n" );   \
+  MESSAGE( "  Current status is " << HEX << t.status() << "\n" ); \
+  MESSAGE( "  Current count  is " << DEC << t.value() << "\n" );  \
+  MEND( MEDIUM );                                                 \
 } while(0)
 
 //------------------------------------------------------------------------------
@@ -75,33 +86,53 @@ void
 Cpu_module::cpu_thread( void )
 {
 
-  INFO( MEDIUM, "Testing writing/reading memory");
+  RULER( 'M' );
+  INFO( MEDIUM, "Testing writing/reading memory" );
   uint32_t data32;
   uint16_t data16;
   uint8_t  data8;
-  TESTRAM(8,  0, 0xEF   );
-  TESTRAM(8,  1, 0xBE   );
-  TESTRAM(16, 2, 0xCAFE );
-  data32 = 0u; read32( RAM_BASE+0, data32 );
+  TEST_RAM( 8,  0, 0xEF );
+  TEST_RAM( 8,  1, 0xBE );
+  TEST_RAM( 16, 2, 0xCAFE );
+  data32 = 0u;
+  read32( RAM_BASE + 0, data32 );
   INFO( MEDIUM, "read 0:" << HEX << data32 );
-  vector<short> v1(8);
+  vector<short> v1( 8 );
   v1 = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
   INFO( MEDIUM, "v1 = " << HEX << v1 );
-  write( RAM_BASE+0x100, v1 );
-  vector<int> v2(4);
-  read( RAM_BASE+0x100, v2 );
+  write( RAM_BASE + 0x100, v1 );
+  vector<int> v2( 4 );
+  read( RAM_BASE + 0x100, v2 );
   INFO( MEDIUM, "v2 = " << HEX << v2 );
 
-  INFO( MEDIUM, "Testing hexfile functions");
-  for(int i=3000; i<3050; ++i) {
-    v2.push_back(i);
+  INFO( MEDIUM, "Testing hexfile functions" );
+
+  for ( int i = 3000; i < 3050; ++i ) {
+    v2.push_back( i );
   }
-  hexfile::dump(0, v2 );
-  hexfile::save("test.dat", 100, v2 );
+
+  hexfile::dump( 0, v2 );
+  hexfile::save( "test.dat", 100, v2 );
   vector<uint8_t> v3;
-  Addr_t a = hexfile::load("test.dat", v3);
+  Addr_t a = hexfile::load( "test.dat", v3 );
   INFO( MEDIUM, "a=" << a << " v3.size=" << v3.size() );
   hexfile::dump( a, v3 );
+
+  RULER( 'T' );
+  INFO( MEDIUM, "Testing timers" );
+  Timer_api t0{ *this };
+  t0.setup( 10 );
+  TEST_TIMER( t0 );
+  t0.start();
+
+  Timer_api t1{ *this };
+  t1.setup( 30 );
+  TEST_TIMER( t1 );
+  t1.start();
+
+  clk.wait_posedge( 50 );
+  TEST_TIMER( t0 );
+  TEST_TIMER( t1 );
 
   sc_stop();
 }
@@ -110,9 +141,11 @@ Cpu_module::cpu_thread( void )
 void
 Cpu_module::irq_thread( void )
 {
+  Timer_api t0{ *this, 0 };
   for(;;) {
     intrq_chan.wait();
     INFO( MEDIUM, "Received interrupt at " << sc_time_stamp() );
+    TEST_TIMER(t0);
   }//endforever
 }
 
@@ -280,6 +313,9 @@ Cpu_module::transport
 , Style       coding_style
 )
 {
+  // Prevent overlapping process calls
+  std::lock_guard<sc_mutex> lock(m_transport_mutex);
+
   // Determine AT/LT and burst size
   if ( coding_style == Style::DEFAULT ) {
     coding_style = m_coding_style;

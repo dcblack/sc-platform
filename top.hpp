@@ -34,6 +34,9 @@ struct Top_module
   Top_module(sc_core::sc_module_name instance_name);
   ~Top_module(void); // Destructor
   virtual const char* kind() const { return "Top_module"; }
+  void end_of_elaboration( void );
+  void start_of_simulation( void );
+  void end_of_simulation( void );
   struct Impl;
   std::unique_ptr<Impl> pImpl;
 

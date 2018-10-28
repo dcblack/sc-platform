@@ -12,7 +12,7 @@
 #ifndef TIMER_MODULE_H
 #define TIMER_MODULE_H
 #include "timer_beh.hpp"
-#include "timer_api.hpp"
+#include "timer_reg.hpp"
 #include "interrupt_if.hpp"
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES

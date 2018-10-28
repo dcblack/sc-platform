@@ -1,5 +1,5 @@
 About `Timer_module`
-==================
+====================
 
 The timer module may implement 1 to 16 timers. The number implemented may be read
 from the QTY field of the status register of any timer.
@@ -84,13 +84,14 @@ Status Register
 Files
 -----
 
-  Filename        | Purpose
-  --------        | -------
-  `ABOUT_TIMER.md | Documentation in markdown
-  `timer.cpp`     | Implements `Timer_module`
-  `timer.hpp`     | Header needed to instantiate `Timer_module`
-  `timer_api.hpp` | Provides programming conveniences for software
-  `timer_beh.cpp` | Implements simple Timer behavior
-  `timer_beh.hpp` | Header needed to instantiate `Timer`
+  Filename         | Purpose
+  --------         | -------
+  `ABOUT_TIMER.md` | Documentation in markdown
+  `timer.cpp`      | Implements `Timer_module`
+  `timer.hpp`      | Header needed to instantiate `Timer_module`
+  `timer_api.hpp`  | Provides programming conveniences for software
+  `timer_reg.hpp`  | Provides register definitions for software
+  `timer_beh.cpp`  | Implements simple Timer behavior
+  `timer_beh.hpp`  | Header needed to instantiate `Timer`
 
 ### The end

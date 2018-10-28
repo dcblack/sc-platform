@@ -42,8 +42,8 @@
 #ifdef NEVER /* DOCUMENTATION */
 #error This code should NEVER be enabled
      const sc_core::sc_time(1.0,SC_NS) ns;
-     no_clock CLK1("CLK1",/*period*/10*ns,/*duty*/0.5,/*offset*/0*ns,/*1stpos*/true ,/*smpl*/1*ns,/*chg*/5*ns);
-     no_clock CLK2("CLK2",/*period*/12*ns,/*duty*/0.3,/*offset*/1*ns,/*1stpos*/false,/*smpl*/7*ns,/*chg*/9*ns);
+     no_clock CLK1("CLK1",/*period*/10_ns,/*duty*/0.5,/*offset*/0_ns,/*1stpos*/true ,/*smpl*/1*ns,/*chg*/5*ns);
+     no_clock CLK2("CLK2",/*period*/12_ns,/*duty*/0.3,/*offset*/1_ns,/*1stpos*/false,/*smpl*/7*ns,/*chg*/9*ns);
 #endif
 //   Examples of above definitions impact to the virtual clocks they define.
 //   |                                |                                    |

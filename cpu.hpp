@@ -9,8 +9,8 @@
 //   ####  #       ####  ###### #     # ####   #####                             
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef CPU_MODULE_H
-#define CPU_MODULE_H
+#ifndef CPU_MODULE_HPP
+#define CPU_MODULE_HPP
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 #endif
@@ -79,7 +79,12 @@ private:
   );
   void check_transaction( tlm_payload_t& trans );
 
+public:
   // Convenience
+  void write64  ( Addr_t address, uint64_t data )
+    { write( address, reinterpret_cast<uint8_t*>( &data ), 8 ); }
+  void read64   ( Addr_t address, uint64_t& data )
+    { read ( address, reinterpret_cast<uint8_t*>( &data ), 8 ); }
   void write32  ( Addr_t address, uint32_t data )
     { write( address, reinterpret_cast<uint8_t*>( &data ), 4 ); }
   void read32   ( Addr_t address, uint32_t& data )
@@ -106,6 +111,7 @@ private:
   void put( Addr_t address, std::vector<uint8_t>& vec );
   void get( Addr_t address, Depth_t depth, std::vector<uint8_t>& vec );
 
+private:
   // Attributes
   no_clock&                    clk { no_clock::global( "system_clock" ) };
   Style                        m_coding_style{ Style::LT };
@@ -118,6 +124,7 @@ private:
   sc_event                     m_transport_done_event;
   Style                        m_prev_style;
   std::map<std::string,Addr_t> m_stat; // Statistics
+  sc_core::sc_mutex            m_transport_mutex;
 };
 
 //------------------------------------------------------------------------------
@@ -154,4 +161,4 @@ Cpu_module::transport_dbg
   }
 }
 
-#endif /*CPU_MODULE_H*/
+#endif /*CPU_MODULE_HPP*/

@@ -14,7 +14,7 @@ Config_extn::Config_extn( void ) //< Constructor
 
 //------------------------------------------------------------------------------
 tlm_extension_base*
-Config_extn::clone() const
+Config_extn::clone( void ) const
 {
   Config_extn* extn = new Config_extn();
   extn->config = config;

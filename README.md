@@ -43,23 +43,25 @@ make it easy to understand. Comment blocks are highly encouraged.
 - Names outside the boxes are part of a module name.
 - Blocks with an exclamation mark (`!`), either generate or receive interrupts.
 - Dotted boxes indicate a power or reset domain
+
   
 ```
 Top
 +--------------------------------------------------------------+
-|                                                              |
-|   Cpu       Dma       IrqCtrl   Gpio      Console            |
-|   +-----+   +-----+   +-----+   +-----+   +-----+            |
-|   | cpu !   | dma !   | pic !   | gio !   | con !            |
-|   +--v--+   +-v-^-+   +--^--+   +--^--+   +--^--+            |
-|      |        | |        |         |         |               |
+|                                                            r0|
+|           ...........                                        |
+|   Cpu     : Dma   r1: IrqCtrl   Gpio      Console            |
+|   +-----+ : +-----+ : +-----+   +-----+   +-----+            |
+|   | cpu ! : | dma ! : | pic !   | gio !   | con !            |
+|   +--v--+ : +-v-^-+ : +--^--+   +--^--+   +--^--+            |
+|      |    :...|.|...:    |         |         |               |
 |   Mmu|<-------' |        |         |         |      Environ  |
 |   +--v--+       |        |         |         |      +-----+  |
 |   ! mmu |       '--------x---------x----x----x    .-> env |  |
 |   +v-v--+                |         |    |    |    | +-----+  |
 |    | |                   |         |    |    |    |          |
 | .--' |    ...........    |         |    |    |    |          |
-| |    |    : Mouse   :    |         |    |    |    |          |
+| |    |    : Mouse r3:    |         |    |    |    |          |
 | | +--v--+ : +-----+ : +--v--+   +--v--+ |    |    |          |
 | | |cache| : | ptr | : | ddr |   |flash| |    |    |          |
 | | +--v--+ : +--^--+ : +-----+   +-----+ |    |    |          |
@@ -74,7 +76,7 @@ Top
 |      x---------x---------x---------x    '----x---------.     |
 |      |         |         |         |         |         |     |
 |      |         |    .....|.........|.....    |         |     |
-|      |         |    :    |         |    :    |         |     |
+|      |         |    :    |         |  r2:    |         |     |
 |   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+   +--v--+  |
 |   | ram |   | rom | : | net !   | vid ! : | tmr !   | ser !  |
 |   +-----+   +-----+ : +-----+   +-----+ : +-----+   +-----+  |
@@ -138,6 +140,7 @@ Top
 - Eventually Video or Wifi may become a hierarchical sub-system
 - Eventually one of the buses will become customized
 - Order of development is TBD, but simplest first
+- Four power regions labeled r0 through r3
 
 ## <a name="ToDo"></a>To Do List
 
@@ -149,6 +152,7 @@ In order of priority:
    2. Add South Bus
 1. Add `Global` class to replace `g_` variables
 1. Add `Pic_module`
+1. Add `Dma_module`
 1. Add power-down capability (?use CCI?) with reset
 1. Add timing to AT mode of `Bus_module` with analysis port support
 1. Add yaml or jason support for configuration
@@ -164,18 +168,22 @@ Optional:
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
 - Documentation will be maintained in GitHub style Markdown
-- C++14 standard will be used.
-- Header filenames have suffix `.hpp`.
-- Compiled C++ filenames have suffix `.cpp`.
+   + ABOUT_{:NAME:}.md will document each module
+- C++14 standard will be the minimum C++ standard level used.
+- Header filenames have suffix `.hpp` unless purely C11 compatible.
+- Compiled C++ filenames have suffix `.cpp` unless purely C11 compatible.
 - Raw pointers and arrays will be avoided. Instead use `std::unique_ptr<>`,
-  `std::unique_ptr<>`, `std::vector<>`, etc. when possible.
+  `std::unique_ptr<>`, `std::vector<>`, etc. when possible. References are
+  better than pointers of any type.
 - `cstdint` will be preferred over built-in types.
 - Destructors will be defined. `default` is allowed if no allocations need to be
   managed.
-- TLM Base Protocol will be used.
+- TLM Base Protocol will be preferred.
+- Ignorable extensions will be preferred.
 - Underscores will be used to separate words.
 - User-defined types (e.g. classes, structs, enums) will start.
   with use Name case.
+- `enum class` will be preferred over simple `enum`
 - Methods and variables will be lowercase.
 - UPPERCASE may be used for labels, enumeration values and constants only.
 - `and` will be preferred over `&&`.
@@ -184,20 +192,25 @@ Optional:
 - Leading or trailing underscores `_` will NEVER be used together (i.e. `a_`
   and `_a` are legal, but `_a_` is not).
 
-| Pre/Suf   | Use                         |
-| -------   | ---                         |
-| `_module` | `sc_module`                 |
-| `_extn`   | `tlm_extension`             |
-| `_t`      | `typedef`                   |
-| `_thread` | `SC_THREAD`                 |
-| `_method` | `SC_METHOD`                 |
-| `_socket` | TLM socket                  |
-| `_port`   | `sc_port`                   |
-| `m_`      | class member attributes     |
-| `s_`      | class static attributes     |
-| `g_`      | global variables            |
-| `get_`    | const accessor method       |
-| `set_`    | modifying accessor method   |
+| Pre/Suf   | Use                          |
+| -------   | ---                          |
+| `_api`    | initiator methods/constants  |
+| `_beh`    | behavioral implementation    |
+| `_extn`   | `tlm_extension`              |
+| `_if`     | interface class for channels |
+| `_method` | `SC_METHOD`                  |
+| `_module` | `sc_module`                  |
+| `_port`   | `sc_port`                    |
+| `_rtl`    | RTL implementation           |
+| `_socket` | TLM socket                   |
+| `_t`      | `typedef`                    |
+| `_thread` | `SC_THREAD`                  |
+| `g_`      | global variables             |
+| `get_`    | const accessor method        |
+| `is_`     | returns bool status          |
+| `m_`      | class member attributes      |
+| `s_`      | class static attributes      |
+| `set_`    | modifying accessor method    |
 
 ## Extras
 

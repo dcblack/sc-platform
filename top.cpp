@@ -211,6 +211,24 @@ struct Top_module::Impl {
   m_configuration;
 };
 
+void Top_module::end_of_elaboration( void )
+{
+  MESSAGE( "Design complete" );
+  MEND( ALWAYS );
+  // TODO: Netlist
+}
+
+void Top_module::start_of_simulation( void )
+{
+  RULER('!');
+  MESSAGE( "Clock period is " << pImpl->clk.period() );
+  MEND( ALWAYS );
+}
+
+void Top_module::end_of_simulation( void )
+{
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Copyright 2018 by Doulos. All rights reserved.
 //END $Id$

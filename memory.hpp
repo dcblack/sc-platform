@@ -9,8 +9,8 @@
 //  #     # ##### #     #  ####  #    #    #    ###### #     # ####   #####       
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef MEMORY_MODULE_H
-#define MEMORY_MODULE_H
+#ifndef MEMORY_MODULE_HPP
+#define MEMORY_MODULE_HPP
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 #endif
@@ -93,4 +93,4 @@ private:
   sc_core::sc_event    m_target_done_event;
 };
 
-#endif /*MEMORY_MODULE_H*/
+#endif /*MEMORY_MODULE_HPP*/
