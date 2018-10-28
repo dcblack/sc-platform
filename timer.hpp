@@ -41,7 +41,7 @@ struct Timer_module: sc_core::sc_module
   //----------------------------------------------------------------------------
   // Ports
   tlm_utils::simple_target_socket<Timer_module>                             targ_socket{ "targ_socket" };
-  sc_core::sc_port<Interrupt_send_if,1,sc_core::SC_ZERO_OR_MORE_BOUND>      intrq_port { "intrq_port"  };
+  sc_core::sc_port<Interrupt_send_if,0,sc_core::SC_ZERO_OR_MORE_BOUND>      intrq_port { "intrq_port"  };
   sc_core::sc_port<sc_core::sc_signal_out_if<bool>,0,sc_core::SC_ZERO_OR_MORE_BOUND> pulse_port { "pulse_port"  };
 
   //----------------------------------------------------------------------------
