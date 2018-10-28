@@ -37,6 +37,7 @@ Top_module::Top_module( sc_module_name instance_name )
     //--------------------------------------------------------------------------
     // Brief help
     if ( arg == "-help" or arg == "--help" or arg == "-h" ) {
+      MESSAGE( "\n" );
       RULER( '-' );
       MESSAGE( "\n"
                << "Syntax:\n"
@@ -139,17 +140,18 @@ struct Top_module::Impl {
   Impl( void )
   {
     config();
-    cpu = std::make_unique<Cpu_module>( "cpu" );
-    nth = std::make_unique<Bus_module>( "nth" );
-    rom = std::make_unique<Memory_module>( "rom"
-                                           , ROM_DEPTH, ROM_BASE,  Access::RO, 16, 32, DMI::enabled
-                                         );
-    ram = std::make_unique<Memory_module>( "ram"
-                                           , RAM_DEPTH, RAM_BASE,  Access::RW, 16,  8, DMI::enabled
-                                         );
-    tmr = std::make_unique<Timer_module>( "tmr"
-                                          , 2, TMR_BASE, 1, 2, 2
-                                        );
+    switch ( m_configuration ) { // Fall-thru intentional
+      case Configuration::TIMER:
+        tmr = std::make_unique<Timer_module> ( "tmr" , 2, TMR_BASE, 1, 2, 2 );
+      case Configuration::MEMORY:
+        rom = std::make_unique<Memory_module>( "rom" , ROM_DEPTH, ROM_BASE,  Access::RO, 16, 32, DMI::enabled );
+        nth = std::make_unique<Bus_module>   ( "nth" );
+      case Configuration::TRIVIAL:
+        ram = std::make_unique<Memory_module>( "ram" , RAM_DEPTH, RAM_BASE,  Access::RW, 16,  8, DMI::enabled );
+        cpu = std::make_unique<Cpu_module>   ( "cpu" );
+      default:
+        break;
+    }
 
     // Connectivity
     switch ( m_configuration ) {
@@ -168,7 +170,7 @@ struct Top_module::Impl {
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );
         nth->init_socket.bind( tmr->targ_socket );
-        tmr->intrq_port.bind( cpu->intrq_xport );
+        tmr->intrq_port.bind ( cpu->intrq_xport );
         break;
 
       default:
@@ -183,7 +185,7 @@ struct Top_module::Impl {
   void config( void )
   {
     // Establish default
-    m_configuration = Configuration::MEMORY;
+    m_configuration = Configuration::TIMER;
 
     for ( int i = 1; i < sc_argc(); ++i ) {
       string arg{sc_argv()[i]};
@@ -220,6 +222,7 @@ void Top_module::end_of_elaboration( void )
 
 void Top_module::start_of_simulation( void )
 {
+  MESSAGE( "\n" );
   RULER('!');
   MESSAGE( "Clock period is " << pImpl->clk.period() );
   MEND( ALWAYS );
