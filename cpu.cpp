@@ -68,8 +68,8 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
   data##w = int##w##_t(~value);                                 \
   read##w ( RAM_BASE+addr, data##w );                           \
   if( value != data##w ) REPORT( WARNING, "Data mismatch!" );   \
-  MESSAGE( "wrote " << addr << ":0x" << HEX <<  value );        \
-  MESSAGE( "read "  << addr << ":0x" << HEX << int(data##w) );  \
+  MESSAGE( "wrote " << addr << ":" << HEX <<  value );        \
+  MESSAGE( "read "  << addr << ":" << HEX << int(data##w) );  \
   MEND( MEDIUM );                                               \
 } while(0)
 
@@ -86,6 +86,7 @@ void
 Cpu_module::cpu_thread( void )
 {
 
+  MESSAGE( "\n" );
   RULER( 'M' );
   INFO( MEDIUM, "Testing writing/reading memory" );
   uint32_t data32;
@@ -118,6 +119,7 @@ Cpu_module::cpu_thread( void )
   INFO( MEDIUM, "a=" << a << " v3.size=" << v3.size() );
   hexfile::dump( a, v3 );
 
+  MESSAGE( "\n" );
   RULER( 'T' );
   INFO( MEDIUM, "Testing timers" );
   Timer_api t0{ *this };
