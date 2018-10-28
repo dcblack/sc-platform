@@ -423,17 +423,6 @@ bool Timer_module::payload_is_ok( tlm_payload_t& trans, Depth_t len, Style codin
 
     return false;
   }
-  else if ( cmd == TLM_WRITE_COMMAND ) { // No extended commands
-    if ( g_error_at_target ) {
-      REPORT( ERROR, "Attempt to write read-only device " << name() << " with address " << adr );
-      trans.set_response_status( TLM_OK_RESPONSE );
-    }
-    else {
-      trans.set_response_status( TLM_COMMAND_ERROR_RESPONSE );
-    }
-
-    return false;
-  }
   else {
     return true;
   }
