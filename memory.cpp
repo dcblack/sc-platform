@@ -392,7 +392,7 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
     }
     return false;
   }
-  else if( m_access == Access::RO and cmd == TLM_WRITE_COMMAND ) { // No extended commands
+  else if( m_access == Access::RO and cmd == TLM_WRITE_COMMAND ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Attempt to write read-only device " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
