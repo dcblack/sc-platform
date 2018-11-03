@@ -147,16 +147,16 @@ Top
 In order of priority:
 
 1. Add `Timer_module` and South Bus instantiation. Will include `no_clock`.
-   2. Create base timer
+   1. Create base timer
    2. Add base `no_clock`
-   2. Add South Bus
-1. Add `Global` class to replace `g_` variables
-1. Add `Pic_module`
-1. Add `Dma_module`
-1. Add power-down capability (?use CCI?) with reset
-1. Add timing to AT mode of `Bus_module` with analysis port support
-1. Add yaml or jason support for configuration
-1. Implement proxy interconnect
+   3. Add South Bus
+2. Add `Global` class to replace `g_` variables
+3. Add `Pic_module`
+4. Add `Dma_module`
+5. Add power-down capability (?use CCI?) with reset
+6. Add timing to AT mode of `Bus_module` with analysis port support
+7. Add yaml or jason support for configuration
+8. Implement proxy interconnect
 
 Optional:
 
@@ -164,6 +164,9 @@ Optional:
 1. Implement one module as RTL and provide an example adaptor
 1. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
 1. Consider refactor `Memory_module` to use PIMPL
+1. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
+1. Add a Mailbox_module (2 FIFO's)
+1. Add a Stack_module (LIFO).
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
