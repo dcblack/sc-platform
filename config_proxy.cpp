@@ -12,7 +12,7 @@
 #include "config_proxy.hpp"
 #include "report.hpp"
 namespace {
-  const char* MSGID{ "/Doulos/Example/TLM-bus" };
+  const char* MSGID{ "/Doulos/Example/Config_proxy" };
 }
 using namespace sc_core;
 using namespace sc_dt;
