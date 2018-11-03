@@ -57,14 +57,14 @@ enum TimerField : uint32_t
 // Equivalent structure
 struct Timer_reg
 {
-  volatile uint32_t status { 0x0000'0001 }; // Read-status - write to clear any or all IRQ's
-  volatile uint32_t ctrlset{ 0x0000'0000 }; // Read/Write (writes to QTY ignored)
-  volatile uint32_t ctrlclr{ 0x0000'0000 }; // Read/Write (writes to QTY ignored)
-  volatile uint32_t trig_lo{ 0 }; // Writing clears hi
-  volatile uint32_t trig_hi{ 0 }; // 
-  volatile uint32_t curr_lo{ 0 }; // Writing clears hi
-  volatile uint32_t curr_hi{ 0 };
-  volatile uint32_t pulse  { 1 };
+  volatile uint32_t status  { 0x0000'0001 }; // Read-status - write to clear any or all IRQ's
+  volatile uint32_t ctrlset { 0x0000'0000 }; // Read/Write (writes to QTY ignored)
+  volatile uint32_t ctrlclr { 0x0000'0000 }; // Read/Write (writes to QTY ignored)
+  volatile uint32_t trig_lo {           0 }; // Writing clears hi
+  volatile uint32_t trig_hi {           0 }; // 
+  volatile uint32_t curr_lo {           0 }; // Writing clears hi
+  volatile uint32_t curr_hi {           0 };
+  volatile uint32_t pulse   {           1 };
 };
 
 #endif /*TIMER_REG_HPP*/
