@@ -1,6 +1,9 @@
 About `Timer_module`
 ====================
 
+Functional Description
+----------------------
+
 The timer module may implement 1 to 16 timers. The number implemented may be read
 from the QTY field of the status register of any timer.
 
@@ -24,9 +27,9 @@ its status register.
 There are three word (32-bit ) address offsets used to access
 control/status:
 
-0: Read for status
-4: Control clear - every set bit causes the corresponding bit to cleared to 0.
-8: Control set - every set bit causes the corresponding bit to set to 1.
+0: Read for status - read-only
+4: Control clear - clears any modifiable bit that is set to 1. Effectively `STATUS &= ~(VALUE);`
+8: Control set - sets any modifiable bit that is set to 1. Effectively `STATUS |= VALUE;`
 
 Timers have three possible states:
 
@@ -91,7 +94,11 @@ Files
   `timer.hpp`      | Header needed to instantiate `Timer_module`
   `timer_api.hpp`  | Provides programming conveniences for software
   `timer_reg.hpp`  | Provides register definitions for software
-  `timer_beh.cpp`  | Implements simple Timer behavior
+  `timer_beh.cpp`  | Implements simple `Timer` behavior
   `timer_beh.hpp`  | Header needed to instantiate `Timer`
+
+Implementation Design Details
+-----------------------------
+
 
 ### The end
