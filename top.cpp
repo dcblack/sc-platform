@@ -209,7 +209,7 @@ struct Top_module::Impl {
       INFO( ALWAYS, "Reporting errors at target." );
     }
 
-    if( m_test_set.empty() ) m_test_set.insert(Test:TRIVIAL);
+    if( m_test_set.empty() ) m_test_set.insert(Test::TRIVIAL);
   }
 
   // Attributes
