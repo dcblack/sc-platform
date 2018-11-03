@@ -144,6 +144,32 @@ void Config::clear_data( void )
 }
 
 //------------------------------------------------------------------------------
+// Add a key
+void Config::addkey( const string& field, boost::any value, bool reqd )
+{
+  // Don't add if it already exists
+  if ( m_dflt.count( field ) != 0 ) {
+    // Warn if different type
+    if( m_dflt[field].type() != value.type() ) {
+      REPORT( WARNING, "Field '" << field << "' type mismatch." );
+    } else {
+      REPORT( WARNING, "Field '" << field << "' already defined "
+                    << "- ignoring.\n"
+                    << "Use delkey(field) beforehand redefining."
+            );
+    }
+    return;
+  }
+
+  // Insert default value
+  m_dflt[field] = value;
+
+  if ( reqd ) {
+    m_reqd.insert( field );
+  }
+}
+
+//------------------------------------------------------------------------------
 // Remove a key
 void Config::delkey( const string& field )
 {
