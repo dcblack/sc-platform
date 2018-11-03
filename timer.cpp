@@ -548,8 +548,8 @@ void Timer_module::set_timer_status( unsigned int index, const sc_time& delay )
 //------------------------------------------------------------------------------
 void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
 {
-  unsigned int index   { static_cast<unsigned int>( address >> clog2(TIMER_SIZE) ) };
-  Addr_t base_address  { index << clog2(TIMER_SIZE) };
+  unsigned int index   { static_cast<unsigned int>( address >> bits(TIMER_SIZE) ) };
+  Addr_t base_address  { index << bits(TIMER_SIZE) };
   Addr_t reg_address   { address - base_address };
   Timer_reg& timer_reg { timer_reg_vec(index) };
   Timer&     timer     { m_timer_vec[index] };
@@ -641,8 +641,8 @@ void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len
 //------------------------------------------------------------------------------
 void Timer_module::read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
 {
-  unsigned int index   { static_cast<unsigned int>( address >> clog2(TIMER_SIZE) ) };
-  Addr_t base_address  { index << clog2(TIMER_SIZE) };
+  unsigned int index   { static_cast<unsigned int>( address >> bits(TIMER_SIZE) ) };
+  Addr_t base_address  { index << bits(TIMER_SIZE) };
   Addr_t reg_address   { address - base_address };
   Timer_reg& timer_reg { timer_reg_vec(index) };
   Timer&     timer     { m_timer_vec[index] };
