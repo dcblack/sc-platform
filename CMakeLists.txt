@@ -10,7 +10,8 @@ set(TARGET_EXECUTABLE $<TARGET_FILE_NAME:plat>)
 set(TARGET_NAME plat)
 project(plat CXX)
 
-include(systemc.cmake)
+include(cmake/BuildTypes.cmake)
+include(cmake/SystemC.cmake)
 find_package(yaml-cpp CONFIG REQUIRED)
 find_package(Boost 1.66 REQUIRED)
 
