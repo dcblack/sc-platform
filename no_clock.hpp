@@ -217,6 +217,7 @@ struct no_clock
   sc_core::sc_time  next_sample   ( Clock_count_t cycles = 0U ) const;
   sc_core::sc_time  next_setedge  ( Clock_count_t cycles = 0U ) const;
   // Wait only if really necessary (for use in SC_THREAD)
+  void wait         ( Clock_count_t cycles = 0U );
   void wait_posedge ( Clock_count_t cycles = 0U );
   void wait_negedge ( Clock_count_t cycles = 0U );
   void wait_anyedge ( Clock_count_t cycles = 0U );
@@ -404,34 +405,39 @@ inline sc_core::sc_time  no_clock::next_setedge ( Clock_count_t cycles ) const
 }
 
 // Wait only if really necessary (for use in SC_THREAD) -- may be a NOP if cycles == 0
+inline void no_clock::wait ( Clock_count_t cycles )
+{
+  if ( cycles > 0) sc_core::wait( period(cycles) );
+}
+
 inline void no_clock::wait_posedge ( Clock_count_t cycles )
 {
   sc_core::sc_time t(until_posedge(cycles));
-  if (sc_core::SC_ZERO_TIME != t) wait(t);
+  if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
 inline void no_clock::wait_negedge ( Clock_count_t cycles )
 {
   sc_core::sc_time t(until_negedge(cycles));
-  if (sc_core::SC_ZERO_TIME != t) wait(t);
+  if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
 inline void no_clock::wait_anyedge ( Clock_count_t cycles )
 {
   sc_core::sc_time t(until_anyedge(cycles));
-  if (sc_core::SC_ZERO_TIME != t) wait(t);
+  if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
 inline void no_clock::wait_sample  ( Clock_count_t cycles )
 {
   sc_core::sc_time t(until_sample(cycles));
-  if (sc_core::SC_ZERO_TIME != t) wait(t);
+  if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
 inline void no_clock::wait_setedge ( Clock_count_t cycles )
 {
   sc_core::sc_time t(until_setedge(cycles));
-  if (sc_core::SC_ZERO_TIME != t) wait(t);
+  if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
 // Are we there? (use in SC_METHOD)

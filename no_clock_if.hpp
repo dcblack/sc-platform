@@ -52,6 +52,7 @@ struct no_clock_if
   virtual sc_core::sc_time   next_sample        ( Clock_count_t cycles = 0U ) const = 0;
   virtual sc_core::sc_time   next_setedge       ( Clock_count_t cycles = 0U ) const = 0;
   // Wait only if really necessary (for use in SC_THREAD)
+  virtual void               wait                ( Clock_count_t cycles = 0U ) = 0;
   virtual void               wait_posedge        ( Clock_count_t cycles = 0U ) = 0;
   virtual void               wait_negedge        ( Clock_count_t cycles = 0U ) = 0;
   virtual void               wait_anyedge        ( Clock_count_t cycles = 0U ) = 0;
