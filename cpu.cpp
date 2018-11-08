@@ -16,14 +16,13 @@
 #include "hexfile.hpp"
 #include "memory_map.hpp"
 #include "interrupt.hpp"
-#include "timer_reg.hpp"
 #include "timer_api.hpp"
 
 #include <string>
 #include <mutex>
 
 namespace {
-  const char* MSGID{ "/Doulos/Example/TLM-cpu" };
+  const char* const MSGID{ "/Doulos/Example/TLM-cpu" };
 }
 using namespace sc_core;
 using namespace sc_dt;
@@ -36,6 +35,7 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
 : m_mm                  { Memory_manager<>::instance()   }
 , m_init_peq            { this, &Cpu_module::init_peq_cb }
 , m_request_in_progress { nullptr                        }
+, cpu_task_mgr          { "cpu", this }
 {
   SC_HAS_PROCESS( Cpu_module );
   SC_THREAD( cpu_thread );
@@ -63,83 +63,66 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#define TEST_RAM(w,addr,value) do {                             \
-  write##w( RAM_BASE+addr, value );                             \
-  data##w = int##w##_t(~value);                                 \
-  read##w ( RAM_BASE+addr, data##w );                           \
-  if( value != data##w ) REPORT( WARNING, "Data mismatch!" );   \
-  MESSAGE( "wrote " << addr << ":" << HEX <<  value );        \
-  MESSAGE( "read "  << addr << ":" << HEX << int(data##w) );  \
-  MEND( MEDIUM );                                               \
-} while(0)
-
-#define TEST_TIMER(t) do {                                        \
-  MESSAGE( "Timer " << t.timer()                                  \
-    << " is " << (t.is_running()?"":" not") << " running.\n" );   \
-  MESSAGE( "  Current status is " << HEX << t.status() << "\n" ); \
-  MESSAGE( "  Current count  is " << DEC << t.value() << "\n" );  \
-  MEND( MEDIUM );                                                 \
-} while(0)
-
 //------------------------------------------------------------------------------
 void
 Cpu_module::cpu_thread( void )
 {
-
-  MESSAGE( "\n" );
-  RULER( 'M' );
-  INFO( MEDIUM, "Testing writing/reading memory" );
-  uint32_t data32;
-  uint16_t data16;
-  uint8_t  data8;
-  TEST_RAM( 8,  0, 0xEF );
-  TEST_RAM( 8,  1, 0xBE );
-  TEST_RAM( 16, 2, 0xCAFE );
-  data32 = 0u;
-  read32( RAM_BASE + 0, data32 );
-  INFO( MEDIUM, "read 0:" << HEX << data32 );
-  vector<short> v1( 8 );
-  v1 = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
-  INFO( MEDIUM, "v1 = " << HEX << v1 );
-  write( RAM_BASE + 0x100, v1 );
-  vector<int> v2( 4 );
-  read( RAM_BASE + 0x100, v2 );
-  INFO( MEDIUM, "v2 = " << HEX << v2 );
-
-  INFO( MEDIUM, "Testing hexfile functions" );
-
-  for ( int i = 3000; i < 3050; ++i ) {
-    v2.push_back( i );
+  //----------------------------------------------------------------------------
+  // Gather test list from command-line
+  vector<string> task_names;
+  for ( int i = 1; i < sc_argc(); ++i ) {
+    string arg { sc_argv()[i] };
+    if ( ( arg != "-test" ) and ( arg != "-T" ) ) {
+      continue;
+    }
+    ++i;
+    if ( i < sc_argc() ) {
+      string name { sc_argv()[i] };
+      // TODO -- test reasonability of task name
+      task_names.push_back( name );
+    }
+    else {
+      REPORT( ERROR, "Missing argument for -test option!?" );
+    }
   }
 
-  hexfile::dump( 0, v2 );
-  hexfile::save( "test.dat", 100, v2 );
-  vector<uint8_t> v3;
-  Addr_t a = hexfile::load( "test.dat", v3 );
-  INFO( MEDIUM, "a=" << a << " v3.size=" << v3.size() );
-  hexfile::dump( a, v3 );
+  // TODO -- gather names from file?
 
-  MESSAGE( "\n" );
-  RULER( 'T' );
-  INFO( MEDIUM, "Testing timers" );
-  Timer_api t0{ *this };
-  t0.setup( 10 );
-  TEST_TIMER( t0 );
-  t0.start();
+  if ( task_names.empty() ) {
+    task_names = {
+      "memory_test"
+      , "timer_test"
+    };
+  }
 
-  Timer_api t1{ *this };
-  t1.setup( 30 );
-  TEST_TIMER( t1 );
-  t1.start();
-
-  clk.wait_posedge( 50 );
-  TEST_TIMER( t0 );
-  TEST_TIMER( t1 );
+  //----------------------------------------------------------------------------
+  // Execute tasks sequentially
+  Task_manager::Task_map_t task { cpu_task_mgr.tasks() };
+  for ( const auto& task_name : task_names ) {
+    if ( task.count( task_name ) == 1 ) {
+      MESSAGE( "\n" );
+      RULER( 'x' );
+      INFO( MEDIUM, "Executing '" << task_name << "'" );
+      task[ task_name ]();
+      MESSAGE( "\n" );
+    }
+    else {
+      REPORT( ERROR, "No such cpu task '" << task_name << "'" );
+    }
+  }
 
   sc_stop();
 }
 
 //------------------------------------------------------------------------------
+#define VALUE(v) DEC << int(v) << HEX << " (" << int(v) << ")"
+#define TEST_TIMER(t) do {                                        \
+  MESSAGE( "Testing timer " << t.timer() << "\n" ); \
+  MESSAGE( "  " << (t.is_running()?"Running.":"Halted.")<<"\n" );   \
+  MESSAGE( "  Current status is " << HEX << t.status() << "\n" ); \
+  MESSAGE( "  Current count  is " << VALUE(t.value()) << "\n" );  \
+  MEND( MEDIUM );                                                 \
+} while(0)
 void
 Cpu_module::irq_thread( void )
 {

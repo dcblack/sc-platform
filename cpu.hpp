@@ -22,6 +22,7 @@
 #include "common.hpp"
 #include "no_clock.hpp"
 #include "interrupt.hpp"
+#include "task.hpp"
 #include "memory_manager.hpp"
 #include <map>
 using sc_core::sc_time;
@@ -35,6 +36,8 @@ struct Cpu_module: sc_core::sc_module
   // Ports
   tlm_utils::simple_initiator_socket<Cpu_module>  init_socket { "init_socket" };
   sc_core::sc_export<Interrupt_send_if>           intrq_xport { "intrq_xport" };
+  no_clock&                                       clk         { no_clock::global( "system_clock" ) };
+
   // Local signals
   Interrupt                                       intrq_chan  { "intrq_signal" };
 
@@ -113,7 +116,6 @@ public:
 
 private:
   // Attributes
-  no_clock&                    clk { no_clock::global( "system_clock" ) };
   Style                        m_coding_style{ Style::LT };
   tlm_utils::tlm_quantumkeeper m_qk;
   std::vector<tlm::tlm_dmi>    dmi_table; // Table of valid DMI regions
@@ -125,6 +127,7 @@ private:
   Style                        m_prev_style;
   std::map<std::string,Addr_t> m_stat; // Statistics
   sc_core::sc_mutex            m_transport_mutex;
+  Task_manager                 cpu_task_mgr; // allow multiple thread access
 };
 
 //------------------------------------------------------------------------------
