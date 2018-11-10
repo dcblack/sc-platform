@@ -4,7 +4,8 @@
 #include <tlm>
 #include <cstdint>
 
-#include "require_cxx11.hpp"
+#define REQUIRES_CPP 14
+#include "require_cxx_version.hpp"
 #include "sc_cxx11.hpp"
 
 // Useful constants
