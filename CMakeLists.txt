@@ -23,7 +23,9 @@ add_executable( plat
   common.cpp
   util.cpp
   log2.cpp
+# report.cpp
   no_clock.cpp
+  task.cpp
   main.cpp
   top.cpp
   wallclock.cpp
@@ -34,9 +36,11 @@ add_executable( plat
   cpu.cpp
 # program.cpp
   memory.cpp
+  memory_test.cpp
   bus.cpp
   timer_beh.cpp
   timer.cpp
+  timer_test.cpp
 # pic.cpp
 # gpio.cpp
 # dma.cpp
@@ -47,6 +51,7 @@ add_executable( plat
 # video.cpp
 )
 
+################################################################################
 add_executable( config
   config.cpp
   common.cpp
@@ -54,6 +59,18 @@ add_executable( config
 
 target_compile_definitions( config PRIVATE CONFIG_EXAMPLE )
 
+################################################################################
+add_executable( timer
+  timer_beh.cpp
+  common.cpp
+  report.cpp
+)
+
+target_compile_definitions( timer PRIVATE TIMER_EXAMPLE )
+
 #target_compile_features(plat PUBLIC cxx_std_11)
 #target_include_directories(plat $includes)
 #target_link_libraries(plat ${CMAKE_SOURCE_DIR}/lib{:YOUR_STATIC_LIB:}.a)
+
+################################################################################
+message("   -- CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
