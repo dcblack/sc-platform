@@ -165,8 +165,8 @@ Optional:
 1. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
 1. Consider refactor `Memory_module` to use PIMPL
 1. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
-1. Add a Mailbox_module (2 FIFO's)
-1. Add a Stack_module (LIFO).
+1. Add a `Mailbox_module` (2 FIFO\'s)
+1. Add a `Stack_module` (LIFO).
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
@@ -192,28 +192,30 @@ Optional:
 - `and` will be preferred over `&&`.
 - `or` will be preferred over `||`.
 - `not` will be preferred over `!`.
-- Leading or trailing underscores `_` will NEVER be used together (i.e. `a_`
+- Leading or trailing underscores `\_` will NEVER be used together (i.e. `a_`
   and `_a` are legal, but `_a_` is not).
 
-| Pre/Suf   | Use                          |
-| -------   | ---                          |
-| `_api`    | initiator methods/constants  |
-| `_beh`    | behavioral implementation    |
-| `_extn`   | `tlm_extension`              |
-| `_if`     | interface class for channels |
-| `_method` | `SC_METHOD`                  |
-| `_module` | `sc_module`                  |
-| `_port`   | `sc_port`                    |
-| `_rtl`    | RTL implementation           |
-| `_socket` | TLM socket                   |
-| `_t`      | `typedef`                    |
-| `_thread` | `SC_THREAD`                  |
-| `g_`      | global variables             |
-| `get_`    | const accessor method        |
-| `is_`     | returns bool status          |
-| `m_`      | class member attributes      |
-| `s_`      | class static attributes      |
-| `set_`    | modifying accessor method    |
+| Pre/Suf   | Use                             |
+| --------- | ------------------------------- |
+| `_api`    | initiator methods/constants     |
+| `_beh`    | behavioral implementation       |
+| `_delay`  | relative simulation `sc_time`   |
+| `_extn`   | `tlm_extension`                 |
+| `_if`     | interface class for channels    |
+| `_method` | `SC_METHOD`                     |
+| `_module` | `sc_module`                     |
+| `_port`   | `sc_port`                       |
+| `_rtl`    | RTL implementation              |
+| `_socket` | TLM socket                      |
+| `_t`      | `typedef`                       |
+| `_thread` | `SC_THREAD`                     |
+| `_time`   | absolute simulation `sc_time`   |
+| `g_`      | global variables                |
+| `get_`    | const accessor method           |
+| `is_`     | returns bool status             |
+| `m_`      | class member attributes         |
+| `s_`      | class static attributes         |
+| `set_`    | modifying accessor method       |
 
 ## Extras
 
