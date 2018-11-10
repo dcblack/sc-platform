@@ -13,6 +13,7 @@
 #    pragma message("ERROR: Requires C++11 vis avi Microsoft Visual Studio 2012 or later")
 #  else
 #    define HAS_CXX11
+#    define CPP_VERSION 2011
 #  endif
 #else
 #  if __cplusplus < 201103L
@@ -23,6 +24,7 @@
 #    endif
 #  else
 #    define HAS_CXX11
+#    define CPP_VERSION 2011
 #  endif
 #endif
 
