@@ -4,10 +4,9 @@
 #include "top.hpp"
 #include <tlm>
 #include "wallclock.hpp"
-#if __cplusplus >= 201103L
-#  include <memory>
-#endif
+#include <memory>
 #include "report.hpp"
+#include "common.hpp"
 std::ostringstream mout;
 
 namespace {
@@ -48,41 +47,48 @@ int sc_main(int argc, char *argv[])
     return summary();
   }//endtry
 
-  // Simulate
-  try {
-    REPORT( INFO, "Starting kernel" );
-    starting_time = get_cpu_time();
-    sc_start();
-    finished_time = get_cpu_time();
-    REPORT( INFO, "Exited kernel at " << sc_time_stamp() );
-  }
-  catch ( sc_exception& e )
+  auto elaboration_errors = sc_report_handler::get_count( SC_ERROR )
+                + main_errors
+                + sc_report_handler::get_count( SC_FATAL )
+  ;
+  if( elaboration_errors == 0 )
   {
-    REPORT( WARNING, "Caught exception during active simulation.\n" << e.what() );
-  }
-  catch ( exception& e )
-  {
-    REPORT( WARNING, "Caught exception during active simulation.\n" << e.what() );
-  }
-  catch ( ... )
-  {
-    REPORT( WARNING, "Error: Caught unknown exception during active simulation." );
-    ++main_errors;
-  }//endtry
-
-  // Clean up
-
-  if ( ! sc_end_of_simulation_invoked() )
-  {
+    // Simulate
     try {
-      REPORT( INFO, "\nError: Simulation stopped without explicit sc_stop()" );
+      REPORT( INFO, "Starting kernel" );
+      starting_time = get_cpu_time();
+      sc_start();
+      finished_time = get_cpu_time();
+      REPORT( INFO, "Exited kernel at " << sc_time_stamp() );
+    }
+    catch ( sc_exception& e )
+    {
+      REPORT( WARNING, "Caught exception during active simulation.\n" << e.what() );
+    }
+    catch ( exception& e )
+    {
+      REPORT( WARNING, "Caught exception during active simulation.\n" << e.what() );
+    }
+    catch ( ... )
+    {
+      REPORT( WARNING, "Error: Caught unknown exception during active simulation." );
       ++main_errors;
-    }
-    catch ( sc_exception& e ) {
-      REPORT( INFO, "\n\n" << e.what() );
-    }
+    }//endtry
 
-    sc_stop(); //< this will invoke end_of_simulation() callbacks
+    // Clean up
+
+    if ( ! sc_end_of_simulation_invoked() )
+    {
+      try {
+        REPORT( INFO, "\nError: Simulation stopped without explicit sc_stop()" );
+        ++main_errors;
+      }
+      catch ( sc_exception& e ) {
+        REPORT( INFO, "\n\n" << e.what() );
+      }
+
+      sc_stop(); //< this will invoke end_of_simulation() callbacks
+    }//endif
   }//endif
 
   return summary();
@@ -99,7 +105,7 @@ namespace {
       MESSAGE( "\n" );
       RULER( '#' );
       MESSAGE( "Compilation information for " << sc_argv()[0] << ":\n" );
-      MESSAGE( "  C++     version: " << __cplusplus << "\n" );
+      MESSAGE( "  C++ std version: " << __cplusplus << " (" << CPP_VERSION << ")" << "\n" );
       MESSAGE( "  SystemC version: " << SYSTEMC_VERSION << "\n" );
       MESSAGE( "  TLM     version: " << TLM_VERSION << "\n" );
       #ifdef BOOST_LIB_VERSION
