@@ -27,7 +27,8 @@
 // *******************************************************************
 
 #include "report.hpp"
-#include "require_cxx11.hpp"
+#define REQUIRES_CPP 11
+#include "require_cxx_version.hpp"
 #include <tlm>
 
 template<typename T=tlm::tlm_generic_payload>
