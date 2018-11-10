@@ -9,17 +9,21 @@
 //   ####     #    ### #####                                                     
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef UTIL_HPP
+#define UTIL_HPP
 
 #include <tlm>
-
-sc_core::sc_time rand_ps( double mean, double stddev=0.0 );
-
-std::string to_string( tlm::tlm_command cmd );
-
 #include <ostream>
 #include <iomanip>
+
+sc_core::sc_time rand_ps( double mean, double stddev=0.0 );
+std::string to_string( tlm::tlm_command cmd );
+
+template<typename T>
+std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec );
+
+////////////////////////////////////////////////////////////////////////////////
+// Implementation
 template<typename T>
 std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec )
 {
@@ -46,4 +50,4 @@ std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec )
   return os;
 }
 
-#endif /*UTIL_H*/
+#endif /*UTIL_HPP*/
