@@ -243,11 +243,21 @@ int Config::avail( void ) const
 std::ostream& operator<<( std::ostream& os, const Config& rhs )
 {
   std::vector<string> fields;
-  std::vector<string> special = {"name", "kind", "object_ptr", "target_start", "target_depth"};
+  static std::vector<string> special 
+  { "name"
+  , "kind"
+  , "object_ptr"
+  , "target_start"
+  , "target_depth"
+  };
+  size_t max_width = 0;
 
   size_t n = rhs.m_data.size();
   fields.reserve( rhs.m_data.size() );
   for( auto v : rhs.m_data ) {
+    if( max_width < v.first.length() ) {
+      max_width = v.first.length();
+    }
     bool is_special{ false };
     for( auto f : special ) {
       is_special |= ( v.first == f );
@@ -258,7 +268,7 @@ std::ostream& operator<<( std::ostream& os, const Config& rhs )
 
   for( const string& field : special ) {
     if( rhs.m_data.count( field ) == 0 ) continue;
-    os << "  " << field << ": ";
+    os << "  " << setw(max_width) << (field + ": ");
     boost::any v{ rhs.m_data.find( field )->second };
     size_t v_type_hash = v.type().hash_code();
     Config::s_function[v_type_hash]->printer( os, v); //< Use stored printing functor
@@ -266,7 +276,7 @@ std::ostream& operator<<( std::ostream& os, const Config& rhs )
   }
 
   for( const string& field : fields ) {
-    os << "  " << field << ": ";
+    os << "  " << setw(max_width) << (field + ": ");
     boost::any v{ rhs.m_data.find( field )->second };
     size_t v_type_hash = v.type().hash_code();
     Config::s_function[v_type_hash]->printer( os, v); //< Use stored printing functor

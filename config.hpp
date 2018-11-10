@@ -127,8 +127,8 @@ void config_key( Config& config, const string& field, const T& value, bool reqd 
         try {
           if( std::is_integral<T>::value ) {
             T ta ( boost::any_cast<T>( a ) );
-            os << DEC << ta;
-            os << " (" << HEX << ta << DEC << ")";
+            os << HEX << ta;
+            os << " (" << DEC << ta << ")";
           } else if( std::is_pointer<T>::value ) {
             os << "(pointer)";
           } else {
