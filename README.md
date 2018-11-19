@@ -1,5 +1,5 @@
-Index
-=====
+Table of Contents
+=================
 
 + [About the Project](#AbtMe)
 + [The Grand Design](#GrandDesign)
@@ -49,38 +49,43 @@ make it easy to understand. Comment blocks are highly encouraged.
 Top
 +--------------------------------------------------------------+
 |                                                            r0|
-|           ...........                                        |
-|   Cpu     : Dma   r1: IrqCtrl   Gpio      Console            |
-|   +-----+ : +-----+ : +-----+   +-----+   +-----+            |
-|   | cpu ! : | dma ! : | pic !   | gio !   | con !            |
-|   +--v--+ : +-v-^-+ : +--^--+   +--^--+   +--^--+            |
-|      |    :...|.|...:    |         |         |               |
-|   Mmu|<-------' |        |         |         |      Environ  |
-|   +--v--+       |        |         |         |      +-----+  |
-|   ! mmu |       '--------x---------x----x----x    .-> env |  |
-|   +v-v--+                |         |    |    |    | +-----+  |
-|    | |                   |         |    |    |    |          |
-| .--' |    ...........    |         |    |    |    |          |
-| |    |    : Mouse r3:    |         |    |    |    |          |
-| | +--v--+ : +-----+ : +--v--+   +--v--+ |    |    |          |
-| | |cache| : | ptr | : | ddr |   |flash| |    |    |          |
-| | +--v--+ : +--^--+ : +-----+   +-----+ |    |    |          |
-| |    |    :....|....: Memory    Flash   |    |    |          |
-| '--->|         |                        |    |    |          |
-|   Bus|      Usb|      Disk      Bus     |    |    | Gps      |
-|   +--v--+   +--^--+   +-----+   +-----+ | +--v--+ | +-----+  | 
-|   | nth |   | usb !   | dsk !   | sth >-x ! spi >-'-> gps |  | 
-|   +--v--+   +--^--+   +--^--+   +--^--+ | +-----+   +-----+  | 
-|      |         |         |         |    | SBus               |
-|      |         |         |         |    |                    |
-|      x---------x---------x---------x    '----x---------.     |
-|      |         |         |         |         |         |     |
-|      |         |    .....|.........|.....    |         |     |
-|      |         |    :    |         |  r2:    |         |     |
-|   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+   +--v--+  |
-|   | ram |   | rom | : | net !   | vid ! : | tmr !   | ser !  |
-|   +-----+   +-----+ : +-----+   +-----+ : +-----+   +-----+  |
-|   Memory    Memory  : Wifi      Video   : Timer     Usart    |
+| .--------------.                                             |
+| |         .....|.....                                        |
+| | Cpu     : Dma|  r1: IrqCtrl   Gpio      Crypto             |
+| | +-----+ : +--^--+ : +-----+   +-----+   +-----+            |
+| | ! cpu ! : | dma ! : ! pic !   | gio !   |crypt!            |
+| | +--v-v+ : +--^--+ : +--^--+   +--^--+   +--^--+            |
+| |    | |  :....|....:    |         |         |     SBus      |
+| |    | |       |         |         |         |     +-----+   |
+| '--->| |       '---------x---------x---------x-----> spi !   |
+|      | '------.          |         |         |     +--v--+   |
+|   Mmu|        |          |         |         |        |      |
+|   +--v--+  +--v--+    +--v--+   +--v--+      |   .----'      |
+|   ! mmu !  | tcm |    | ssd |   |flash|      |   | Environ   |
+|   +v---v+  +-----+    +-----+   +-----+      |   | +-----+   |
+|   P|  S|   Memory     Ssd       Flash        |   x-> env |   |
+|    |   |                                     |   | +-----+   |
+| .--'   |  ...............................    |   |           |
+| | Cache|  : Ssd   r3: Mouse r4: Keybd r5:    |   | +-----+   |
+| | +----v+ : +-----+ : +-----+ : +-----+ :    |   '-> gps |   |
+| | | l2c | : | thb | : | ptr | : | kbd | :    |     +-----+   |
+| | +--v--+ : +--^--+ : +--^--+ : +--^--+ :    |     Gps       |
+| |    |    :....|....:....|....:....|....:    |               |
+| '--->|         '---------x---------'         |               |
+|      |                   |                   |               |
+|   Bus|      Disk      Usb|      Bus          |     Memory    |
+|   +--V--+   +-----+   +--^--+   +-----+      |     +-----+   | 
+|   | nth |   | dsk !   | usb !   | sth >------x-----> ddr |   | 
+|   +--V--+   +--^--+   +--^--+   +--^--+      |     +-----+   | 
+|      |         |         |         |         |               |
+|      x---------x---------x---------x         x--------.      |
+|      |         |         |         |         |        |      |
+|      |         |    .....|.........|.....    |        |      |
+|      |         |    :    |         |  r2:    |        |      |
+|   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+  +--v--+   |
+|   | ram |   | rom | : | net !   | vid ! : | tmr !  | ser !   |
+|   +-----+   +-----+ : +-----+   +-----+ : +-----+  +-----+   |
+|   Memory    Memory  : Wifi      Video   : Timer    Usart     |
 |                     :...................:                    |
 |                                                              |
 +--------------------------------------------------------------+
@@ -90,14 +95,14 @@ Top
 ----------
 
 | Block | Base Address | Bus | Size | Irq | Module   |
-| ----- | :----------- | --- | ---: | :-: | :-----   |
+| ----- | :----------- | --- | ---: | --: | :-----   |
 | cpu   | 0xF000'0000  |  -  |  128 |  -  | Cpu      |
 | rom   | 0x0000'0000  | NTH |  16M |  -  | Memory   |
 | ram   | 0x1000'0000  | NTH | 512K |  -  | Memory   |
 | ddr   | 0x2000'0000  | NTH |   1G |  -  | Memory   |
 | tmr   | 0x4000'0000  | sth |   32 |  1  | Timer    |
 | gio   | 0x4000'1000  | sth |   32 |  2  | Gpio     |
-| con   | 0x4000'2000  | sth |   32 |  3  | Console  |
+| crypt | 0x4000'2000  | sth |   2K |  3  | Crypto   |
 | pic   | 0x4000'3000  | sth |   1K |  4  | IrqCtrl  |
 | dma   | 0x4000'4000  | sth |   32 |  0  | Dma      |
 | flash | 0x4000'5000  | sth |   4K | 12  | Flash    |
@@ -107,14 +112,17 @@ Top
 | net   | 0x4008'1000  | NTH |   32 |  8  | Wifi     |
 | mmu   | 0x4008'2000  | NTH |   32 |  9  | Mmu      |
 | usb   | 0x4008'3000  | NTH |   32 | 10  | Usb      |
+| ssd   | 0x6000'0000  | sth |   2M | 13  | Ssd      |
 | flash | 0x8000'0000  | sth |   1G |  7  | Flash    |
 | vid   | 0xC000'0000  | NTH |  16M | 11  | Video    |
 | gps   | spi:0x0      | spi |   32 |  -  | Gps      |
 | env   | spi:0x100    | spi |   32 |  -  | Environ  |
 | ptr   | usb:0        | usb |   32 |  -  | Mouse    |
+| kbd   | usb:1        | usb |   32 |  -  | Keyboard |
+| thb   | usb:2        | usb |  32G |  -  | Ssd      |
 | nth   | 0x0000'0000  |  -  |   4G |  -  | Bus      |
 | sth   | 0x4000'0000  |  -  |  64K |  -  | Bus      |
-| cache | n/a          |  -  |    - |  -  | Cache    |
+| l2c   | n/a          |  -  |    - |  -  | Cache    |
 
 ## <a name="DNotes"></a>Design Notes
 
@@ -161,12 +169,13 @@ In order of priority:
 Optional:
 
 1. Add fancy report handler with XML option and expectations for error injection
-1. Implement one module as RTL and provide an example adaptor
-1. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
-1. Consider refactor `Memory_module` to use PIMPL
-1. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
-1. Add a `Mailbox_module` (2 FIFO\'s)
-1. Add a `Stack_module` (LIFO).
+2. Implement one module as RTL and provide an example adaptor
+3. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
+4. Consider refactor `Memory_module` to use PIMPL
+5. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
+6. Add a `Mailbox_module` (2 FIFO\'s)
+7. Add a `Stack_module` (LIFO).
+8. Add a `SystemManager_module` to manage clocks/power/resets
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
@@ -246,7 +255,7 @@ If you would like to contribute, you should also have:
 Linux/OSX
 ---------
 1. Open a terminal and navigate to the directory where this file is located.
-2. Configure by typeing `cmake .`
+2. Configure by typing `cmake .`
 3. Build code with `make` or `make all`
 4. Alternately, build and run with `make run`
 5. To pass arguments to run, use `env ARGS="-your args" make run`
@@ -264,7 +273,7 @@ This document was created as a MarkDown text file.
 - Or generate HTML, PDF or DOC using pandoc <http://pandoc.org/installing.html>
 - Do not edit derived files
 - For apps that view/edit markdown see <https://github.com/karthik/markdown_science/wiki/Tools-to-support-your-markdown-authoring>.
-- Same syntax as used for GitHub README's etc. Very popular amoung programmers.
+- Same syntax as used for GitHub README's etc. Very popular among programmers.
 
 Reasons for GitHub Markdown include:
 
