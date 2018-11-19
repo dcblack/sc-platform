@@ -23,12 +23,13 @@ add_executable( platform
   common.cpp
   log2.cpp
   report.cpp
+  wallclock.cpp
   summary.cpp
   no_clock.cpp
   task.cpp
   main.cpp
   top.cpp
-  wallclock.cpp
+  signal.cpp
   config.cpp
   config_extn.cpp
   config_proxy.cpp
@@ -44,20 +45,42 @@ add_executable( platform
 # pic.cpp
 # gpio.cpp
 # dma.cpp
-# console.cpp
 # mmu.cpp
 # cache.cpp
+# crypto.cpp
+# flash.cpp
+# ssd.cpp
 # usb.cpp
+# mouse.cpp
+# keyboard.cpp
+# usart.cpp
 # video.cpp
+# wifi.cpp
+# sbus.cpp
+# environ.cpp
+# gps.cpp
 )
 
 ################################################################################
 add_executable( config
   config.cpp
+  report.cpp
+  wallclock.cpp
+  summary.cpp
   common.cpp
 )
 
 target_compile_definitions( config PRIVATE CONFIG_EXAMPLE )
+
+################################################################################
+add_executable( signal
+  signal.cpp
+  report.cpp
+  wallclock.cpp
+  summary.cpp
+)
+
+target_compile_definitions( signal PRIVATE SIGNAL_EXAMPLE )
 
 ################################################################################
 add_executable( timer
