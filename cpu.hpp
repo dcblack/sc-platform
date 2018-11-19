@@ -44,7 +44,7 @@ struct Cpu_module: sc_core::sc_module
   // Fundamentals
   SC_CTOR( Cpu_module );
   ~Cpu_module( void ){}
-  const char* kind() const override { return "Cpu_module"; }
+  const char* kind( void ) const override { return "Cpu_module"; }
 
   // Processes
   void cpu_thread( void );

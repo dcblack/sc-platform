@@ -12,7 +12,6 @@
 #include "cpu.hpp"
 #include "report.hpp"
 #include "common.hpp"
-#include "util.hpp"
 #include "hexfile.hpp"
 #include "memory_map.hpp"
 #include "interrupt.hpp"
@@ -78,7 +77,7 @@ Cpu_module::cpu_thread( void )
     ++i;
     if ( i < sc_argc() ) {
       string name { sc_argv()[i] };
-      // TODO -- test reasonability of task name
+      // TODO -- test reasonableness of task name
       task_names.push_back( name );
     }
     else {
@@ -89,9 +88,9 @@ Cpu_module::cpu_thread( void )
   // TODO -- gather names from file?
 
   if ( task_names.empty() ) {
-    task_names = {
-      "memory_test"
-      , "timer_test"
+    task_names =
+    { "memory_test"
+    , "timer_test"
     };
   }
 
@@ -112,17 +111,9 @@ Cpu_module::cpu_thread( void )
   }
 
   sc_stop();
-}
+}//end cpu_thread()
 
 //------------------------------------------------------------------------------
-#define VALUE(v) DEC << int(v) << HEX << " (" << int(v) << ")"
-#define TEST_TIMER(t) do {                                        \
-  MESSAGE( "Testing timer " << t.timer() << "\n" ); \
-  MESSAGE( "  " << (t.is_running()?"Running.":"Halted.")<<"\n" );   \
-  MESSAGE( "  Current status is " << HEX << t.status() << "\n" ); \
-  MESSAGE( "  Current count  is " << VALUE(t.value()) << "\n" );  \
-  MEND( MEDIUM );                                                 \
-} while(0)
 void
 Cpu_module::irq_thread( void )
 {
@@ -130,7 +121,11 @@ Cpu_module::irq_thread( void )
   for(;;) {
     intrq_chan.wait();
     INFO( MEDIUM, "Received interrupt at " << sc_time_stamp() );
-    TEST_TIMER(t0);
+    MESSAGE( "Testing timer " << t0.timer() << "\n" );
+    MESSAGE( "  " << (t0.is_running()?"Running.":"Halted.")<<"\n" );
+    MESSAGE( "  Current status is " << HEX << t0.status() << "\n" );
+    MESSAGE( "  Current count  is " << DEC << t0.value() << HEX << " (" << t0.value() << ")\n" );
+    MEND( MEDIUM );
   }//endforever
 }
 
