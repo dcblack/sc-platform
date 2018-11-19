@@ -106,7 +106,7 @@ remove_path() {
 PROJ_ROOT=$(dirname $(firstreal ./.git ../.git ../../.git ../../../.git ../../../../.git))
 PROJ_BIN="$(real_path $PROJ_ROOT/bin)"
 prepend_path PATH $PROJ_BIN
-header Sandbox 1>&2
+header Platform 1>&2
 if [[ "$(uname -s)" == "Darwin" ]]; then
   export CXX=clang++
   export CPP=clang
