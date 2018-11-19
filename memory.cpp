@@ -11,9 +11,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "memory.hpp"
 #include "report.hpp"
-#include "util.hpp"
 #include "config_extn.hpp"
 #include <algorithm>
+#include <random>
 namespace {
   const char* MSGID{"/Doulos/Example/TLM-Memory"};
 }
@@ -283,16 +283,19 @@ Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )
 {
   Memory_module::tlm_phase_t bw_phase;
   sc_time delay;
+  // Random number generation
+  static std::default_random_engine generator;
+  std::normal_distribution<double> distribution{ 5.0, 0.0 };
 
   // Queue the acceptance and the response with the appropriate latency
   bw_phase = END_REQ;
-  delay = rand_ps(5); // Accept delay
+  delay = sc_time( distribution( generator ), SC_PS ); // Accept delay
 
   tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
-  delay = delay + rand_ps(5); // Latency
+  delay = delay + sc_time( distribution( generator ), SC_PS ); // Latency
   m_target_done_event.notify( delay );
 
   assert( m_transaction_in_progress == nullptr );

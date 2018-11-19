@@ -1,7 +1,6 @@
 #include "cpu.hpp"
 #include "report.hpp"
 #include "task.hpp"
-#include "util.hpp"
 #include "hexfile.hpp"
 #include "memory_map.hpp"
 
