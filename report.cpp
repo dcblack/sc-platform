@@ -6,6 +6,8 @@ using namespace sc_core;
 using namespace std;
 using namespace tlm;
 
+std::ostringstream mout;
+
 string to_string( tlm_command command )
 {
   switch( command )

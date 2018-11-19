@@ -1,47 +1,19 @@
-// Improve reporting providing two macros, REPORT and INFO, that allow
-// for streaming syntax like cout.
+////////////////////////////////////////////////////////////////////////////////
 //
-// Syntax:
-//   REPORT(message_type, message_stream);
-//   INFO(verbosity_level, message_stream);
-//   MESSAGE(message_stream);
-//   MEND(verbosity_level);
-//   RULER(char);
-//   TODO(message_stream);
-//   NOT_YET_IMPLEMENTED();
+//  #####  ##### #####   ####  #####  #######                                     
+//  #    # #     #    # #    # #    #    #                                        
+//  #    # #     #    # #    # #    #    #                                        
+//  #####  ##### #####  #    # #####     #                                        
+//  #  #   #     #      #    # #  #      #                                        
+//  #   #  #     #      #    # #   #     #                                        
+//  #    # ##### #       ####  #    #    #                                        
 //
-//   message types are: FATAL, ERROR, WARNING, and INFO
-//   verbosity levels are: ALWAYS, LOW, MEDIUM, HIGH, DEBUG
-//
-//   MESSAGE macro doesn't output anything, but rather builds up
-//   a message to be emitted by REPORT, INFO or MEND.
-//
-// Assumes you define in every implementation file (i.e. .cpp):
-//
-//   #include "report.hpp"
-//   namespace { static const char* const MSGID{ "/Company/Group/Project/Module" }; }
-//
-// For header files leave off the name space and put in the function
-// or define a class member (non-static). Must not allow to escape
-// the header. So a #define is inappropriate.
-//
-// Examples:
-#ifdef EXAMPLES
-     #include "report.hpp"
-     namespace { static const char* MSGID{ "/Doulos/Example/Report" }; }
-     REPORT(ERROR,"Data " << data << " doesn't match expected " << expected);
-     INFO(DEBUG,"Packet contains " << packet);
-     TODO("Fix report handler to remove blank line after REPORT_INFO");
-     NOT_YET_IMPLEMENTED();
-     MESSAGE( "Map contents:\n" );
-     for( const auto& v : my_map ) {
-       MESSAGE( "  " << v.first << ": " << v.second << "\n" );
-     }
-     MEND( HIGH ); // or REPORT( WARNING, "" );
-#endif
-//
-
+////////////////////////////////////////////////////////////////////////////////
 #ifndef REPORT_HPP
+// Improve reporting with macros, more overloads on `operator<<`,
+// and other enhancements to `sc_report_handler`.
+//
+// See `ABOUT_REPORT.md` for more information.
 #define REPORT_HPP
 #include <systemc>
 #include <tlm>
