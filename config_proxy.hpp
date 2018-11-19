@@ -39,7 +39,7 @@ struct Config_proxy
   , uint32_t                write_clocks = 3
   );
   virtual ~Config_proxy( void );
-  virtual const char* kind() const { return "Config_proxy"; }
+  virtual const char* kind( void ) const { return "Config_proxy"; }
 
 private:
   // Forward interface
