@@ -18,8 +18,8 @@
 //
 // Assumes you define in every implementation file (i.e. .cpp):
 //
-//   #include "report.h"
-//   namespace { static const char* MSGID{ "/Company/Group/Project/Module" }; }
+//   #include "report.hpp"
+//   namespace { static const char* const MSGID{ "/Company/Group/Project/Module" }; }
 //
 // For header files leave off the name space and put in the function
 // or define a class member (non-static). Must not allow to escape
@@ -27,7 +27,7 @@
 //
 // Examples:
 #ifdef EXAMPLES
-     #include "report.h"
+     #include "report.hpp"
      namespace { static const char* MSGID{ "/Doulos/Example/Report" }; }
      REPORT(ERROR,"Data " << data << " doesn't match expected " << expected);
      INFO(DEBUG,"Packet contains " << packet);
@@ -41,9 +41,10 @@
 #endif
 //
 
-#ifndef REPORT_H
-#define REPORT_H
+#ifndef REPORT_HPP
+#define REPORT_HPP
 #include <systemc>
+#include <tlm>
 #include <sstream>
 #include <iomanip>
 extern std::ostringstream mout;
@@ -86,9 +87,42 @@ do {                                                                            
     mout.str( "" );                                                                 \
   }                                                                                 \
 } while (0)
-#define RULER(c) MESSAGE( string( 80, c ) << "\n" )
+#define RULER(c) MESSAGE( std::string( 80, c ) << "\n" )
 
 #define TODO(stream) REPORT( WARNING, "TODO: " << stream )
 #define NOT_YET_IMPLEMENTED() REPORT( WARNING, __func__ << " is not yet implemented." )
+
+std::string to_string( tlm::tlm_command command );
+std::string verbosity2str(const int& level);
+template<typename T>
+std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec );
+
+////////////////////////////////////////////////////////////////////////////////
+// Implementation
+template<typename T>
+std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec )
+{
+  static const int threshold{8};
+  os << "{ ";
+  size_t i = 0;
+
+  for ( auto& v : vec ) {
+    if ( i != 0 ) {
+      os << ", ";
+    }
+
+    if ( i+1 == vec.size() and vec.size() > threshold ) {
+      os << " ...";
+    }
+
+    if ( i < threshold or i+1 == vec.size() ) {
+      os << i++ << ":" << v;
+    }
+
+  }
+
+  os << " }";
+  return os;
+}
 
 #endif
