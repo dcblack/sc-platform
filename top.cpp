@@ -46,11 +46,11 @@ struct Top_module::Impl {
   no_clock& clk { no_clock::global( "system_clock", 100_MHz ) };
 
   // Modules
-  std::unique_ptr<Cpu_module   > cpu;
-  std::unique_ptr<Bus_module   > nth;
-  std::unique_ptr<Memory_module> rom;
-  std::unique_ptr<Memory_module> ram;
-  std::unique_ptr<Timer_module>  tmr;
+  std::unique_ptr< Cpu_module    > cpu;
+  std::unique_ptr< Bus_module    > nth;
+  std::unique_ptr< Memory_module > rom;
+  std::unique_ptr< Memory_module > ram;
+  std::unique_ptr< Timer_module  > tmr;
 
   // Constructor
   Impl( void )
