@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef COMMON_HPP
+#define COMMON_HPP
 
 #include <tlm>
 #include <cstdint>
@@ -24,11 +24,16 @@ enum class Feature { none, enabled };
 using DMI = Feature;
 using Byte_enables = Feature;
 enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };
-enum class Style { UNKNOWN, DEFAULT, LT, AT };
+enum class Style
+{ UNKNOWN
+, DEFAULT
+, LT // Loosely Timed
+, AT // Approximately Timed
+, TD // LT with Temporally Decoupling
+};
 
 #include <ostream>
 
-std::string verbosity2str(const int & level);
 std::ostream& operator<<(std::ostream& os, const Access& rhs);
 std::ostream& operator<<(std::ostream& os, const Feature& rhs);
 std::ostream& operator<<(std::ostream& os, const Style& rhs);
@@ -38,4 +43,4 @@ std::ostream& operator<<(std::ostream& os, const Style& rhs);
 extern bool  g_error_at_target;
 extern Style g_coding_style;
 
-#endif /*COMMON_H*/
+#endif /*COMMON_HPP*/
