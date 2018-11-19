@@ -1,5 +1,5 @@
-#ifndef WALLCLOCK_H
-#define WALLCLOCK_H
+#ifndef WALLCLOCK_HPP
+#define WALLCLOCK_HPP
 
 #include <cstdint>
 
@@ -12,4 +12,4 @@ double get_wall_time(void);
 // Works for Linux, OS X and Windows.
 double get_cpu_time(void);
 
-#endif /*WALLCLOCK_H*/
+#endif /*WALLCLOCK_HPP*/
