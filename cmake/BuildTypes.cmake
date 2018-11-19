@@ -1,6 +1,7 @@
 # Set a default build type if none was specified
 set(default_build_type "Release")
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+  message(STATUS "Building debug")
   set(default_build_type "Debug")
 endif()
  
