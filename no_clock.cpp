@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // DESCRIPTION
-// This is an implemenation of the no_clock component used
+// This is an implementation of the no_clock component used
 // to simplify high-level modeling of clocks without incurring
 // the context switching overhead of a real clock.
 
