@@ -1,8 +1,6 @@
 #ifndef SUMMARY_HPP
 #define SUMMARY_HPP
 
-
-int report_summary( void );
 struct Summary {
   static int report( void );
   static int errors( void );

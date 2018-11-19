@@ -27,13 +27,19 @@ void Summary::starting_elaboration( void )
 //------------------------------------------------------------------------------
 void Summary::starting_simulation( void )
 {
+  // Last call wins...
   s_starting_time = get_cpu_time();
 }
 
 //------------------------------------------------------------------------------
 void Summary::finished_simulation( void )
 {
-  s_finished_time = get_cpu_time();
+  // First call wins...
+  static bool first_time = true;
+  if( first_time ) {
+    s_finished_time = get_cpu_time();
+  }
+  first_time = false;
 }
 
 //------------------------------------------------------------------------------
@@ -110,3 +116,7 @@ int Summary::report( void )
   MEND( ALWAYS );
   return ( errors() ? 1 : 0 );
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Copyright 2018 by Doulos. All rights reserved.
+// END $Id: summary.cpp,v 1.0 2018/11/19 05:18:14 dcblack Exp $
