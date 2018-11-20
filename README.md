@@ -255,12 +255,17 @@ If you would like to contribute, you should also have:
 
 Linux/OSX
 ---------
-1. Open a terminal and navigate to the directory where this file is located.
-2. Configure by typing `cmake .`
+1. Open a terminal and navigate into the `build/` directory located where this file is located.
+2. Configure by typing `cmake ..`
 3. Build code with `make` or `make all`
 4. Alternately, build and run with `make run`
 5. To pass arguments to run, use `env ARGS="-your args" make run`
 6. To cleanup after running, use `make clean`
+
+A slightly more automated approach uses some scripts located in the `bin/` directory.
+A `setup.profile` bash script should be sourced to set environment variables; however, it will
+need some tweaking. For one thing, it uses `modulecmd` to setup C++ (clang), SystemC and
+Boost environment.
 
 Windows
 -------

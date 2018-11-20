@@ -5,68 +5,51 @@
 
 # DOCUMENTATION
 function help() {
-  perldoc $0
-  cat >/dev/null <<.
-=pod
+  cat <<EMBEDDED_MARKDOWN
+NAME
+----
+`setup.profile` - environment settings for SystemC/TLM  platform examples
 
-=head1 NAME
+SYNOPSIS
+--------
 
-setup.profile - environment settings for SystemC/TLM  platform examples
+```sh
+source setup.profile
+```
 
-=head1 SYNOPSIS
-
-    source setup.profile
-
-=head1 DESCRIPTION
-
+DESCRIPTION
+-----------
 Source this file to setup tools
 
-=head1 OPTIONS
-
+OPTIONS
+-------
 None
 
-=head1 DEPENDENCIES
-
+DEPENDENCIES
+------------
 Assumes the following:
 
-=over
+- BASH shell
+- boost library
+- C++ compiler - Either clang/llvm v9.1 or g++ v5.2 or later
+- dirname
+- git 2.19 or later
+- header - perl script (located in bin/ directory)
+- module - bash alias for the modulecmd tcl script that sets up environment variables in BASH.
+- perl v5.14 or later
+- systemc v2.3.2 or later
 
-=item BASH shell
-
-=item boost library
-
-=item clang/llvm
-
-=item g++ v5.2 or later
-
-=item git 2.19 or later
-
-=item header - perl script
-
-=item module - bash alias
-
-Invokes the modulecmd tcl script that sets
-up environment variables in BASH.
-
-=item perl v5.14 or later
-
-=item systemc v2.3.2 or later
-
-=back
-
-=head1 COPYRIGHT & LICENSE
-
+COPYRIGHT & LICENSE
+-------------------
 Copyright (C) 2018 Doulos. All rights reserved.
 
 Licensed under Apache 2.0.
 
-=head1 AUTHOR
-
+AUTHOR
+------
 David C Black <david.black@doulos.com>
 
-=cut
-
-.
+EMBEDDED_MARKDOWN
 }
 firstreal() {
   perl -le '@_=split($;,join($;,@ARGV));for(@_){next unless -e $_;print $_;exit 0;}' "$@"
