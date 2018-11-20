@@ -5,12 +5,17 @@ if [[ "$1" == "-v" ]]; then
   OPTS="${OPTS} VERBOSE=1"
   shift
 fi
+BDIR="."
+if [[ -r build ]]; then
+  BDIR=".."
+  cd build
+fi
 
 printf "|\n|\n|\n"
 clear;
 ruler '*'
-rm -f make.log run.log
+rm -f $BDIR/make.log $BDIR/run.log
 if [[ -r CMakeLists.txt ]]; then cmake .; fi
-echo "make $@$OPTS 2>&1 | tee make.log"
-make "$@""$OPTS" 2>&1 | tee -a make.log
+echo "make $@$OPTS 2>&1 | tee $BDIR/make.log"
+make "$@""$OPTS" 2>&1 | tee -a $BDIR/make.log
 # The end
