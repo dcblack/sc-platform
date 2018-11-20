@@ -11,7 +11,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "timer.hpp"
 #include "report.hpp"
-#include "util.hpp"
 #include "log2.hpp"
 #include "config_extn.hpp"
 #include <algorithm>
@@ -113,11 +112,11 @@ void Timer_module::timer_thread( void )
 
     // Generate pulse for connected ports
     for( int iPulse=0; iPulse!=pulse_port.size(); ++iPulse ) {
-      if( m_timer_vec[iPulse].triggered() ) {
+      if( m_timer_vec[iPulse].test_and_clear_triggered() ) {
         sc_spawn( [&]() 
           {
             pulse_port[iPulse]->write(true);
-            wait( m_timer_vec[iPulse].get_pulse_time() );
+            wait( m_timer_vec[iPulse].get_pulse_delay() );
             pulse_port[iPulse]->write(false);
           }
         );
@@ -174,8 +173,18 @@ Timer_module::transport_dbg
     return 0;
   }
 
-  sc_time delay( SC_ZERO_TIME );
-  return transport( trans, delay, len );
+  uint8_t* ptr = trans.get_data_ptr();
+  uint8_t* reg = m_register_vec.data();
+  if ( trans.is_write() ) {
+    memcpy( reg + adr, ptr, len );
+  }
+  else if ( trans.is_read() ) {
+    memcpy( ptr, reg + adr, len );
+  }
+  else {
+    len = 0;
+  }
+  return len;
 }
 
 //------------------------------------------------------------------------------
@@ -443,15 +452,14 @@ Timer_module::transport
   uint8_t*   reg = m_register_vec.data();
   delay += clk.period( m_addr_clocks );
 
+  INFO( DEBUG+1, "Transport to address " << HEX << adr << " in " << name() );
   if ( trans.is_write() ) {
-    INFO( DEBUG, "Writing " << HEX << adr << "..." << ( adr + len - 1 ) );
     memcpy( reg + adr, ptr, len );
     delay += clk.period( m_write_clocks ) * ( ( len + sbw - 1 ) / sbw );
     write_actions( adr, reg, len, delay );
   }
   else if ( trans.is_read() ) {
     read_actions( adr, reg, len, delay );
-    INFO( DEBUG, "Reading " << HEX << adr << "..." << ( adr + len - 1 ) );
     memcpy( ptr, reg + adr, len );
     delay += clk.period( m_read_clocks ) * ( ( len + sbw - 1 ) / sbw );
   }
@@ -467,16 +475,18 @@ Timer_module::transport
 // Timer Helpers
 
 //------------------------------------------------------------------------------
-// Map Timer_reg structure onto respective registers
-Timer_reg& Timer_module::timer_reg_vec( int index )
+// Map Timer_reg_t structure onto respective registers
+Timer_reg_t& Timer_module::timer_reg_vec( int index )
 {
-  uint8_t* base_ptr    { m_register_vec.data() + index * TIMER_SIZE };
-  Timer_reg* timer_reg { reinterpret_cast<Timer_reg*>( base_ptr ) };
+  sc_assert( 0 <= index and index < m_timer_quantity );
+  uint8_t* base_ptr      { m_register_vec.data() + index * TIMER_SIZE };
+  Timer_reg_t* timer_reg { reinterpret_cast<Timer_reg_t*>( base_ptr ) };
   return *timer_reg;
 }
 
 //------------------------------------------------------------------------------
-uint32_t Timer_module::get_timer_status( unsigned int index )
+uint32_t Timer_module::get_timer_status
+( unsigned int index )
 {
   uint32_t status { ( uint32_t( m_timer_quantity ) << TIMER_QTY_LSB ) };
   sc_assert( status <= TIMER_QTY_MASK ); // Make sure it fits
@@ -505,12 +515,11 @@ uint32_t Timer_module::get_timer_status( unsigned int index )
 }
 
 //------------------------------------------------------------------------------
-void Timer_module::set_timer_status( unsigned int index, const sc_time& delay )
+void Timer_module::set_timer_status
+( unsigned int index, const sc_time& delay )
 {
   // Read current
-  volatile uint32_t& next_status {
-    timer_reg_vec( index ).status
-  };
+  volatile uint32_t& next_status { timer_reg_vec( index ).status };
   // Update new values
   next_status &= ~TIMER_QTY_MASK; // ignore
   // Handle interrupt enable
@@ -521,12 +530,14 @@ void Timer_module::set_timer_status( unsigned int index, const sc_time& delay )
   m_timer_vec[index].set_continuous( ( next_status & TIMER_STATE_MASK ) == TIMER_CONTINUOUS );
 
   if ( m_timer_vec[index].is_running() ) {
+    INFO( DEBUG, "Timer " << m_timer_vec[index].name() << " running." );
     // Handle start/stop
     if ( ( next_status & TIMER_STARTED_MASK ) == TIMER_STOP ) {
       m_timer_vec[index].stop( delay );
     }
   }
   else {
+    INFO( DEBUG, "Timer " << m_timer_vec[index].name() << " not running." );
     // Handle pause/run
     if ( ( m_timer_vec[index].is_paused() )
          and ( ( next_status & TIMER_PAUSED_MASK ) != TIMER_PAUSED )
@@ -548,16 +559,18 @@ void Timer_module::set_timer_status( unsigned int index, const sc_time& delay )
 //------------------------------------------------------------------------------
 void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
 {
-  unsigned int index   { static_cast<unsigned int>( address >> bits(TIMER_SIZE) ) };
-  Addr_t base_address  { index << bits(TIMER_SIZE) };
-  Addr_t reg_address   { address - base_address };
-  Timer_reg& timer_reg { timer_reg_vec(index) };
-  Timer&     timer     { m_timer_vec[index] };
+  unsigned int index     { static_cast<unsigned int>( address >> bits(TIMER_SIZE) ) };
+  Addr_t base_address    { index << bits(TIMER_SIZE) };
+  Addr_t reg_address     { address - base_address };
+  Timer_reg_t& timer_reg { timer_reg_vec(index) };
+  Timer&     timer       { m_timer_vec[index] };
 
-  if ( base_address == TIMER_GLOBAL_REG ) {
+  if ( address == m_timer_quantity*TIMER_SIZE ) {
   }
   else {
+    // Check the size of the transfer
     if ( len == sizeof( uint32_t ) ) {
+      // Word transfer
       switch ( reg_address ) {
         case /*write*/ TIMER_STATUS_REG:
         {
@@ -578,17 +591,17 @@ void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len
           set_timer_status( index, delay );
           break;
         }
-        case /*write*/ TIMER_TRIG_LO_REG:
+        case /*write*/ TIMER_LOAD_LO_REG:
         {
-          timer_reg.trig_hi = 0;
-          sc_time trig_delay = clk.period( scale(timer_reg.status) * timer_reg.trig_lo );
-          timer.set_trig_delay( trig_delay );
+          timer_reg.load_hi = 0;
+          sc_time load_delay = clk.period( scale(timer_reg.status) * timer_reg.load_lo );
+          timer.set_load_delay( load_delay );
           break;
         }
-        case /*write*/ TIMER_TRIG_HI_REG:
+        case /*write*/ TIMER_LOAD_HI_REG:
         {
-          sc_time trig_delay = clk.period( scale(timer_reg.status) * (( uint64_t( timer_reg.trig_hi ) << 32 ) + timer_reg.trig_lo ));
-          timer.set_trig_delay( trig_delay );
+          sc_time load_delay = clk.period( scale(timer_reg.status) * (( uint64_t( timer_reg.load_hi ) << 32 ) + timer_reg.load_lo ));
+          timer.set_load_delay( load_delay );
           break;
         }
         case /*write*/ TIMER_CURR_LO_REG:
@@ -616,19 +629,20 @@ void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len
       }
     }
     else {
+      // Double word transfer
       sc_assert( len == 2 * sizeof( uint32_t ) );
 
       switch ( reg_address ) {
-        case /*write*/ TIMER_TRIG_LO_REG:
+        case /*write*/ TIMER_LOAD_LO_REG:
         {
-          sc_time trig_delay = clk.period( ( uint64_t( timer_reg.trig_hi ) << 32 ) + timer_reg.trig_lo );
-          timer.set_trig_delay( trig_delay );
+          sc_time load_delay = clk.period( ( uint64_t( timer_reg.load_hi ) << 32 ) + timer_reg.load_lo );
+          timer.set_load_delay( load_delay );
           break;
         }
         case /*write*/ TIMER_CURR_LO_REG:
         {
           sc_time curr_time = clk.period( ( uint64_t( timer_reg.curr_hi ) << 32 ) + timer_reg.curr_lo );
-          timer.set_trigger_time( curr_time );
+          timer.set_load_delay( curr_time );
           break;
         }
         default:
@@ -641,17 +655,17 @@ void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len
 //------------------------------------------------------------------------------
 void Timer_module::read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
 {
-  unsigned int index   { static_cast<unsigned int>( address >> bits(TIMER_SIZE) ) };
-  Addr_t base_address  { index << bits(TIMER_SIZE) };
-  Addr_t reg_address   { address - base_address };
-  Timer_reg& timer_reg { timer_reg_vec(index) };
-  Timer&     timer     { m_timer_vec[index] };
+  unsigned int index     { static_cast<unsigned int>( address >> bits(TIMER_SIZE) ) };
+  Addr_t base_address    { index << bits(TIMER_SIZE) };
+  Addr_t reg_address     { address - base_address };
+  Timer_reg_t& timer_reg { timer_reg_vec(index) };
+  Timer&     timer       { m_timer_vec[index] };
 
-  if ( base_address == TIMER_GLOBAL_REG ) {
+  if ( address == m_timer_quantity*TIMER_SIZE ) {
   }
   else {
-    sc_time trig_delay = timer.get_trigger_time();
-    sc_time curr_time = timer.get_trig_delay();
+    sc_time load_delay = timer.get_trigger_time();
+    sc_time curr_time = timer.get_load_delay();
 
     if ( len == sizeof( uint32_t ) ) {
       switch ( reg_address ) {
@@ -662,12 +676,12 @@ void Timer_module::read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len,
           timer_reg.status = get_timer_status( index );
           break;
         }
-        case /*read*/ TIMER_TRIG_LO_REG:
+        case /*read*/ TIMER_LOAD_LO_REG:
         {
           // - nothing to do
           break;
         }
-        case /*read*/ TIMER_TRIG_HI_REG:
+        case /*read*/ TIMER_LOAD_HI_REG:
         {
           // - nothing to do
           break;
@@ -695,7 +709,7 @@ void Timer_module::read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len,
     }
     else {
       switch ( reg_address ) {
-        case /*read*/ TIMER_TRIG_LO_REG:
+        case /*read*/ TIMER_LOAD_LO_REG:
         {
           // - nothing to do
           break;

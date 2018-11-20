@@ -196,14 +196,15 @@ void Timer::reset( void ) {
 //
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef TIMER_EXAMPLE
+// This serves both as an example and a simple unit test
 #include "timer_beh.hpp"
 #include "report.hpp"
-#include "common.hpp"
 #include "summary.hpp"
+#include "common.hpp"
 #include "no_clock.hpp"
 #include <queue>
 #include <iostream>
-std::ostringstream mout;
+
 using namespace std;
 
 //------------------------------------------------------------------------------
@@ -213,7 +214,8 @@ SC_MODULE( Top_module )
   no_clock clk   { "clk", 10_ns };
 
   //----------------------------------------------------------------------------
-  void test_thread( void ) {
+  void test_thread( void )
+  {
     // Display reset state
     MESSAGE("\n");
     RULER('R');
@@ -330,6 +332,16 @@ SC_MODULE( Top_module )
   }
 
   //----------------------------------------------------------------------------
+  void start_of_simulation( void ) override {
+    Summary::starting_simulation();
+  }
+
+  //----------------------------------------------------------------------------
+  void end_of_simulation( void ) override {
+    Summary::finished_simulation();
+  }
+
+  //----------------------------------------------------------------------------
   const char* kind() const override {
     return "Top_module";
   }
@@ -349,15 +361,13 @@ int sc_main( int argc, char* argv[] )
     std::string arg( sc_core::sc_argv()[i] );
     if( arg == "-debug" ) {
       sc_core::sc_report_handler::set_verbosity_level( SC_DEBUG );
-      SC_REPORT_INFO( "/Doulos/example/timer-test", "Verbosity level set to DEBUG" );
+      SC_REPORT_INFO( "/Doulos/Example/Timer_example", "Verbosity level set to DEBUG" );
     }
   }
   sc_report_handler::set_actions( SC_ERROR, SC_DISPLAY | SC_LOG );
   Summary::starting_elaboration();
   Top_module top( "top" );
-  Summary::starting_simulation(); //< best we can do
   sc_start();
-  Summary::finished_simulation();
   return Summary::report();
 }
 #endif

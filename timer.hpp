@@ -57,8 +57,9 @@ struct Timer_module: sc_core::sc_module
   Timer_module( Timer_module&& ) = default;
   Timer_module& operator=( Timer_module&& ) = default;
   ~Timer_module( void ); //< Destructor
-  virtual const char* kind() const { return "Timer_module"; }
+  virtual const char* kind( void ) const { return "Timer_module"; }
 
+private:
   //----------------------------------------------------------------------------
   // Processes
   void timer_thread( void );

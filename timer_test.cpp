@@ -11,8 +11,8 @@ namespace {
 using namespace std;
 
 #define VALUE(v) DEC << int(v) << HEX << " (" << int(v) << ")"
-#define TEST_TIMER(t) do {                                        \
-  MESSAGE( "Testing timer " << t.timer() << "\n" ); \
+#define TEST_TIMER(mesg,t) do {                                        \
+  MESSAGE( mesg << " timer " << t.timer() << "\n" ); \
   MESSAGE( "  " << (t.is_running()?"Running.":"Halted.")<<"\n" );   \
   MESSAGE( "  Current status is " << HEX << t.status() << "\n" ); \
   MESSAGE( "  Current count  is " << VALUE(t.value()) << "\n" );  \
@@ -37,27 +37,28 @@ void timer_test(void)
   Addr_t timer_addr = TMR_BASE;
   uint32_t timer_send { 0x0'F00Dul };
   uint32_t timer_recv { 0xDEAD'BEEFul };
-  cpu->write32( timer_addr + TIMER_TRIG_LO_REG, timer_send );
-  INFO( MEDIUM, "Write timer_trig with " << VALUE(timer_send) );
-  cpu->read32( timer_addr + TIMER_TRIG_LO_REG, timer_recv );
-  INFO( MEDIUM, "Read timer_trig_lo and got " << VALUE(timer_recv) );
+  cpu->write32( timer_addr + TIMER_LOAD_LO_REG, timer_send );
+  INFO( MEDIUM, "Write timer_load with " << VALUE(timer_send) );
+  cpu->read32( timer_addr + TIMER_LOAD_LO_REG, timer_recv );
+  INFO( MEDIUM, "Read timer_load_lo and got " << VALUE(timer_recv) );
 
   Timer_api t0{ *cpu };
   t0.setup( 10 );
-  TEST_TIMER( t0 );
+  TEST_TIMER( "Setup for 10 on", t0 );
   t0.start();
+  TEST_TIMER( "Started", t0 );
   cpu->clk.wait(50);
-  TEST_TIMER( t0 );
+  TEST_TIMER( "Waited 50 on", t0 );
 
   MESSAGE( "\n" );
   RULER( '-' );
   MEND(MEDIUM);
   Timer_api t1{ *cpu };
   t1.setup( 30 );
-  TEST_TIMER( t1 );
+  TEST_TIMER( "Setup for 30 on", t1 );
   t1.start();
 
   cpu->clk.wait( 150 );
-  TEST_TIMER( t0 );
-  TEST_TIMER( t1 );
+  TEST_TIMER( "Final status for", t0 );
+  TEST_TIMER( "Final status for", t1 );
 }
