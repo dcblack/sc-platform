@@ -8,7 +8,6 @@
 #include "report.hpp"
 #include "common.hpp"
 #include "summary.hpp"
-std::ostringstream mout;
 
 namespace {
   const char* MSGID = "/Doulos Inc/Example/main";
