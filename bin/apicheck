@@ -1,0 +1,59 @@
+#!/bin/bash
+
+SRC=/tmp/apicheck.cpp
+if [[ $# != 0 && -r "$1" ]]; then SRC="$1"; shift; fi
+
+BASE=$(basename "$SRC" .cpp)
+DIRN=$(dirname "$SRC")
+echo "DIRN=$DIRN BASE=$BASE"
+
+cat >"$SRC" <<EOF
+#include <systemc>
+using namespace sc_core;
+#include <iostream>
+#include <cassert>
+
+int main( int argc, char* argv[] )
+{
+  assert( typeid(__cplusplus) == typeid(long int) );
+  std::cout << "         sc_release()=" <<           sc_release()        << std::endl;
+  std::cout << "          __cplusplus=" <<            __cplusplus << "L" << std::endl;
+  std::cout << "         SC_CPLUSPLUS=" <<           SC_CPLUSPLUS << "L" << std::endl;
+  std::cout << "  IEEE_1666_CPLUSPLUS=" <<    IEEE_1666_CPLUSPLUS << "L" << std::endl;
+  return 0;
+}
+EOF
+
+VERS=98
+if [[ $# != 0 ]]; then VERS="$1"; shift; fi
+case "$VERS" in
+  98) CPPSTD="c++98"; CPLUSPLUS=199711L;;
+  03) CPPSTD="c++03"; CPLUSPLUS=199711L;;
+  11) CPPSTD="c++11"; CPLUSPLUS=201103L;;
+  14) CPPSTD="c++14"; CPLUSPLUS=201402L;;
+  17) CPPSTD="c++17"; CPLUSPLUS=201703L;;
+   *) echo "FATAL: Illegal version! Must be one of 98, 03, 11, 14 or 17." 1>&2; exit 1;;
+esac
+
+CXX='clang++'
+CPP_OPTS="-O0 -g -ggdb -Wno-long-long -Wno-deprecated -Wall --pedantic -Wno-variadic-macros"
+
+echo "# Compiling for C++ version $VERS"
+CCMD="$CPP_OPTS -std=$CPPSTD -I. -I$SYSTEMC/include -DDEBUG_SYSTEMC -DSC_DISABLE_API_VERSION_CHECK -o $DIRN/$BASE.o -c $SRC"
+echo "$CXX $CCMD"
+$CXX $CCMD
+test -r $DIRN/$BASE.o || exit 1
+
+echo "# Linking"
+LCMD="-std=${CPPSTD} -L. -L$SYSTEMC/lib -o $DIRN/$BASE.x $DIRN/$BASE.o -lsystemc -lm"
+echo "$CXX $LCMD"
+$CXX $LCMD 2>&1 | c++filt;
+test -r $DIRN/$BASE.x || exit 2
+
+echo "# Executing"
+echo "$DIRN/$BASE.x"
+$DIRN/$BASE.x "$@"
+
+rm -fr "$SRC" "$DIRN/$BASE.o" "$DIRN/$BASE.x"
+
+exit 0
