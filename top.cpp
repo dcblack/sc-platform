@@ -13,7 +13,9 @@
 #include "no_clock.hpp"
 #include "top.hpp"
 #include "report.hpp"
+#include "summary.hpp"
 #include "common.hpp"
+#include "signal.hpp"
 #include "cpu.hpp"
 #include "bus.hpp"
 #include "memory.hpp"
@@ -41,6 +43,8 @@ Top_module::~Top_module( void )
   // Nothing to do
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Private implementation
 struct Top_module::Impl {
   // Clock
   no_clock& clk { no_clock::global( "system_clock", 100_MHz ) };
@@ -55,6 +59,7 @@ struct Top_module::Impl {
   // Constructor
   Impl( void )
   {
+    m_interrupt.remove();
     parse_command_line();
     switch ( m_configuration ) { // Fall-thru intentional
       case Configuration::TIMER:
@@ -141,12 +146,15 @@ struct Top_module::Impl {
       // Information message verbosity
       else if ( arg == "-hyper" ) {
         sc_report_handler::set_verbosity_level( SC_HYPER );
+        m_interrupt.install();
       }
       else if ( arg == "-debug+1" ) {
         sc_report_handler::set_verbosity_level( SC_DEBUG + 1 );
+        m_interrupt.install();
       }
       else if ( arg == "-debug" ) {
         sc_report_handler::set_verbosity_level( SC_DEBUG );
+        m_interrupt.install();
       }
       else if ( arg == "-full" ) {
         sc_report_handler::set_verbosity_level( SC_FULL );
@@ -229,6 +237,8 @@ struct Top_module::Impl {
     , TRIVIAL
   };
   std::set<Test> m_test_set;
+  Signal         m_interrupt{ Signal::INTERRUPT };
+
 };
 
 void Top_module::end_of_elaboration( void )
@@ -240,6 +250,7 @@ void Top_module::end_of_elaboration( void )
 
 void Top_module::start_of_simulation( void )
 {
+  Summary::starting_simulation();
   MESSAGE( "\n" );
   RULER('!');
   MESSAGE( "Clock period is " << pImpl->clk.period() );
@@ -248,6 +259,7 @@ void Top_module::start_of_simulation( void )
 
 void Top_module::end_of_simulation( void )
 {
+  Summary::finished_simulation();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
