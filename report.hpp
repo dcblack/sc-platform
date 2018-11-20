@@ -65,6 +65,7 @@ do {                                                                            
 #define NOT_YET_IMPLEMENTED() REPORT( WARNING, __func__ << " is not yet implemented." )
 
 std::string to_string( tlm::tlm_command command );
+std::string to_string( uint8_t const * const data, uint32_t len );
 std::string verbosity2str(const int& level);
 template<typename T>
 std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec );

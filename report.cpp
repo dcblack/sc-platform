@@ -19,6 +19,20 @@ string to_string( tlm_command command )
   }
 }
 
+string to_string( uint8_t const * const data, uint32_t len )
+{
+  static char const * const hexdigit = "0123456789ABCDEF";
+  string result( len+2, '0' );
+  result[1] = 'x';
+  for( int i=2; len > 0; ) {
+    --len;
+    uint8_t d = data[len];
+    result[i++] = hexdigit[ d >>  4 ];
+    result[i++] = hexdigit[ d & 0xF ];
+  }
+  return result;
+}
+
 std::string verbosity2str(const int & level)
 {
   std::ostringstream os;
