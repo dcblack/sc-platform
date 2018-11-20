@@ -20,9 +20,8 @@
 #include <string>
 #include <mutex>
 
-namespace {
-  const char* const MSGID{ "/Doulos/Example/TLM-cpu" };
-}
+const char* const Cpu_module::MSGID{ "/Doulos/Example/TLM-cpu" };
+
 using namespace sc_core;
 using namespace sc_dt;
 using namespace tlm;
@@ -293,7 +292,7 @@ Cpu_module::transport
 , Style       coding_style
 )
 {
-  // Prevent overlapping process calls
+  // Prevent overlapping calls from parallel processes
   std::lock_guard<sc_mutex> lock(m_transport_mutex);
 
   // Determine AT/LT and burst size
@@ -491,4 +490,4 @@ void Cpu_module::get( Addr_t address, Depth_t depth, std::vector<uint8_t>& vec )
 
 ////////////////////////////////////////////////////////////////////////////////
 // Copyright 2018 by Doulos. All rights reserved.
-//END $Id$
+// END $Id: cpu.cpp,v 1.0 2018/11/19 05:16:51 dcblack Exp $

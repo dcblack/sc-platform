@@ -106,10 +106,10 @@ public:
   template<typename T>
   void read     ( Addr_t address, std::vector<T>& vec )
     { read ( address, reinterpret_cast<uint8_t*>( vec.data() ), vec.size()*sizeof(T) ); }
-  void write    ( Addr_t address, uint8_t* data, Depth_t length )
-    { transport( tlm::TLM_WRITE_COMMAND, address, data, length ); }
-  void read     ( Addr_t address, uint8_t* data, Depth_t length )
-    { transport( tlm::TLM_READ_COMMAND, address, data, length ); }
+  void write    ( Addr_t address, uint8_t* const data, Depth_t len )
+    { transport( tlm::TLM_WRITE_COMMAND, address, data, len ); INFO( DEBUG, "Wrote " << to_string( data, len ) << " to " << HEX << address ); }
+  void read     ( Addr_t address, uint8_t* const data, Depth_t len )
+    { transport( tlm::TLM_READ_COMMAND, address, data, len );  INFO( DEBUG, "Read  " << to_string( data, len ) << " fm " << HEX << address ); }
 
   void put( Addr_t address, std::vector<uint8_t>& vec );
   void get( Addr_t address, Depth_t depth, std::vector<uint8_t>& vec );
@@ -128,6 +128,7 @@ private:
   std::map<std::string,Addr_t> m_stat; // Statistics
   sc_core::sc_mutex            m_transport_mutex;
   Task_manager                 cpu_task_mgr; // allow multiple thread access
+  static const char * const    MSGID;
 };
 
 //------------------------------------------------------------------------------
@@ -139,7 +140,6 @@ Cpu_module::transport_dbg
 , std::vector<T>&  vec
 )
 {
-  static const char* MSGID{ "/Doulos/Example/TLM-cpu" };
   uint8_t* data_ptr{ reinterpret_cast<uint8_t*>( vec.data() ) };
   Depth_t  data_len{ Depth_t(vec.size()*sizeof(T)) };
   static Cpu_module::tlm_payload_t trans;
