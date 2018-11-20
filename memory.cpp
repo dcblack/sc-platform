@@ -429,15 +429,14 @@ Memory_module::transport
   }
   uint8_t*   mem = m_mem_vec.data();
   delay += clk.period( m_addr_clocks );
+  INFO( DEBUG+1, "Transport to address " << HEX << adr << " in " << name() );
   if( trans.is_read() ) {
     // TODO: Add byte enable support
-    INFO( DEBUG, "Reading " << HEX << adr << "..." << (adr+len-1) );
     memcpy( ptr, mem+adr, len );
     delay += clk.period( m_read_clocks ) * ( ( len+sbw-1 )/sbw );
   }
   else if( trans.is_write() ) {
     // TODO: Add byte enable support
-    INFO( DEBUG, "Writing " << HEX << adr << "..." << (adr+len-1) );
     memcpy( mem+adr, ptr, len );
     delay += clk.period( m_write_clocks ) * ( ( len+sbw-1 )/sbw );
     if( m_used_vec.size() ) {
