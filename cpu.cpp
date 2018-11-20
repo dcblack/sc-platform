@@ -12,12 +12,16 @@
 #include "cpu.hpp"
 #include "report.hpp"
 #include "common.hpp"
-#include "util.hpp"
 #include "hexfile.hpp"
+#include "memory_map.hpp"
+#include "interrupt.hpp"
+#include "timer_api.hpp"
+
 #include <string>
-namespace {
-  const char* MSGID{ "/Doulos/Example/TLM-cpu" };
-}
+#include <mutex>
+
+const char* const Cpu_module::MSGID{ "/Doulos/Example/TLM-cpu" };
+
 using namespace sc_core;
 using namespace sc_dt;
 using namespace tlm;
@@ -26,24 +30,23 @@ using namespace std;
 //------------------------------------------------------------------------------
 // Constructor
 Cpu_module::Cpu_module( sc_module_name instance_name )
-: init_socket           { "init_socket"                  }
-, m_coding_style        { Style::LT                      }
-, m_mm                  { Memory_manager<>::instance()   }
+: m_mm                  { Memory_manager<>::instance()   }
 , m_init_peq            { this, &Cpu_module::init_peq_cb }
 , m_request_in_progress { nullptr                        }
+, cpu_task_mgr          { "cpu", this }
 {
   SC_HAS_PROCESS( Cpu_module );
   SC_THREAD( cpu_thread );
+  SC_THREAD( irq_thread );
   init_socket.register_nb_transport_bw           ( this, &Cpu_module::nb_transport_bw );
   init_socket.register_invalidate_direct_mem_ptr ( this, &Cpu_module::invalidate_direct_mem_ptr );
+  intrq_xport.bind( intrq_chan );
   m_qk.reset();
   INFO( ALWAYS, "Constructed " << name() );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Processes
-
-#include "memory_map.hpp"
 
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,49 +61,71 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#define TESTRAM(w,addr,value) do {\
-  write##w( RAM_BASE+addr, value );\
-  data##w = int##w##_t(~value);\
-  read##w ( RAM_BASE+addr, data##w );\
-  if( value != data##w ) REPORT( WARNING, "Data mismatch!" );\
-  MESSAGE( "wrote " << addr << ":0x" << HEX <<  value );\
-  MESSAGE( "read "  << addr << ":0x" << HEX << int(data##w) );\
-  MEND( MEDIUM );\
-} while(0)
-
+//------------------------------------------------------------------------------
 void
 Cpu_module::cpu_thread( void )
 {
-
-  INFO( MEDIUM, "Testing writing/reading memory");
-  uint32_t data32;
-  uint16_t data16;
-  uint8_t  data8;
-  TESTRAM(8,  0, 0xEF   );
-  TESTRAM(8,  1, 0xBE   );
-  TESTRAM(16, 2, 0xCAFE );
-  data32 = 0u; read32( RAM_BASE+0, data32 );
-  INFO( MEDIUM, "read 0:" << HEX << data32 );
-  vector<short> v1(8);
-  v1 = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
-  INFO( MEDIUM, "v1 = " << HEX << v1 );
-  write( RAM_BASE+0x100, v1 );
-  vector<int> v2(4);
-  read( RAM_BASE+0x100, v2 );
-  INFO( MEDIUM, "v2 = " << HEX << v2 );
-
-  INFO( MEDIUM, "Testing hexfile functions");
-  for(int i=3000; i<3050; ++i) {
-    v2.push_back(i);
+  //----------------------------------------------------------------------------
+  // Gather test list from command-line
+  vector<string> task_names;
+  for ( int i = 1; i < sc_argc(); ++i ) {
+    string arg { sc_argv()[i] };
+    if ( ( arg != "-test" ) and ( arg != "-T" ) ) {
+      continue;
+    }
+    ++i;
+    if ( i < sc_argc() ) {
+      string name { sc_argv()[i] };
+      // TODO -- test reasonableness of task name
+      task_names.push_back( name );
+    }
+    else {
+      REPORT( ERROR, "Missing argument for -test option!?" );
+    }
   }
-  hexfile::dump(0, v2 );
-  hexfile::save("test.dat", 100, v2 );
-  vector<uint8_t> v3;
-  Addr_t a = hexfile::load("test.dat", v3);
-  INFO( MEDIUM, "a=" << a << " v3.size=" << v3.size() );
-  hexfile::dump( a, v3 );
+
+  // TODO -- gather names from file?
+
+  if ( task_names.empty() ) {
+    task_names =
+    { "memory_test"
+    , "timer_test"
+    };
+  }
+
+  //----------------------------------------------------------------------------
+  // Execute tasks sequentially
+  Task_manager::Task_map_t task { cpu_task_mgr.tasks() };
+  for ( const auto& task_name : task_names ) {
+    if ( task.count( task_name ) == 1 ) {
+      MESSAGE( "\n" );
+      RULER( 'x' );
+      INFO( MEDIUM, "Executing '" << task_name << "'" );
+      task[ task_name ]();
+      MESSAGE( "\n" );
+    }
+    else {
+      REPORT( ERROR, "No such cpu task '" << task_name << "'" );
+    }
+  }
 
   sc_stop();
+}//end cpu_thread()
+
+//------------------------------------------------------------------------------
+void
+Cpu_module::irq_thread( void )
+{
+  Timer_api t0{ *this, 0 };
+  for(;;) {
+    intrq_chan.wait();
+    INFO( MEDIUM, "Received interrupt at " << sc_time_stamp() );
+    MESSAGE( "Testing timer " << t0.timer() << "\n" );
+    MESSAGE( "  " << (t0.is_running()?"Running.":"Halted.")<<"\n" );
+    MESSAGE( "  Current status is " << HEX << t0.status() << "\n" );
+    MESSAGE( "  Current count  is " << DEC << t0.value() << HEX << " (" << t0.value() << ")\n" );
+    MEND( MEDIUM );
+  }//endforever
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -267,6 +292,9 @@ Cpu_module::transport
 , Style       coding_style
 )
 {
+  // Prevent overlapping calls from parallel processes
+  std::lock_guard<sc_mutex> lock(m_transport_mutex);
+
   // Determine AT/LT and burst size
   if ( coding_style == Style::DEFAULT ) {
     coding_style = m_coding_style;
@@ -462,4 +490,4 @@ void Cpu_module::get( Addr_t address, Depth_t depth, std::vector<uint8_t>& vec )
 
 ////////////////////////////////////////////////////////////////////////////////
 // Copyright 2018 by Doulos. All rights reserved.
-//END $Id$
+// END $Id: cpu.cpp,v 1.0 2018/11/19 05:16:51 dcblack Exp $

@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+
+our $sep='_';
+    $sep  = shift(@ARGV) if @ARGV;
+our $cols = $2 if qx(stty -a)=~m{(\d+) rows; (\d+) columns;};
+    $cols = $ENV{'COLUMNS'} unless $cols;
+    $cols = shift(@ARGV) if @ARGV;
+    $cols = 80 unless $cols;
+printf(qq{%s\n},($sep x $cols));

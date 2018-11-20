@@ -1,49 +1,22 @@
-// Improve reporting providing two macros, REPORT and INFO, that allow
-// for streaming syntax like cout.
+////////////////////////////////////////////////////////////////////////////////
 //
-// Syntax:
-//   REPORT(message_type, message_stream);
-//   INFO(verbosity_level, message_stream);
-//   MESSAGE(message_stream);
-//   MEND(verbosity_level);
-//   RULER(char);
-//   TODO(message_stream);
-//   NOT_YET_IMPLEMENTED();
+//  #####  ##### #####   ####  #####  #######                                     
+//  #    # #     #    # #    # #    #    #                                        
+//  #    # #     #    # #    # #    #    #                                        
+//  #####  ##### #####  #    # #####     #                                        
+//  #  #   #     #      #    # #  #      #                                        
+//  #   #  #     #      #    # #   #     #                                        
+//  #    # ##### #       ####  #    #    #                                        
 //
-//   message types are: FATAL, ERROR, WARNING, and INFO
-//   verbosity levels are: ALWAYS, LOW, MEDIUM, HIGH, DEBUG
+////////////////////////////////////////////////////////////////////////////////
+#ifndef REPORT_HPP
+// Improve reporting with macros, more overloads on `operator<<`,
+// and other enhancements to `sc_report_handler`.
 //
-//   MESSAGE macro doesn't output anything, but rather builds up
-//   a message to be emitted by REPORT, INFO or MEND.
-//
-// Assumes you define in every implementation file (i.e. .cpp):
-//
-//   #include "report.h"
-//   namespace { static const char* MSGID{ "/Company/Group/Project/Module" }; }
-//
-// For header files leave off the name space and put in the function
-// or define a class member (non-static). Must not allow to escape
-// the header. So a #define is inappropriate.
-//
-// Examples:
-#ifdef EXAMPLES
-     #include "report.h"
-     namespace { static const char* MSGID{ "/Doulos/Example/Report" }; }
-     REPORT(ERROR,"Data " << data << " doesn't match expected " << expected);
-     INFO(DEBUG,"Packet contains " << packet);
-     TODO("Fix report handler to remove blank line after REPORT_INFO");
-     NOT_YET_IMPLEMENTED();
-     MESSAGE( "Map contents:\n" );
-     for( const auto& v : my_map ) {
-       MESSAGE( "  " << v.first << ": " << v.second << "\n" );
-     }
-     MEND( HIGH ); // or REPORT( WARNING, "" );
-#endif
-//
-
-#ifndef REPORT_H
-#define REPORT_H
+// See `ABOUT_REPORT.md` for more information.
+#define REPORT_HPP
 #include <systemc>
+#include <tlm>
 #include <sstream>
 #include <iomanip>
 extern std::ostringstream mout;
@@ -86,9 +59,43 @@ do {                                                                            
     mout.str( "" );                                                                 \
   }                                                                                 \
 } while (0)
-#define RULER(c) MESSAGE( string( 80, c ) << "\n" )
+#define RULER(c) MESSAGE( std::string( 80, c ) << "\n" )
 
 #define TODO(stream) REPORT( WARNING, "TODO: " << stream )
 #define NOT_YET_IMPLEMENTED() REPORT( WARNING, __func__ << " is not yet implemented." )
+
+std::string to_string( tlm::tlm_command command );
+std::string to_string( uint8_t const * const data, uint32_t len );
+std::string verbosity2str(const int& level);
+template<typename T>
+std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec );
+
+////////////////////////////////////////////////////////////////////////////////
+// Implementation
+template<typename T>
+std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec )
+{
+  static const int threshold{8};
+  os << "{ ";
+  size_t i = 0;
+
+  for ( auto& v : vec ) {
+    if ( i != 0 ) {
+      os << ", ";
+    }
+
+    if ( i+1 == vec.size() and vec.size() > threshold ) {
+      os << " ...";
+    }
+
+    if ( i < threshold or i+1 == vec.size() ) {
+      os << i++ << ":" << v;
+    }
+
+  }
+
+  os << " }";
+  return os;
+}
 
 #endif

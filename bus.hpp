@@ -1,22 +1,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  #####  #    #  ####         #     # ####   #                                 
-//  #    # #    # #    #        ##   ## #   #  #                                 
-//  #    # #    # #             # # # # #    # #                                 
-//  #####  #    #  ####         #  #  # #    # #                                 
-//  #    # #    #      #        #     # #    # #                                 
-//  #    # #    # #    #        #     # #   #  #                                 
-//  #####   ####   ####  ###### #     # ####   #####                             
+//  #####  #    #  ####         #     # ####   #
+//  #    # #    # #    #        ##   ## #   #  #
+//  #    # #    # #             # # # # #    # #
+//  #####  #    #  ####         #  #  # #    # #
+//  #    # #    #      #        #     # #    # #
+//  #    # #    # #    #        #     # #   #  #
+//  #####   ####   ####  ###### #     # ####   #####
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef BUS_MODULE_H
-#define BUS_MODULE_H
+#ifndef BUS_HPP
+#define BUS_HPP
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 #endif
 #include <tlm>
 #include <tlm_utils/multi_passthrough_initiator_socket.h>
 #include <tlm_utils/multi_passthrough_target_socket.h>
+#include <tlm_utils/instance_specific_extensions.h>
 #include "common.hpp"
 #include "memory_manager.hpp"
 #include "config.hpp"
@@ -25,12 +26,13 @@
 struct Bus_module: sc_core::sc_module
 {
   using tlm_payload_t = tlm::tlm_generic_payload;
-  tlm_utils::multi_passthrough_target_socket<Bus_module>    targ_socket{ "targ_socket" };
-  tlm_utils::multi_passthrough_initiator_socket<Bus_module> init_socket{ "init_socket" };
+  using tlm_accessor_t = tlm_utils::instance_specific_extension_accessor;
+  tlm_utils::multi_passthrough_target_socket<Bus_module>    targ_socket { "targ_socket" };
+  tlm_utils::multi_passthrough_initiator_socket<Bus_module> init_socket { "init_socket" };
 
   SC_CTOR( Bus_module );
   virtual ~Bus_module( void );
-  virtual const char* kind() const { return "Bus_module"; }
+  virtual const char* kind( void ) const { return "Bus_module"; }
 
   // Forward interface
   void b_transport( int id, tlm_payload_t& trans, sc_core::sc_time& delay );
@@ -41,6 +43,7 @@ struct Bus_module: sc_core::sc_module
   // Backward interface
   tlm::tlm_sync_enum nb_transport_bw( int id, tlm_payload_t& trans, tlm::tlm_phase& phase, sc_core::sc_time& delay );
   void invalidate_direct_mem_ptr( int id, sc_dt::uint64 start_range, sc_dt::uint64 end_range );
+
 private:
   // Helpers
   unsigned int decode_address( uint64_t address, uint64_t& masked_address );
@@ -56,13 +59,13 @@ private:
     int         port  { -1       };
     Addr_t      start { MAX_ADDR };
     Depth_t     depth { 0        };
-    std::string name  { ""       }; 
-    std::string kind  { ""       }; 
+    std::string name  { ""       };
+    std::string kind  { ""       };
   };
-  Config                                  m_config;
-  std::vector<Socket_info>                m_port_vec;
-  std::map<tlm_payload_t*, unsigned int>  m_id_map;
-  Memory_manager<>&                       m_mm; // for managing generic payload
+  Config                    m_config;
+  std::vector<Socket_info>  m_port_vec;
+  Memory_manager<>&         m_mm; // for managing generic payload
+  tlm_accessor_t            m_accessor;
 };
 
-#endif /*BUS_MODULE_H*/
+#endif /*BUS_HPP*/

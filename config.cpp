@@ -144,6 +144,32 @@ void Config::clear_data( void )
 }
 
 //------------------------------------------------------------------------------
+// Add a key
+void Config::addkey( const string& field, boost::any value, bool reqd )
+{
+  // Don't add if it already exists
+  if ( m_dflt.count( field ) != 0 ) {
+    // Warn if different type
+    if( m_dflt[field].type() != value.type() ) {
+      REPORT( WARNING, "Field '" << field << "' type mismatch." );
+    } else {
+      REPORT( WARNING, "Field '" << field << "' already defined "
+                    << "- ignoring.\n"
+                    << "Use delkey(field) beforehand redefining."
+            );
+    }
+    return;
+  }
+
+  // Insert default value
+  m_dflt[field] = value;
+
+  if ( reqd ) {
+    m_reqd.insert( field );
+  }
+}
+
+//------------------------------------------------------------------------------
 // Remove a key
 void Config::delkey( const string& field )
 {
@@ -217,11 +243,21 @@ int Config::avail( void ) const
 std::ostream& operator<<( std::ostream& os, const Config& rhs )
 {
   std::vector<string> fields;
-  std::vector<string> special = {"name", "kind", "object_ptr", "target_start", "target_depth"};
+  static std::vector<string> special 
+  { "name"
+  , "kind"
+  , "object_ptr"
+  , "target_start"
+  , "target_depth"
+  };
+  size_t max_width = 0;
 
   size_t n = rhs.m_data.size();
   fields.reserve( rhs.m_data.size() );
   for( auto v : rhs.m_data ) {
+    if( max_width < v.first.length() ) {
+      max_width = v.first.length();
+    }
     bool is_special{ false };
     for( auto f : special ) {
       is_special |= ( v.first == f );
@@ -232,7 +268,7 @@ std::ostream& operator<<( std::ostream& os, const Config& rhs )
 
   for( const string& field : special ) {
     if( rhs.m_data.count( field ) == 0 ) continue;
-    os << "  " << field << ": ";
+    os << "  " << setw(max_width) << (field + ": ");
     boost::any v{ rhs.m_data.find( field )->second };
     size_t v_type_hash = v.type().hash_code();
     Config::s_function[v_type_hash]->printer( os, v); //< Use stored printing functor
@@ -240,7 +276,7 @@ std::ostream& operator<<( std::ostream& os, const Config& rhs )
   }
 
   for( const string& field : fields ) {
-    os << "  " << field << ": ";
+    os << "  " << setw(max_width) << (field + ": ");
     boost::any v{ rhs.m_data.find( field )->second };
     size_t v_type_hash = v.type().hash_code();
     Config::s_function[v_type_hash]->printer( os, v); //< Use stored printing functor
@@ -262,11 +298,12 @@ std::ostream& operator<<( std::ostream& os, const Config& rhs )
 //
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef CONFIG_EXAMPLE
+// This serves both as an example and a simple unit test
 #include "config.hpp"
 #include "report.hpp"
+#include "summary.hpp"
 #include <iostream>
 using namespace std;
-std::ostringstream mout;
 // Helper
 //------------------------------------------------------------------------------
 namespace {
@@ -327,6 +364,16 @@ SC_MODULE( Top_module )
   }
 
   //----------------------------------------------------------------------------
+  void start_of_simulation( void ) override {
+    Summary::starting_simulation();
+  }
+
+  //----------------------------------------------------------------------------
+  void end_of_simulation( void ) override {
+    Summary::finished_simulation();
+  }
+
+  //----------------------------------------------------------------------------
   const char* kind() const override {
     return "Top_module";
   }
@@ -341,12 +388,13 @@ int sc_main( int argc, char* argv[] )
     std::string arg(sc_core::sc_argv()[i]);
     if (arg == "-debug") {
       sc_core::sc_report_handler::set_verbosity_level(SC_DEBUG);
-      SC_REPORT_INFO( "/Doulos/example/config", "Verbosity level set to DEBUG" );
+      SC_REPORT_INFO( "/Doulos/Example/config_example", "Verbosity level set to DEBUG" );
     }
   }
+  Summary::starting_elaboration();
   Top_module top( "top" );
   sc_start();
-  return 0;
+  return Summary::report();
 }
 #endif
 

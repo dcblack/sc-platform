@@ -1,0 +1,8 @@
+// This is a simple $readmemh file
+
+@100
+DEAD BEEF
+1
+206
+0 123456789abcdef // Comments
+

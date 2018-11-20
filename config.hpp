@@ -29,8 +29,8 @@ struct Config
 
   //----------------------------------------------------------------------------
   using Printer_t = std::function<void( std::ostream&, const boost::any& )>;
-  using Equal_t = std::function<bool( const boost::any&, const boost::any& )>;
-  using Assign_t = std::function<void( const std::string&, boost::any&, const boost::any& )>;
+  using Equal_t   = std::function<bool( const boost::any&, const boost::any& )>;
+  using Assign_t  = std::function<void( const std::string&, boost::any&, const boost::any& )>;
   struct Function_t 
   {
     Function_t
@@ -54,31 +54,7 @@ struct Config
   void clear_keys( void ); //< remove all field defaults
 
   //------------------------------------------------------------------------------
-  void addkey( const string& field, boost::any value, bool reqd = false )
-  {
-    // Don't add if it already exists
-    if ( m_dflt.count( field ) != 0 ) {
-      // Warn if different type
-      if( m_dflt[field].type() != value.type() ) {
-        REPORT( WARNING, "Field '" << field << "' type mismatch." );
-      } else {
-        REPORT( WARNING, "Field '" << field << "' already defined "
-                      << "- ignoring.\n"
-                      << "Use delkey(field) beforehand redefining."
-              );
-      }
-      return;
-    }
-
-    // Insert default value
-    m_dflt[field] = value;
-
-    if ( reqd ) {
-      m_reqd.insert( field );
-    }
-  }
-
-  //----------------------------------------------------------------------------
+  void addkey( const string& field, boost::any value, bool reqd = false );
   void delkey( const string& field );
   bool is_key( const string& field ) const;
   bool has_key( const string& field ) const;
@@ -151,8 +127,8 @@ void config_key( Config& config, const string& field, const T& value, bool reqd 
         try {
           if( std::is_integral<T>::value ) {
             T ta ( boost::any_cast<T>( a ) );
-            os << DEC << ta;
-            os << " (" << HEX << ta << DEC << ")";
+            os << HEX << ta;
+            os << " (" << DEC << ta << ")";
           } else if( std::is_pointer<T>::value ) {
             os << "(pointer)";
           } else {

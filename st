@@ -1,0 +1,1 @@
+/eda/hldw/sc-templates

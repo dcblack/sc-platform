@@ -12,6 +12,7 @@
 #include "bus.hpp"
 #include "report.hpp"
 #include "config_extn.hpp"
+#include "route_extn.hpp"
 #include <memory>
 namespace {
   const char* MSGID{ "/Doulos/Example/TLM-bus" };
@@ -52,7 +53,7 @@ Bus_module::b_transport( int id, tlm_payload_t& trans, sc_time& delay )
   sc_dt::uint64 masked_address;
   unsigned int target = decode_address( trans.get_address(), masked_address );
 
-  if ( target > init_socket.size() ) {
+  if( target > init_socket.size() ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << trans.get_address() );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -76,24 +77,41 @@ Bus_module::nb_transport_fw
   , sc_time& delay
 )
 {
-  m_id_map[ &trans ] = id;
+  Route_extn* route_extn;
+  if( phase == tlm::BEGIN_REQ )
+  {
+    route_extn = new Route_extn;
+    route_extn->id = id;
+    m_accessor( trans ).set_extension( route_extn );
+  }
 
   sc_dt::uint64 masked_address;
   unsigned int target = decode_address( trans.get_address(), masked_address );
 
-  if ( target > init_socket.size() ) {
+  if( target > init_socket.size() ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << trans.get_address() );
       trans.set_response_status( TLM_OK_RESPONSE );
     } else {
       trans.set_response_status( TLM_ADDRESS_ERROR_RESPONSE );
     }
+    if( route_extn != nullptr ) {
+      m_accessor( trans ).clear_extension( route_extn );
+      delete route_extn;
+    }
     return TLM_COMPLETED;
   }
 
   trans.set_address( masked_address );
 
-  return init_socket[target]->nb_transport_fw( trans, phase, delay );
+  tlm_sync_enum status = init_socket[target]->nb_transport_fw( trans, phase, delay );
+
+  if( status == tlm::TLM_COMPLETED and route_extn != nullptr ) {
+    m_accessor( trans ).clear_extension( route_extn );
+    delete route_extn;
+  }
+
+  return status;
 }
 
 //------------------------------------------------------------------------------
@@ -107,7 +125,7 @@ Bus_module::get_direct_mem_ptr
   sc_dt::uint64 masked_address;
   unsigned int target = decode_address( trans.get_address(), masked_address );
 
-  if ( target > init_socket.size() ) {
+  if(  target > init_socket.size() ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << trans.get_address() );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -134,7 +152,7 @@ Bus_module::transport_dbg( int id, tlm_payload_t& trans )
   uint64 address{ trans.get_address() };
   bool config_only{config( trans )};
 
-  if ( config_only and address == MAX_ADDR ) {
+  if(  config_only and address == MAX_ADDR ) {
     trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
     trans.set_response_status( TLM_OK_RESPONSE );
     return 0;
@@ -143,7 +161,7 @@ Bus_module::transport_dbg( int id, tlm_payload_t& trans )
   uint64 masked_address;
   unsigned int target = decode_address( address, masked_address );
 
-  if ( target > init_socket.size() ) {
+  if(  target > init_socket.size() ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << trans.get_address() );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -164,13 +182,22 @@ Bus_module::transport_dbg( int id, tlm_payload_t& trans )
 //------------------------------------------------------------------------------
 tlm_sync_enum
 Bus_module::nb_transport_bw
-( int id
-  , tlm_payload_t& trans
-  , tlm_phase& phase
-  , sc_time& delay
+( int            id
+, tlm_payload_t& trans
+, tlm_phase&     phase
+, sc_time&       delay
 )
 {
-  return targ_socket[ m_id_map[ &trans ] ]->nb_transport_bw( trans, phase, delay );
+  Route_extn* route_extn;
+  m_accessor( trans ).get_extension( route_extn );
+  sc_assert( route_extn != nullptr );
+  tlm::tlm_sync_enum status = targ_socket[ route_extn->id ]->nb_transport_bw( trans, phase, delay );
+  if( status == tlm::TLM_COMPLETED )
+  {
+    m_accessor( trans ).clear_extension( route_extn );
+    delete route_extn;
+  }
+  return status;
 }
 
 //------------------------------------------------------------------------------
@@ -199,8 +226,8 @@ Bus_module::invalidate_direct_mem_ptr
 bool
 Bus_module::mask_if_fits( Addr_t& address, Addr_t start, Depth_t depth ) const
 {
-  INFO( DEBUG+1, "Testing address " << HEX << address << " against " << start << ".." << (start+depth) );
-  if ( ( address >= start ) and ( address < ( start + depth ) ) ) {
+  INFO( DEBUG+1, "Testing address " << HEX << address << " against " << start << ".." << ( start+depth ) );
+  if( ( address >= start ) and ( address < ( start + depth ) ) ) {
     address -= start;
     INFO( DEBUG+1, "Matched! Returning masked address " << HEX << address );
     return true;
@@ -218,18 +245,18 @@ bool Bus_module::config
 )
 {
   //sc_assert( trans.get_address() == MAX_ADDR );
-  Config_extn* extn{trans.get_extension<Config_extn>()};
+  Config_extn* config_extn{trans.get_extension<Config_extn>()};
 
-  if ( extn != nullptr ) {
+  if( config_extn != nullptr ) {
     // Ensure we have the correct name locally
     m_config.set( "name", string( name() ) );
     m_config.set( "kind", string( kind() ) );
 
-    if ( extn->config.empty() ) {
-      extn->config = m_config;
+    if( config_extn->config.empty() ) {
+      config_extn->config = m_config;
     }
     else {
-      m_config.update( extn->config );
+      m_config.update( config_extn->config );
     }
   }
 
@@ -248,13 +275,13 @@ Bus_module::decode_address
 #ifndef CRUDE
 
   // Probing
-  if ( m_port_vec.empty() ) {
+  if( m_port_vec.empty() ) {
     build_port_map();
   }
 
   // Lookup for appropriate start, depth
   for ( int port = 0; port < init_socket.size(); ++port ) {
-    if ( mask_if_fits( masked_address, m_port_vec[port].start, m_port_vec[port].depth ) ) {
+    if( mask_if_fits( masked_address, m_port_vec[port].start, m_port_vec[port].depth ) ) {
       return m_port_vec[port].port;
     }
   }
@@ -263,11 +290,11 @@ Bus_module::decode_address
   return ~0;
 #else
   // Crude - only allows for fixed one layer North bus
-  if ( mask_if_fits( masked_address, ROM_BASE, ROM_DEPTH ) ) {
+  if( mask_if_fits( masked_address, ROM_BASE, ROM_DEPTH ) ) {
     return ROM_PORT;
   }
 
-  if ( mask_if_fits( masked_address, RAM_BASE, RAM_DEPTH ) ) {
+  if( mask_if_fits( masked_address, RAM_BASE, RAM_DEPTH ) ) {
     return RAM_PORT;
   }
 
@@ -285,10 +312,10 @@ Bus_module::reconstruct_address
 #ifndef CRUDE
   Addr_t  start = m_port_vec[id].start;
   Depth_t depth = m_port_vec[id].depth;
-  Addr_t  reconstructed{ m_port_vec[id].start + address };
+  Addr_t  reconstructed{ start + address };
 
   // Clip as required
-  if ( reconstructed >= ( start + depth ) ) {
+  if( reconstructed >= ( start + depth ) ) {
     reconstructed = start + depth - 1;
   }
 
@@ -296,11 +323,11 @@ Bus_module::reconstruct_address
 #else
 
   // Crude
-  if ( id == ROM_PORT ) {
+  if( id == ROM_PORT ) {
     return ROM_BASE + address;
   }
 
-  if ( id == RAM_PORT ) {
+  if( id == RAM_PORT ) {
     return RAM_BASE + address;
   }
 
@@ -318,14 +345,14 @@ Bus_module::build_port_map( void )
   tlm_payload_t& trans{ *m_mm.allocate_acquire() };
   trans.set_command( TLM_IGNORE_COMMAND );
   // Add sticky extension as needed
-  Config_extn* extn{ trans.get_extension<Config_extn>() };
+  Config_extn* config_extn{ trans.get_extension<Config_extn>() };
 
-  if ( extn == nullptr ) {
-    extn = new Config_extn;
-    trans.set_extension( extn );
+  if( config_extn == nullptr ) {
+    config_extn = new Config_extn;
+    trans.set_extension( config_extn );
   }
   else {
-    extn->config.set_defaults();
+    config_extn->config.set_defaults();
   }
 
   // Setup port mapping vector
@@ -338,27 +365,27 @@ Bus_module::build_port_map( void )
     trans.set_response_status( TLM_INCOMPLETE_RESPONSE );
     trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
     // Make sure data is cleared to compel receiver to fill
-    extn->config.clear_data();
+    config_extn->config.clear_data();
     int count = init_socket[port]->transport_dbg( trans );
     INFO( DEBUG, "transport_db response: " << trans.get_response_string() );
-    NOINFO( DEBUG, "Got " << extn->config );
+    NOINFO( DEBUG, "Got " << config_extn->config );
 
-    if ( trans.get_response_status() == TLM_OK_RESPONSE ) {
-      if ( extn->config.has_key( "target_start" )
-           and extn->config.has_key( "target_depth" )
-           and extn->config.has_key( "name" )
-           and extn->config.has_key( "kind" )
+    if( trans.get_response_status() == TLM_OK_RESPONSE ) {
+      if( config_extn->config.has_key( "target_start" )
+           and config_extn->config.has_key( "target_depth" )
+           and config_extn->config.has_key( "name" )
+           and config_extn->config.has_key( "kind" )
          ) {
         m_port_vec[port].port = port;
-        extn->config.get( "name",         m_port_vec[port].name );
-        extn->config.get( "kind",         m_port_vec[port].kind );
-        extn->config.get( "target_start", m_port_vec[port].start );
-        extn->config.get( "target_depth", m_port_vec[port].depth );
+        config_extn->config.get( "name",         m_port_vec[port].name );
+        config_extn->config.get( "kind",         m_port_vec[port].kind );
+        config_extn->config.get( "target_start", m_port_vec[port].start );
+        config_extn->config.get( "target_depth", m_port_vec[port].depth );
       }
     }
   }//endfor port
 
-  extn->config.clear_data();
+  config_extn->config.clear_data();
   trans.release();
   check_port_map();
 }
@@ -396,8 +423,8 @@ Bus_module::check_port_map( void )
     Addr_t  start = m_port_vec[port].start;
     Depth_t depth = m_port_vec[port].depth;
 
-    if ( start == MAX_ADDR ) {
-      if ( errors++ == 0 ) {
+    if( start == MAX_ADDR ) {
+      if( errors++ == 0 ) {
         MESSAGE( "Port map errors detected:" );
       }
 
@@ -407,8 +434,8 @@ Bus_module::check_port_map( void )
       continue;
     }
 
-    if ( start + depth < start ) {
-      if ( errors++ == 0 ) {
+    if( start + depth < start ) {
+      if( errors++ == 0 ) {
         MESSAGE( "Port map errors detected:" );
       }
 
@@ -418,23 +445,23 @@ Bus_module::check_port_map( void )
       continue;
     }
 
-    if ( start < min_addr ) {
+    if( start < min_addr ) {
       min_addr = start;
     }
 
-    if ( start + depth > max_addr ) {
+    if( start + depth > max_addr ) {
       max_addr = start + depth;
     }
 
     // Check for overlapping address ranges
     for ( int prev = 0; prev < port; ++prev ) {
-      if ( m_port_vec[prev].start == MAX_ADDR ) {
+      if( m_port_vec[prev].start == MAX_ADDR ) {
         continue;
       }
 
-      if ( start < ( m_port_vec[prev].start + m_port_vec[prev].depth )
+      if( start < ( m_port_vec[prev].start + m_port_vec[prev].depth )
            and m_port_vec[prev].start < ( start + depth ) ) {
-        if ( errors++ == 0 ) {
+        if( errors++ == 0 ) {
           MESSAGE( "Port map errors detected:" );
         }
 
@@ -449,7 +476,7 @@ Bus_module::check_port_map( void )
     }//endfor prev
   }//endfor port
 
-  if ( errors > 0 ) {
+  if( errors > 0 ) {
     REPORT( ERROR, "\n\nTotal of " << errors << " detected mapping errors." );
   }
   else {

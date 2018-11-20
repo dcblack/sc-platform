@@ -1,0 +1,178 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Access	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	c
+Access_t	memory_manager.h	/^  struct Access_t$/;"	s	struct:Memory_manager
+BUS_H	bus.h	13;"	d
+Bus_module	bus.cpp	/^Bus_module::Bus_module( sc_module_name instance_name )$/;"	f	class:Bus_module
+Bus_module	bus.h	/^struct Bus_module: sc_core::sc_module$/;"	s
+COMMON_H	common.h	2;"	d
+CONFIG_EXTN_H	config_extn.h	2;"	d
+CPU_H	cpu.h	13;"	d
+Config_extn	config_extn.cpp	/^Config_extn::Config_extn(void) \/\/< Constructor$/;"	f	class:Config_extn
+Config_extn	config_extn.h	/^struct Config_extn$/;"	s
+Cpu_module	cpu.cpp	/^Cpu_module::Cpu_module( sc_module_name instance_name )$/;"	f	class:Cpu_module
+Cpu_module	cpu.h	/^struct Cpu_module: sc_core::sc_module$/;"	s
+DEFAULT	common.h	/^enum class Style { DEFAULT, LT, AT };$/;"	m	class:Style
+DMA_H	dma.h	13;"	d
+DMI_EXTN_H	dmi_extn.h	2;"	d
+Dma_module	dma.cpp	/^Dma_module::Dma_module$/;"	f	class:Dma_module
+Dma_module	dma.h	/^struct Dma_module: sc_core::sc_module$/;"	s
+Dmi_extn	dmi_extn.cpp	/^Dmi_extn::Dmi_extn(void) \/\/< Constructor$/;"	f	class:Dmi_extn
+Dmi_extn	dmi_extn.h	/^struct Dmi_extn$/;"	s
+Feature	common.h	/^enum class Feature { none, enabled };$/;"	c
+G	common.h	12;"	d
+INFO	report.h	45;"	d
+K	common.h	10;"	d
+LT	common.h	/^enum class Style { DEFAULT, LT, AT };$/;"	m	class:Style
+M	common.h	11;"	d
+MEMORY_H	memory.h	13;"	d
+MEMORY_MANAGER_H	memory_manager.h	2;"	d
+MSGID	main.cpp	/^  const char* MSGID = "\/Doulos Inc\/{:PROJECT:}\/main";$/;"	m	namespace:__anon4	file:
+MSGID	memory_manager.h	134;"	d
+MSGID	memory_manager.h	37;"	d
+MSGID	top.cpp	/^  const char* const MSGID="\/Doulos\/Example\/Platform";$/;"	m	namespace:__anon7	file:
+Memory_manager	memory_manager.h	/^Memory_manager<T>::Memory_manager( void )$/;"	f	class:Memory_manager
+Memory_manager	memory_manager.h	/^struct Memory_manager: public tlm::tlm_mm_interface$/;"	s
+Memory_module	memory.cpp	/^Memory_module::Memory_module \/\/ Constructor$/;"	f	class:Memory_module
+Memory_module	memory.h	/^struct Memory_module: sc_core::sc_module$/;"	s
+NOT_YET_IMPLEMENTED	report.h	55;"	d
+RC	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+RCSID	top.cpp	/^  const char* const RCSID="$Id$";$/;"	m	namespace:__anon7	file:
+REPORT	report.h	37;"	d
+REPORT_H	report.h	32;"	d
+RO	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+RS	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+RW	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+SC_ALWAYS	report.h	44;"	d
+SC_INCLUDE_DYNAMIC_PROCESSES	bus.h	15;"	d
+SC_INCLUDE_DYNAMIC_PROCESSES	cpu.h	15;"	d
+SC_INCLUDE_DYNAMIC_PROCESSES	dma.h	15;"	d
+SC_INCLUDE_DYNAMIC_PROCESSES	memory.h	15;"	d
+Style	common.h	/^enum class Style { DEFAULT, LT, AT };$/;"	c
+TODO	report.h	54;"	d
+TOP_H	top.h	2;"	d
+Top_module	top.cpp	/^Top_module::Top_module(sc_module_name instance_name)$/;"	f	class:Top_module
+Top_module	top.h	/^struct Top_module$/;"	s
+UTIL_H	util.h	13;"	d
+W0C	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+W0S	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+W0T	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+W1C	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+W1S	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+W1T	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+WALLCLOCK_H	wallclock.h	2;"	d
+WO	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+allocate	memory_manager.h	/^T* Memory_manager<T>::allocate()$/;"	f	class:Memory_manager
+allocate_acquire	memory_manager.h	/^T* Memory_manager<T>::allocate_acquire( void )$/;"	f	class:Memory_manager
+b_transport	bus.cpp	/^Bus_module::b_transport( int id, tlm_generic_payload& trans, sc_time& delay )$/;"	f	class:Bus_module
+b_transport	memory.cpp	/^Memory_module::b_transport$/;"	f	class:Memory_module
+check_transaction	cpu.cpp	/^void Cpu_module::check_transaction( tlm::tlm_generic_payload& trans )$/;"	f	class:Cpu_module
+clone	config_extn.cpp	/^Config_extn::clone()$/;"	f	class:Config_extn
+clone	dmi_extn.cpp	/^Dmi_extn::clone()$/;"	f	class:Dmi_extn
+copy_from	config_extn.cpp	/^Config_extn::copy_from(tlm_extension_base const& ext)$/;"	f	class:Config_extn
+copy_from	dmi_extn.cpp	/^Dmi_extn::copy_from(tlm_extension_base const& ext)$/;"	f	class:Dmi_extn
+cpu	top.h	/^  Cpu_module*    cpu;$/;"	m	struct:Top_module
+cpu_thread	cpu.cpp	/^Cpu_module::cpu_thread( void )$/;"	f	class:Cpu_module
+decompose	bus.cpp	/^Bus_module::decompose( uint64_t address, uint64_t& masked_address )$/;"	f	class:Bus_module
+dma_thread	dma.cpp	/^Dma_module::dma_thread( void )$/;"	f	class:Dma_module
+elaboration_time	main.cpp	/^  double elaboration_time=-1.0, starting_time=-1.0, finished_time=-1.0;$/;"	m	namespace:__anon4	file:
+empties	memory_manager.h	/^  Access_t* empties;$/;"	m	struct:Memory_manager
+execute_transaction	memory.cpp	/^void Memory_module::execute_transaction( Memory_module::tlm_payload_t& trans )$/;"	f	class:Memory_module
+execute_transaction_process	memory.cpp	/^Memory_module::execute_transaction_process( void )$/;"	f	class:Memory_module
+finished_time	main.cpp	/^  double elaboration_time=-1.0, starting_time=-1.0, finished_time=-1.0;$/;"	m	namespace:__anon4	file:
+free	config_extn.cpp	/^Config_extn::free(void)$/;"	f	class:Config_extn
+free	dmi_extn.cpp	/^Dmi_extn::free(void)$/;"	f	class:Dmi_extn
+free	memory_manager.h	/^void Memory_manager<T>::free(T* trans)$/;"	f	class:Memory_manager
+free_list	memory_manager.h	/^  Access_t* free_list;$/;"	m	struct:Memory_manager
+get_cpu_time	wallclock.cpp	/^double get_cpu_time(){$/;"	f
+get_direct_mem_ptr	bus.cpp	/^Bus_module::get_direct_mem_ptr( int id, tlm_generic_payload& trans,$/;"	f	class:Bus_module
+get_direct_mem_ptr	memory.cpp	/^Memory_module::get_direct_mem_ptr$/;"	f	class:Memory_module
+get_wall_time	wallclock.cpp	/^double get_wall_time(){$/;"	f
+init_peq_cb	cpu.cpp	/^Cpu_module::init_peq_cb$/;"	f	class:Cpu_module
+init_peq_cb	dma.cpp	/^Dma_module::init_peq_cb$/;"	f	class:Dma_module
+init_socket	bus.h	/^  tlm_utils::multi_passthrough_initiator_socket<Bus_module> init_socket;$/;"	m	struct:Bus_module
+init_socket	dma.h	/^  tlm_utils::simple_initiator_socket<Dma_module> init_socket;$/;"	m	struct:Dma_module
+invalidate_direct_mem_ptr	bus.cpp	/^Bus_module::invalidate_direct_mem_ptr( int id, uint64 start_range,$/;"	f	class:Bus_module
+invalidate_direct_mem_ptr	cpu.cpp	/^Cpu_module::invalidate_direct_mem_ptr$/;"	f	class:Cpu_module
+invalidate_direct_mem_ptr	dma.cpp	/^Dma_module::invalidate_direct_mem_ptr$/;"	f	class:Dma_module
+m_access	memory.h	/^  Access  m_access;        \/\/ Default RW, optional RO$/;"	m	struct:Memory_module
+m_addr_latency	memory.h	/^  sc_time m_addr_latency;  \/\/ time to receive address\/control$/;"	m	struct:Memory_module
+m_alignment	memory.h	/^  size_t  m_alignment;     \/\/ required minimum alignment$/;"	m	struct:Memory_module
+m_base_address	memory.h	/^  size_t  m_base_address;$/;"	m	struct:Memory_module
+m_byte_enables	memory.h	/^  Feature m_byte_enables;$/;"	m	struct:Memory_module
+m_coding_style	cpu.h	/^  Style                        m_coding_style;$/;"	m	struct:Cpu_module
+m_count	memory_manager.h	/^  int     m_count;$/;"	m	struct:Memory_manager
+m_dmi_allowed	memory.h	/^  Feature m_dmi_allowed;$/;"	m	struct:Memory_module
+m_dmi_granted	memory.h	/^  bool                 m_dmi_granted;$/;"	m	struct:Memory_module
+m_end_req_pending	memory.h	/^  tlm_payload_t*       m_end_req_pending;$/;"	m	struct:Memory_module
+m_end_request_event	cpu.h	/^  sc_event                     m_end_request_event;$/;"	m	struct:Cpu_module
+m_init_peq	cpu.h	/^  tlm_peq_t                    m_init_peq;$/;"	m	struct:Cpu_module
+m_max_burst	memory.h	/^  size_t  m_max_burst;     \/\/ maximum number of bytes per burst (0 => infinite for LT)$/;"	m	struct:Memory_module
+m_mem	memory.h	/^  std::vector<uint8_t> m_mem;$/;"	m	struct:Memory_module
+m_memory_depth	memory.h	/^  size_t  m_memory_depth;$/;"	m	struct:Memory_module
+m_mm	cpu.h	/^  Memory_manager<>             m_mm; \/\/ for managing generic payload$/;"	m	struct:Cpu_module
+m_next_response_pending	memory.h	/^  tlm_payload_t*       m_next_response_pending;$/;"	m	struct:Memory_module
+m_qk	cpu.h	/^  tlm_utils::tlm_quantumkeeper m_qk;$/;"	m	struct:Cpu_module
+m_read_latency	memory.h	/^  sc_time m_read_latency;  \/\/ time per bus beat to respond with data$/;"	m	struct:Memory_module
+m_request_in_progress	cpu.h	/^  tlm_payload_t*               m_request_in_progress;$/;"	m	struct:Cpu_module
+m_response_in_progress	memory.h	/^  bool                 m_response_in_progress;$/;"	m	struct:Memory_module
+m_targ_peq	memory.h	/^  tlm_peq_t            m_targ_peq;$/;"	m	struct:Memory_module
+m_transport_done_event	cpu.h	/^  sc_event                     m_transport_done_event;$/;"	m	struct:Cpu_module
+m_used	memory.h	/^  std::vector<bool>    m_used;$/;"	m	struct:Memory_module
+m_write_latency	memory.h	/^  sc_time m_write_latency; \/\/ time per bus beat to write data$/;"	m	struct:Memory_module
+main	wallclock.cpp	/^int main(){$/;"	f
+mout	main.cpp	/^std::ostringstream mout;$/;"	v
+ms	common.h	9;"	d
+nb_transport_bw	bus.cpp	/^Bus_module::nb_transport_bw( int id, tlm_generic_payload& trans,$/;"	f	class:Bus_module
+nb_transport_bw	cpu.cpp	/^Cpu_module::nb_transport_bw$/;"	f	class:Cpu_module
+nb_transport_bw	dma.cpp	/^Dma_module::nb_transport_bw$/;"	f	class:Dma_module
+nb_transport_fw	bus.cpp	/^Bus_module::nb_transport_fw( int id, tlm_generic_payload& trans,$/;"	f	class:Bus_module
+nb_transport_fw	memory.cpp	/^Memory_module::nb_transport_fw$/;"	f	class:Memory_module
+next	memory_manager.h	/^    Access_t* next;$/;"	m	struct:Memory_manager::Access_t
+none	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
+none	common.h	/^enum class Feature { none, enabled };$/;"	m	class:Feature
+ns	common.h	7;"	d
+operator <<	util.h	/^std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec )$/;"	f
+payload_is_ok	memory.cpp	/^bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, unsigned int len )$/;"	f	class:Memory_module
+prev	memory_manager.h	/^    Access_t* prev;$/;"	m	struct:Memory_manager::Access_t
+ram	top.h	/^  Memory_module* ram;$/;"	m	struct:Top_module
+rand_ps	util.cpp	/^sc_time rand_ps( double mean, double stddev )$/;"	f
+read	cpu.h	/^  virtual void read     ( uint64_t address, unsigned char* data, int32_t length )$/;"	f	struct:Cpu_module
+read	cpu.h	/^  void read     ( uint64_t address, std::vector<T> data )$/;"	f	struct:Cpu_module
+read16	cpu.h	/^  virtual void read16   ( uint64_t address, uint16_t& data )$/;"	f	struct:Cpu_module
+read32	cpu.h	/^  virtual void read32   ( uint64_t address, uint32_t& data )$/;"	f	struct:Cpu_module
+read8	cpu.h	/^  virtual void read8    ( uint64_t address, uint8_t&  data )$/;"	f	struct:Cpu_module
+rom	top.h	/^  Memory_module* rom;$/;"	m	struct:Top_module
+sc_main	main.cpp	/^int sc_main(int argc, char *argv[])$/;"	f
+send_end_req	memory.cpp	/^Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )$/;"	f	class:Memory_module
+send_response	memory.cpp	/^Memory_module::send_response( Memory_module::tlm_payload_t& trans )$/;"	f	class:Memory_module
+starting_time	main.cpp	/^  double elaboration_time=-1.0, starting_time=-1.0, finished_time=-1.0;$/;"	m	namespace:__anon4	file:
+summary	main.cpp	/^  int summary(void)$/;"	f	namespace:__anon5
+targ_peq_cb	memory.cpp	/^Memory_module::targ_peq_cb$/;"	f	class:Memory_module
+targ_socket	bus.h	/^  tlm_utils::multi_passthrough_target_socket<Bus_module>    targ_socket;$/;"	m	struct:Bus_module
+targ_socket	dma.h	/^  tlm_utils::simple_target_socket<Dma_module>    targ_socket;$/;"	m	struct:Dma_module
+target_done_event	memory.h	/^  sc_event             target_done_event;$/;"	m	struct:Memory_module
+trans	memory_manager.h	/^    T* trans;$/;"	m	struct:Memory_manager::Access_t
+transaction_in_progress	memory.h	/^  tlm_payload_t*       transaction_in_progress;$/;"	m	struct:Memory_module
+transport	cpu.cpp	/^Cpu_module::transport$/;"	f	class:Cpu_module
+transport	dma.cpp	/^Dma_module::transport$/;"	f	class:Dma_module
+transport	memory.cpp	/^Memory_module::transport$/;"	f	class:Memory_module
+transport_dbg	bus.cpp	/^Bus_module::transport_dbg( int id, tlm_generic_payload& trans )$/;"	f	class:Bus_module
+transport_dbg	memory.cpp	/^Memory_module::transport_dbg$/;"	f	class:Memory_module
+us	common.h	8;"	d
+write	cpu.h	/^  virtual void write    ( uint64_t address, unsigned char* data, int32_t length )$/;"	f	struct:Cpu_module
+write	cpu.h	/^  void write    ( uint64_t address, std::vector<T> data )$/;"	f	struct:Cpu_module
+write16	cpu.h	/^  virtual void write16  ( uint64_t address, uint16_t data )$/;"	f	struct:Cpu_module
+write32	cpu.h	/^  virtual void write32  ( uint64_t address, uint32_t data )$/;"	f	struct:Cpu_module
+write32	dma.h	/^  virtual void write32  ( uint64_t address, uint32_t data )$/;"	f	struct:Dma_module
+write8	cpu.h	/^  virtual void write8   ( uint64_t address, uint8_t  data )$/;"	f	struct:Cpu_module
+~Bus_module	bus.cpp	/^Bus_module::~Bus_module( void )$/;"	f	class:Bus_module
+~Cpu_module	cpu.h	/^  ~Cpu_module( void ){}$/;"	f	struct:Cpu_module
+~Dma_module	dma.cpp	/^Dma_module::~Dma_module( void )$/;"	f	class:Dma_module
+~Memory_manager	memory_manager.h	/^Memory_manager<T>::~Memory_manager( void )$/;"	f	class:Memory_manager
+~Memory_module	memory.cpp	/^Memory_module::~Memory_module( void )$/;"	f	class:Memory_module
+~Top_module	top.cpp	/^Top_module::~Top_module(void) {$/;"	f	class:Top_module

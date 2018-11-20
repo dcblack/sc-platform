@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+#
+# $Info: Eliminate blank lines around SC_REPORT_INFO output.$
+
+require v5.6;
+use strict;
+use English;
+use FileHandle;
+use Cwd;
+STDOUT->autoflush(1);
+STDERR->autoflush(1);
+
+my $prev="";
+while(<>) {
+  if (!m/^$/) {
+    if (not ($prev =~ m/^$/ and $_ =~ m/^Info:/)) {
+      print $prev;
+    }
+    $prev = $_;
+  } else {
+    print $prev;
+    $prev = $_ if $. > 1;
+  }
+}
+print if $prev ne "";

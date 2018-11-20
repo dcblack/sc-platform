@@ -1,0 +1,465 @@
+#!/opt/local/bin/perl
+eval 'exec perl -S $0 ${1+"$@"}' # vim600:sw=2:tw=0:fdm=marker
+  if 0;#$running_under_some_shell;
+
+# @(#)$Info: table - Creates tabular output. $
+#
+# @(#)$Copyright: 2001,2007 All rights reserved. $
+# @(#)$Email: <dcblack@hldwizard.com>. $
+require 5.0;
+use English;
+use FindBin qw($RealBin $RealScript);
+use vars qw($exe);
+use lib "$ENV{HLDW}/lib";
+use HLDW qw(%OPT &Version);
+#use strict;
+
+###############################################################################
+$exe = "$RealBin/$RealScript";
+exec "perldoc $exe" if "@ARGV" =~ m/^--?help$/;
+# Initialization <<<
+#------------------------------------------------------------------------------
+our $auth = 'David C Black <dcblack@hldwizard.com>';
+our ($tool,$revn,$TOOL,$Tool) = &Version('@(#)$Id: table 1167 2011-04-22 08:15:47Z dcblack $');
+
+our $ISEP = qr{\s+};
+our $SEP  = ' ';
+our $TAIL = ' ';
+our $HEAD = '';
+our $FILL = ' ';
+our %OPT;
+our (@W, @T, @A);
+
+#--------------------------------------------------------------------------->>>
+# Process command line arguments <<<
+#------------------------------------------------------------------------------
+ARGV: {
+   my @HOLD;
+   @ORIG = @ARGV;
+   while (@ARGV) {
+      $arg = shift(@ARGV);
+      if ($arg eq '-debug') {
+        $OPT{-debug} = 1;
+      } elsif ($arg eq '-v') {
+        $OPT{-v} = $arg;
+      } elsif ($arg eq '-squeeze') {
+        $OPT{-squeeze} = $arg;
+      } elsif ($arg eq '-90') {
+        $OPT{-90} = $arg;
+      } elsif ($arg =~ m{^-(\d+)$}) {
+        $OPT{-maxcols} = $1;
+      } elsif ($arg =~ m{^-lpr=([1-9]\d*)$}) {
+        $OPT{-lines_per_row} = $1;
+      } elsif ($arg eq '-sort') {
+        $OPT{-sort} = $arg;
+      } elsif ($arg =~ m/^-h(\d+)/) {
+        $OPT{-hdr} = $1;
+      } elsif ($arg eq '-notrim') {
+        $OPT{-trim} = 0;
+      } elsif ($arg eq '-trim') {
+        $OPT{-trim} = 1;
+      } elsif ($arg eq '-ignore') {
+        push @OPT_ignore,shift;
+      } elsif ($arg eq '-only') {
+        push @OPT_only,shift;
+      } elsif ($arg =~ m/^-i/) {
+        $ISEP = qr{\s*[|]\s*};
+        next if $' eq '';
+        $ISEP = qr{$'};
+      } elsif ($arg eq '-qq') {
+        $OPT{-quot} = q{"};
+      } elsif ($arg =~ m/^-w(\d+)/) {
+        $MAXINPUT = $1;
+      } elsif ($arg eq '-fill') {
+        $FILL = shift(@ARGV);
+      } elsif ($arg =~ m'-s(\d+)') {
+        $SEP = ' ' x $1;
+      } elsif ($arg eq '-md') {
+        $OPT{-md} = 1;
+        $ISEP = qr{\s*[|]\s*};
+        $SEP  = ' | ';
+        $TAIL = ' |';
+        $HEAD = '| ';
+        $OPT{-trim} = 0;
+      } elsif ($arg eq '-sep') {
+        $SEP = shift(@ARGV);
+      } elsif ($arg eq '-head') {
+        $HEAD = shift(@ARGV);
+      } elsif ($arg eq '-tail') {
+        $TAIL = shift(@ARGV);
+        $OPT{-trim} = 0;
+      } elsif ($arg =~ m/^-/) {
+        print STDERR "WARNING: Unkown option $arg - ignoring\n";
+        #$errors++;
+      } else {
+        push @HOLD,$arg;
+      }#endif
+   }#endwhile
+   @ARGV = @HOLD;
+}
+
+push @ARGV,'-' unless @ARGV;
+
+#--------------------------------------------------------------------------->>>
+# Process each file #<<<
+#------------------------------------------------------------------------------
+for $filename (@ARGV) {
+  open INFILE,"<$filename" or die "ERROR: Unable to read $filename!?\n";
+  @ILINES = <INFILE>;
+  chomp @ILINES;
+  chomp @ILINES;
+  close INFILE;
+  if ($OPT{-md}) {
+    # Remove outer bars
+    foreach my $line (@ILINES) {
+      $line =~ s{^[|]\s*}{};
+      $line =~ s{\s*[|]$}{};
+    }
+    # Search for header separation
+    for(my $i=0; $i<$#ILINES; ++$i) {
+      if( $ILINES[$i] =~ m{^[-:|[:space:]]{4,}$} ) {
+        $OPT{-rule} = $i;
+        #printf(STDERR "Found rule\n") if exists $OPT{-debug};
+        last;
+      }
+    }
+  }
+  if ($OPT{-lines_per_row} > 1) {
+    my $lpr = $OPT{-lines_per_row};
+    my ($t,@t);
+    $t='';
+    $i=$lpr;
+    for my $line (@ILINES) {
+      $t .= $line . $SEP;
+      next if --$i;
+      chop($t);
+      push @t,$t;
+      $t='';
+      $i=$lpr;
+    }#endwhile
+    @ILINES = @t;
+  }#endif
+  if ($OPT{-squeeze} or $OPT{-90} or $OPT{-sort}) { # MANIPULATE
+    my @ALL = ();
+    my $MAXLINE = 79;
+    my $MAXCOLS = 79;
+    my $lw = 0;
+    my $sw = length $SEP;
+    my @CW;
+    my $col = 0;
+    for my $line (@ILINES) {
+      $indent = $& if  $ident eq '' and $line =~ s/^\s+//;
+      $line =~ s/\s+$//; # Remove trailing whitespace
+      my @F = split(m{$ISEP},$line);
+      for my $field (@F) {
+        my $fw = length $field;
+        my $cw = $fw;
+        $fw += $sw if $lw;
+        if (($lw + $fw) > $MAXLINE) {
+          $MAXCOLS = $col if $MAXCOLS > $col;
+          $lw = $cw;
+          $col = 0;
+        } else {
+          $lw += $fw;
+          $col++;
+        }#endif
+        $CW[$col] = $fw if $CW[$col] < $fw;
+      }#endfor
+      push @ALL,@F;
+    }#endfor
+    # Adjust for mismatched columns
+    $MAXCOLS = 0;
+    $lw = 0;
+    for $cw (@CW) {
+      $lw += $sw if $lw;
+      $lw += $cw;
+      $MAXCOLS++ unless $lw > $MAXLINE;
+    }#endfor
+    printf "INFO: Max columns: %d\n", $MAXCOLS if $OPT{-v};
+    # Modifications
+    @ALL = sort @ALL if $OPT{-sort};
+    if ($OPT{-90}) {
+      my @ROT = ();
+      my $total = scalar @ALL;
+      my $MAXROWS = ($MAXCOLS-1+$total)/$MAXCOLS;
+      for my $row (0..$MAXROWS-1) {
+        for my $col (0..$MAXCOLS-1) {
+          my $pos = $row+$col*$MAXROWS;
+          push @ROT,$ALL[$pos];
+        }#endfor
+      }#endfor
+      @ALL = @ROT;
+    }#endif
+    # Reformat
+    @ILINES = ();
+    while (@ALL) {
+      push @ILINES,join(' ',splice(@ALL,0,$MAXCOLS,()));
+    }#endfor
+  }#endif MANIPULATE
+  $indent = '';
+  @OLINES = @W = @T = @A = ();
+  &tablescan(@ILINES);
+  for my $line (@ILINES) {
+    $indent = $&
+      if $ident eq ''
+      and not &Ignore($line)
+      and $line =~ s/^\s+//;
+    $line =~ s/\s+$//; # Remove trailing whitespace
+    push @OLINES,$line;
+  }#endfor
+  printf "%s%s\n",$indent,join("\n$indent",&fmt_table(@OLINES));
+}#endfor $filename
+
+exit 0;
+
+############################################################################>>>
+sub Ignore {
+  my $line = shift;
+  return 1 if grep($line =~ m/$_/,@OPT_ignore);
+  return 0 unless @OPT_only;
+  return 1 unless grep($line =~ m/$_/,@OPT_only);
+  return 0;
+}
+
+############################################################################>>>
+sub Split { #<<<
+  my $line = shift @_;
+  if (exists $OPT{-quot}) {
+    my $q = '';
+    for my $c (split('',$line)) {
+      if ($c ne '') {
+        if ($c eq $q) {
+          $q = '';
+        } elsif ($c eq ' ') {
+          $c = chr(021);
+        } elsif ($c eq "\t") {
+          $c = chr(022);
+        }#endif
+      } elsif ($c eq q{"}) {
+        $q = $c;
+      }#endif
+    }#endfor
+  }#endif
+  my @F = split($ISEP,$line);
+  for my $f (@F) {
+    $f =~ s/\021/ /g;
+    $f =~ s/\022/\t/g;
+  }#endfor
+  if ($MAXINPUT and scalar @F > $MAXINPUT) {
+    my $f = join(' ',@F[$MAXINPUT..$#F]);
+    splice @F,$MAXINPUT,$#F,$f;
+  }#endif
+  return @F;
+}#endsub Split
+
+############################################################################>>>
+sub tablescan { #<<<
+  my ($line,@F,$f,$i);
+  my $n = 0;
+  LINE: foreach $line (@_) {
+    ++$n;
+    next LINE if &Ignore($line);
+    @F = &Split($line);
+    foreach $i (0..$#F) {
+      $W[$i] = length $F[$i] if $W[$i] < length $F[$i];
+      $T[$i] = ($F[$i] =~ m{^-?\d} or $F[$i] =~ m{:$}) ? 'd' : 's' unless $T[$i] eq 'd';
+      # Consider alignment
+      if(    $F[$i] =~ m{:-+:} ) { $A[$i] = 'C'; }
+      elsif( $F[$i] =~ m{-+:}  ) { $A[$i] = 'R'; }
+      elsif( $F[$i] =~ m{:-+}  ) { $A[$i] = 'L'; }
+      elsif( (not defined $A[$i]) and ($T[$i] eq 'd') ) { $A[$i] = 'r'; }
+      elsif( ($A[$i] =~ m{[lr]}) and ($T[$i] eq 'd') ) { $A[$i] = 'r'; }
+      elsif( not defined($A[$i]) ) { $A[$i] = 'l'; }
+      #printf("DEBUG: %2d-%d: W=%3d T=%s A=%s Field '%s'\n",$n,$i,$W[$i],$T[$i],$A[$i],$F[$i]) if exists $OPT{-debug};
+    }#endforeach
+  }#endforeach
+}#endsub tablescan
+
+############################################################################>>>
+sub fmt_field { #<<<
+  my ($sep,$filler,$typ,$wid,$val) = @_;
+  my $space = $wid - length $val;
+  if ($space <= 0) {
+    $val = substr($val,0,$wid);
+  } elsif ($typ eq 'd') {
+    $val = ($filler x $space).$val;
+  } else {
+    $val .= ($filler x $space);
+  }#endif
+  return $sep.$val;
+}#endsub fmt_field
+
+############################################################################>>>
+sub fmt_line { #<<<
+  my ($line) = @_;
+  my @F = &Split($line);
+  if( $line =~ m{^[-:|[:space:]]+$} ) {
+    foreach $i (0..$#A) {
+      next unless length $F[$i] > 0;
+      my $fill = $W[$i] - length $F[$i];
+      substr($F[$i],1,0) = '-' x $fill;
+    }
+  }
+  foreach $i (0..$#A) {
+    next unless $A[$i] eq 'C';
+    my $fill = int(($W[$i] - length $F[$i])/2);
+    next unless $fill > 0;
+    #printf("DEBUG: Centering\n") if exists $OPT{-debug};
+    substr($F[$i],0,0) = $FILL x $fill;
+  }
+  return @F;
+}#endsub fmt_line
+
+############################################################################>>>
+sub fmt_table { #<<<
+  my ($hdr) = shift @_;
+  my ($line,$i,$rfmt);
+  $rfmt = $HEAD;
+  foreach $i (0..$#T) {
+    $rfmt .= $SEP if $i > 0;
+    $rfmt .= '%'.(($A[$i] =~ m{[rR]})?'':'-').$W[$i].'.'.$W[$i].'s';
+  }#endforeach
+  $hdr = sprintf($rfmt,&fmt_line($hdr));
+  if( $OPT{-trim} ) {
+    $hdr =~ s/\s+$//;
+  } else {
+    $hdr .= $TAIL;
+  }#endif
+  foreach $line (@_) {
+    unless (&Ignore($line)) {
+      $line = sprintf($rfmt,&fmt_line($line))
+    }#endunless
+    if( $OPT{-trim} ) {
+      $line =~ s/\s+$//;
+    } else {
+      $line .= $TAIL;
+    }
+  }#endforeach
+  if( $OPT{-md} and not exists $OPT{-rule}) {
+    my @R;
+    foreach $i (0..$#T) {
+      my $r = '-' x ($W[$i] - 1);
+      if( $T[$i] eq 'd' ) {
+        push @R,qq{$r:};
+      } else {
+        push @R,qq{:$r};
+      }
+    }#endfor
+    my $rule = sprintf($rfmt,@R);
+    if( $OPT{-trim} ) {
+      $rule =~ s/\s+$//;
+    } else {
+      $rule .= $TAIL;
+    }
+    return ($rule,$hdr,@_);
+  } else {
+    return ($hdr,@_);
+  }#endif
+}#endsub fmt_table
+
+############################################################################>>>
+__END__
+###############################################################################
+# DOCUMENTATION <<<############################################################
+###############################################################################
+=pod
+
+=head1 NAME
+
+B<table> - format a text table
+
+=head1 SYNOPSIS
+
+B<table> [B<-w>I<MAX_FIELDS>]  I<FILE(S)...>
+
+=head1 DESCRIPTION
+
+VERBOSE DESCRIPTION
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>
+
+Help (this text).
+
+=item B<-v>
+
+Verbose mode.
+
+=item B<-w>I<MAX_FIELDS>
+
+Specify the maximum number of columns to work with as input.
+
+=item B<-notrim>
+
+Keep trailing whitespaces.
+
+=item B<-trim>
+
+Trim trailing whitespaces.
+
+=item B<-ignore> I<PATTERN>
+
+Ignore lines matching I<PATTERN>. May be specified multiple times.
+
+=item B<-sort>
+
+Sort table.
+
+=item B<-qq>
+
+Treat double-quoted strings as a unit. For example "John Doe" <john@acme.com> is two words.
+=item B<-squeeze>
+
+Squeeze table to minimum size.
+
+=item B<-fill> I<STR>
+
+Character string to fill.
+
+=item B<-h>I<N>
+
+Number of header separators between columns.
+
+=item B<-i>I<SEP>
+
+Specify the input separator. Default whitespace.
+
+=item B<-s>I<N>
+
+Number of separators between columns.
+
+=item B<-sep> I<STR>
+
+Separator string used between columns.
+
+=item B<-tail> I<str>
+
+=back
+
+=head1 EXAMPLES
+
+TBS
+
+=head1 AUTHOR
+
+David C. Black <dcblack@hldwizard.com>
+
+=cut
+
+###############################################################################
+## END DOCUMENTATION ##########################################################
+############################################################################>>>
+
+this is_a really_quite
+simple 3 column
+table for testing
+
+| Col0            | Col1  |       Col2       |       Col3 |  Col4 |
+| --------------- | :---- | :--------------: | ---------: | ----- |
+| Whats going on? | This  |   is a simple    |   markdown | 100.4 |
+| x               | table | used for testing | formatting |    32 |
+
+The end

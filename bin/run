@@ -1,0 +1,34 @@
+#!/bin/bash
+
+GDBP=
+OPTS=
+while [[ "$1" =~ -* ]]; do
+  if [[ "$1" == "-d" ]]; then OPTS="$OPTS -debug -error-at-target"; fi
+  if [[ "$1" == "-gdb" ]]; then GDBP=gdb; fi
+  shift
+done
+
+BDIR="."
+if [[ -r build ]]; then
+  BDIR=".."
+  cd build
+fi
+
+printf "|\n|\n|\n"
+clear;
+ruler '*'
+rm -f $BDIR/run.log
+if [[ -r $BDIR/CMakeLists.txt ]]; then cmake $BDIR; fi
+echo "make $@$OPTS 2>&1 | tee $BDIR/make.log"
+make "$@""$OPTS" 2>&1 | tee -a $BDIR/make.log
+
+env DEBUG=1\
+    LD_LIBRARY_PATH=$SYSTEMC/lib \
+    DYLD_LIBRARY_PATH=$SYSTEMC/lib \
+  $GDBP ./"$1" --$OPTS $(ARGS) 2>&1 \
+  | tee run.log
+
+if [[ "$BDIR" != "." ]]; then
+  filter-sclog <run.log >$BDIR/run.log;
+fi
+# The end

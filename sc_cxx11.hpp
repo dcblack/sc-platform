@@ -10,8 +10,8 @@
 
 inline sc_core::sc_time operator "" _day (long double val)        { return sc_core::sc_time( val        , sc_core::SC_SEC )*3600*24; }
 inline sc_core::sc_time operator "" _day (unsigned long long val) { return sc_core::sc_time( double(val), sc_core::SC_SEC )*3600*24; }
-inline sc_core::sc_time operator "" _hr  (unsigned long long val) { return sc_core::sc_time( double(val), sc_core::SC_SEC )*3600;    }
 inline sc_core::sc_time operator "" _hr  (long double val)        { return sc_core::sc_time( val        , sc_core::SC_SEC )*3600;    }
+inline sc_core::sc_time operator "" _hr  (unsigned long long val) { return sc_core::sc_time( double(val), sc_core::SC_SEC )*3600;    }
 inline sc_core::sc_time operator "" _min (long double val)        { return sc_core::sc_time( val        , sc_core::SC_SEC )*60;      }
 inline sc_core::sc_time operator "" _min (unsigned long long val) { return sc_core::sc_time( double(val), sc_core::SC_SEC )*60;      }
 inline sc_core::sc_time operator "" _sec (long double val)        { return sc_core::sc_time( val        , sc_core::SC_SEC );         }

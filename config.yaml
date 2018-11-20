@@ -1,0 +1,21 @@
+---
+top.rom:
+  - start:  0
+    depth:  1m
+    access: rw
+    dmi:    enabled
+    read_latency: 4c
+top.ram:
+  - start:  500m
+    depth:  64k
+    access: rw
+    read_latency:  2c
+    write_latency: 2c
+top.ddr:
+  - start:  500m
+    depth:  64k
+    access: rw
+    dmi:    enabled
+    read_latency:  1c
+    write_latency: 1c
+

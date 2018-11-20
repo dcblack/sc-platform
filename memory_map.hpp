@@ -10,7 +10,7 @@ enum Memory_map : uint64_t
 , ROM_BASE = 0x0000'0000ull, ROM_DEPTH =  16*MB , ROM_PORT =  0 // NTH 
 , RAM_BASE = 0x1000'0000ull, RAM_DEPTH = 512*KB , RAM_PORT =  1 // NTH 
 , DDR_BASE = 0x2000'0000ull, DDR_DEPTH =   1*GB , DDR_PORT = NA // NTH 
-, TMR_BASE = 0x4000'0000ull, TMR_DEPTH =     32 , TMR_PORT = NA // sth 
+, TMR_BASE = 0x4000'0000ull,                      TMR_PORT =  2 // sth 
 , GIO_BASE = 0x4000'1000ull, GIO_DEPTH =     32 , GIO_PORT = NA // sth 
 , CON_BASE = 0x4000'2000ull, CON_DEPTH =     32 , CON_PORT = NA // sth 
 , PIC_BASE = 0x4000'3000ull, PIC_DEPTH =   1*KB , PIC_PORT = NA // sth 

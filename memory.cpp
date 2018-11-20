@@ -1,19 +1,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  #     # ##### #     #  ####  #####  #     #        #     # ####   #           
-//  ##   ## #     ##   ## #    # #    #  #   #         ##   ## #   #  #           
-//  # # # # #     # # # # #    # #    #   # #          # # # # #    # #           
-//  #  #  # ##### #  #  # #    # #####     #           #  #  # #    # #           
-//  #     # #     #     # #    # #  #      #           #     # #    # #           
-//  #     # #     #     # #    # #   #     #           #     # #   #  #           
-//  #     # ##### #     #  ####  #    #    #    ###### #     # ####   #####       
+//  #     # ##### #     #  ####  #####  #     #        #     # ####   #
+//  ##   ## #     ##   ## #    # #    #  #   #         ##   ## #   #  #
+//  # # # # #     # # # # #    # #    #   # #          # # # # #    # #
+//  #  #  # ##### #  #  # #    # #####     #           #  #  # #    # #
+//  #     # #     #     # #    # #  #      #           #     # #    # #
+//  #     # #     #     # #    # #   #     #           #     # #   #  #
+//  #     # ##### #     #  ####  #    #    #    ###### #     # ####   #####
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "memory.hpp"
 #include "report.hpp"
-#include "util.hpp"
 #include "config_extn.hpp"
 #include <algorithm>
+#include <random>
 namespace {
   const char* MSGID{"/Doulos/Example/TLM-Memory"};
 }
@@ -27,7 +27,7 @@ Memory_module::Memory_module // Constructor
 ( sc_module_name instance_name
 , Depth_t        target_depth
 , Addr_t         target_start
-, Access         access    
+, Access         access
 , size_t         max_burst
 , size_t         alignment
 , Feature        dmi_allowed
@@ -36,8 +36,7 @@ Memory_module::Memory_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: targ_socket               { "targ_socket"   } 
-, m_target_depth            { target_depth    }
+: m_target_depth            { target_depth    }
 //m_target_start not needed
 , m_dmi_allowed             { dmi_allowed     }
 , m_access                  { access          }
@@ -47,14 +46,7 @@ Memory_module::Memory_module // Constructor
 , m_addr_clocks             { addr_clocks     }
 , m_read_clocks             { read_clocks     }
 , m_write_clocks            { write_clocks    }
-, m_dmi_granted             { false           }
-, m_mem_vec                 { 0               }
-, m_used_vec                { 0               }
 , m_targ_peq                { this, &Memory_module::targ_peq_cb }
-, m_transaction_in_progress { nullptr }
-, m_response_in_progress    { false }
-, m_next_response_pending   { nullptr }
-, m_end_req_pending         { nullptr }
 {
   SC_HAS_PROCESS( Memory_module );
   SC_METHOD( execute_transaction_process );
@@ -140,7 +132,7 @@ Memory_module::transport_dbg
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Memory_module::config ( tlm_payload_t& trans)
+bool Memory_module::config( tlm_payload_t& trans )
 {
   Config_extn* extn{trans.get_extension<Config_extn>()};
   if( extn != nullptr ) {
@@ -148,7 +140,7 @@ bool Memory_module::config ( tlm_payload_t& trans)
     if (extn->config.empty()) {
       NOINFO( DEBUG, "Sending config:\n" << m_config );
       extn->config = m_config;
-    } else {                                   
+    } else {
       m_config.update( extn->config );
       // Update local copies
       extn->config.get( "target_depth", m_target_depth );
@@ -215,8 +207,8 @@ Memory_module::get_direct_mem_ptr
   dmi_data.set_dmi_ptr( m_mem_vec.data() );
   dmi_data.set_start_address( 0 );
   dmi_data.set_end_address( m_target_depth - 1 );
-  dmi_data.set_read_latency( m_read_clocks * default_period );
-  dmi_data.set_write_latency( m_write_clocks * default_period );
+  dmi_data.set_read_latency( clk.period( m_read_clocks ) );
+  dmi_data.set_write_latency( clk.period( m_write_clocks ) );
   if( m_access == Access::RO ) {
     dmi_data.allow_read();
   } else {
@@ -286,21 +278,24 @@ Memory_module::targ_peq_cb
 }
 
 //------------------------------------------------------------------------------
-void 
+void
 Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )
 {
   Memory_module::tlm_phase_t bw_phase;
   sc_time delay;
+  // Random number generation
+  static std::default_random_engine generator;
+  std::normal_distribution<double> distribution{ 5.0, 0.0 };
 
   // Queue the acceptance and the response with the appropriate latency
   bw_phase = END_REQ;
-  delay = rand_ps(5); // Accept delay
+  delay = sc_time( distribution( generator ), SC_PS ); // Accept delay
 
   tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
-  delay = delay + rand_ps(5); // Latency
+  delay = delay + sc_time( distribution( generator ), SC_PS ); // Latency
   m_target_done_event.notify( delay );
 
   assert( m_transaction_in_progress == nullptr );
@@ -372,8 +367,8 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
       trans.set_response_status( TLM_ADDRESS_ERROR_RESPONSE );
     }
     return false;
-  } 
-  else if( byt != 0 ) { 
+  }
+  else if( byt != 0 ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Attempt to unsupported use byte enables " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -400,7 +395,7 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
     }
     return false;
   }
-  else if( m_access == Access::RO and cmd == TLM_WRITE_COMMAND ) { // No extended commands
+  else if( m_access == Access::RO and cmd == TLM_WRITE_COMMAND ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Attempt to write read-only device " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -433,18 +428,17 @@ Memory_module::transport
     resize( new_size );
   }
   uint8_t*   mem = m_mem_vec.data();
-  delay += m_addr_clocks * default_period;
+  delay += clk.period( m_addr_clocks );
+  INFO( DEBUG+1, "Transport to address " << HEX << adr << " in " << name() );
   if( trans.is_read() ) {
     // TODO: Add byte enable support
-    INFO( DEBUG, "Reading " << HEX << adr << "..." << (adr+len-1) );
     memcpy( ptr, mem+adr, len );
-    delay += m_read_clocks * default_period * ( ( len+sbw-1 )/sbw );
+    delay += clk.period( m_read_clocks ) * ( ( len+sbw-1 )/sbw );
   }
   else if( trans.is_write() ) {
     // TODO: Add byte enable support
-    INFO( DEBUG, "Writing " << HEX << adr << "..." << (adr+len-1) );
     memcpy( mem+adr, ptr, len );
-    delay += m_write_clocks * default_period * ( ( len+sbw-1 )/sbw );
+    delay += clk.period( m_write_clocks ) * ( ( len+sbw-1 )/sbw );
     if( m_used_vec.size() ) {
       for( auto a=adr; a<( adr+len ); ++a ) {
         m_used_vec[a] = true;
