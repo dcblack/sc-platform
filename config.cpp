@@ -298,11 +298,12 @@ std::ostream& operator<<( std::ostream& os, const Config& rhs )
 //
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef CONFIG_EXAMPLE
+// This serves both as an example and a simple unit test
 #include "config.hpp"
 #include "report.hpp"
+#include "summary.hpp"
 #include <iostream>
 using namespace std;
-std::ostringstream mout;
 // Helper
 //------------------------------------------------------------------------------
 namespace {
@@ -363,6 +364,16 @@ SC_MODULE( Top_module )
   }
 
   //----------------------------------------------------------------------------
+  void start_of_simulation( void ) override {
+    Summary::starting_simulation();
+  }
+
+  //----------------------------------------------------------------------------
+  void end_of_simulation( void ) override {
+    Summary::finished_simulation();
+  }
+
+  //----------------------------------------------------------------------------
   const char* kind() const override {
     return "Top_module";
   }
@@ -377,12 +388,13 @@ int sc_main( int argc, char* argv[] )
     std::string arg(sc_core::sc_argv()[i]);
     if (arg == "-debug") {
       sc_core::sc_report_handler::set_verbosity_level(SC_DEBUG);
-      SC_REPORT_INFO( "/Doulos/example/config", "Verbosity level set to DEBUG" );
+      SC_REPORT_INFO( "/Doulos/Example/config_example", "Verbosity level set to DEBUG" );
     }
   }
+  Summary::starting_elaboration();
   Top_module top( "top" );
   sc_start();
-  return 0;
+  return Summary::report();
 }
 #endif
 
