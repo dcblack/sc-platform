@@ -90,13 +90,13 @@ void Timer_module::end_of_elaboration( void )
 void Timer_module::timer_thread( void )
 {
   sc_event_or_list trigger_events;
-  // Setup events to monitor
-  for ( auto& v : m_timer_vec ) {
-    trigger_events |= v.trigger_event();
-  }
 
   for(;;) {
 
+    // Setup events to monitor
+    for ( auto& v : m_timer_vec ) {
+      trigger_events |= v.trigger_event();
+    }
     wait( trigger_events );
 
     if( intrq_port.size() == 1 ) {
