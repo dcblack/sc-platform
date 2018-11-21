@@ -2,11 +2,22 @@
 
 GDBP=
 OPTS=
-while [[ "$1" =~ -* ]]; do
-  if [[ "$1" == "-d" ]]; then OPTS="$OPTS -debug -error-at-target"; fi
-  if [[ "$1" == "-gdb" ]]; then GDBP=gdb; fi
+while [[ "$1" =~ ^-.* ]]; do
+  if [[ "$1" == "-d" ]]; then
+    OPTS="$OPTS -debug -error-at-target"
+  elif [[ "$1" == "-gdb" ]]; then
+    GDBP=gdb
+    OPTS="$OPTS -debug"
+  fi
   shift
 done
+
+if [[ $# == 0 ]]; then
+  echo "ERROR: Must specify target" 1>&2
+  exit 1
+fi
+
+TARG="$1"
 
 BDIR="."
 if [[ -r build ]]; then
@@ -17,15 +28,19 @@ fi
 printf "|\n|\n|\n"
 clear;
 ruler '*'
+
+header "$TARG"
 rm -f $BDIR/run.log
 if [[ -r $BDIR/CMakeLists.txt ]]; then cmake $BDIR; fi
 echo "make $@$OPTS 2>&1 | tee $BDIR/make.log"
-make "$@""$OPTS" 2>&1 | tee -a $BDIR/make.log
+make "$1" 2>&1 | tee -a $BDIR/make.log
+
+grep -q -s error: $BDIR/make.log && exit 1
 
 env DEBUG=1\
     LD_LIBRARY_PATH=$SYSTEMC/lib \
     DYLD_LIBRARY_PATH=$SYSTEMC/lib \
-  $GDBP ./"$1" --$OPTS $(ARGS) 2>&1 \
+  $GDBP ./"$TARG" --$OPTS $(ARGS) 2>&1 \
   | tee run.log
 
 if [[ "$BDIR" != "." ]]; then
