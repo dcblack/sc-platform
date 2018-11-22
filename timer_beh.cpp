@@ -33,52 +33,53 @@ Timer::~Timer( void )
 //------------------------------------------------------------------------------
 void Timer::start( sc_time delay )
 {
-  INFO( DEBUG, "Starting timer " << name() );
+  INFO( DEBUG, "Starting timer " << name() << " at " << sc_time_stamp() );
   if( m_paused ) {
     resume();
   }
   else {
     m_start_time = curr_time( delay );
+    sc_assert( m_load_delay > SC_ZERO_TIME );
     m_trigger_time = m_start_time + m_load_delay;
     m_trigger_event.notify( m_load_delay + delay );
-    INFO( DEBUG, "Timer " << name() << " started." );
+    INFO( DEBUG, "Timer " << name() << " started at " << sc_time_stamp() );
   }
 }
 
 //------------------------------------------------------------------------------
 void Timer::stop( sc_time delay )
 {
-  INFO( DEBUG, "Stopping timer " << name() );
+  INFO( DEBUG, "Stopping timer " << name() << " at " << sc_time_stamp() );
   // Cancel outstanding event
   m_trigger_event.cancel();
   m_trigger_time = SC_ZERO_TIME;
   // Override pause
   m_paused = false;
   m_resume_delay = SC_ZERO_TIME;
-  INFO( DEBUG, "Timer " << name() << " stopped." );
+  INFO( DEBUG, "Timer " << name() << " stopped at " << sc_time_stamp() );
 }
 
 //------------------------------------------------------------------------------
 void Timer::pause( sc_time delay )
 {
-  INFO( DEBUG, "Pausing timer " << name() );
+  INFO( DEBUG, "Pausing timer " << name() << " at " << sc_time_stamp() );
   m_paused = true;
   m_trigger_event.cancel();
   m_resume_delay = m_trigger_time - curr_time( delay );
-  INFO( DEBUG, "Timer " << name() << " paused." );
+  INFO( DEBUG, "Timer " << name() << " paused at " << sc_time_stamp() );
 }
 
 //------------------------------------------------------------------------------
 void Timer::resume( sc_time delay )
 {
-  INFO( DEBUG, "Resuming timer " << name() );
+  INFO( DEBUG, "Resuming timer " << name() << " at " << sc_time_stamp() );
   sc_assert( m_paused and m_resume_delay != SC_ZERO_TIME );
   m_paused = false;
   m_trigger_time = curr_time( delay ) + m_resume_delay;
   m_start_time = m_trigger_time - m_load_delay;
   m_trigger_event.notify( m_resume_delay + delay );
   m_resume_delay = SC_ZERO_TIME;
-  INFO( DEBUG, "Timer " << name() << " resumed." );
+  INFO( DEBUG, "Timer " << name() << " resumed at " << sc_time_stamp() );
 }
 
 //------------------------------------------------------------------------------
@@ -125,23 +126,29 @@ void Timer::trigger_thread( void )
 {
   for(;;) {
     wait( m_trigger_event );
+    INFO( DEBUG, "Triggered timer " << name() << " at " << sc_time_stamp() );
     sc_assert ( m_trigger_time != SC_ZERO_TIME
          and m_trigger_time == sc_time_stamp()
          and not m_paused );
 
     m_triggered = true;
     if( m_pulse_delay > SC_ZERO_TIME ) {
+      INFO( DEBUG, "Pulse from timer " << name() << " at " << sc_time_stamp() );
       m_pulse_event.notify( m_pulse_delay );
     }
 
     if( m_reload and m_load_delay != SC_ZERO_TIME ) {
+      INFO( DEBUG, "Resetting start of timer " << name() << " at " << sc_time_stamp() );
       m_start_time = sc_time_stamp( );
     }
 
     if( m_continuous ) {
+      INFO( DEBUG, "Reloading timer " << name() << " at " << sc_time_stamp() );
+      sc_assert( m_load_delay > SC_ZERO_TIME );
       m_trigger_time = sc_time_stamp( ) + m_load_delay;
       m_trigger_event.notify( m_load_delay );
     } else {
+      INFO( DEBUG, "Disabling timer " << name() << " at " << sc_time_stamp() );
       m_trigger_time = SC_ZERO_TIME;
     }
   }
