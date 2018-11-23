@@ -1,8 +1,17 @@
 #!/bin/bash
+#
+# $Info: Invoke cmake/make in build directory if present and generate logfile. $
+# $Syntax: build TARGET $
 
+TARGET="platform" # default
 CMAKE_OPTS=""
 MAKE_OPTS=""
-while [[ "$1" =~ -* ]]; do
+
+printf "|\n|\n|\n"
+clear;
+ruler '*'
+
+while [[ "$1" =~ -.* ]]; do
   if [[ "$1" == "-v" ]]; then
     MAKE_OPTS="${MAKE_OPTS} VERBOSE=1"
   shift
@@ -13,15 +22,24 @@ while [[ "$1" =~ -* ]]; do
     break
   fi
 done
-
-printf "|\n|\n|\n"
-clear;
-ruler '*'
-rm -f make.log run.log
-if [[ -r CMakeLists.txt ]]; then
-  echo "cmake ${CMAKE_OPTS}. 2>&1 | tee -a make.log"
-  cmake "${CMAKE_OPTS}" .
+if [[ $# > 0 ]]; then
+  TARGET="$1"
+  shift
+else
+  echo "INFO: Using default target - $TARGET"
 fi
-echo "make $@${MAKE_OPTS} 2>&1 | tee -a make.log"
-make "$@""${MAKE_OPTS}" 2>&1 | tee -a make.log
+BDIR="."
+if [[ -r build ]]; then
+  BDIR=".."
+  echo "cd build"
+  cd build
+fi
+
+rm -f make.log run.log $BDIR/make.log $BDIR/run.log
+if [[ -r CMakeLists.txt ]]; then
+  echo "cmake ${CMAKE_OPTS}$BDIR 2>&1 | tee -a make.log"
+  cmake "${CMAKE_OPTS}" $BDIR
+fi
+echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $BDIR/make.log"
+make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $BDIR/make.log
 # The end
