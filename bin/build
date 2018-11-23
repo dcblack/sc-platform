@@ -1,21 +1,27 @@
 #!/bin/bash
 
-OPTS=""
-if [[ "$1" == "-v" ]]; then
-  OPTS="${OPTS} VERBOSE=1"
+CMAKE_OPTS=""
+MAKE_OPTS=""
+while [[ "$1" =~ -* ]]; do
+  if [[ "$1" == "-v" ]]; then
+    MAKE_OPTS="${MAKE_OPTS} VERBOSE=1"
   shift
-fi
-BDIR="."
-if [[ -r build ]]; then
-  BDIR=".."
-  cd build
-fi
+  elif [[ "$1" == "-d" ]]; then
+    CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Debug"
+    shift
+  else
+    break
+  fi
+done
 
 printf "|\n|\n|\n"
 clear;
 ruler '*'
-rm -f $BDIR/make.log $BDIR/run.log
-if [[ -r CMakeLists.txt ]]; then cmake .; fi
-echo "make $@$OPTS 2>&1 | tee $BDIR/make.log"
-make "$@""$OPTS" 2>&1 | tee -a $BDIR/make.log
+rm -f make.log run.log
+if [[ -r CMakeLists.txt ]]; then
+  echo "cmake ${CMAKE_OPTS}. 2>&1 | tee -a make.log"
+  cmake "${CMAKE_OPTS}" .
+fi
+echo "make $@${MAKE_OPTS} 2>&1 | tee -a make.log"
+make "$@""${MAKE_OPTS}" 2>&1 | tee -a make.log
 # The end
