@@ -1,4 +1,7 @@
-#!/usr/bin/perl
+##!/usr/bin/perl
+eval 'exec perl -S $0 ${1+"$@"}'
+  if 0;#running_under_some_shell;
+
 
 our $sep='_';
     $sep  = shift(@ARGV) if @ARGV;
