@@ -24,7 +24,7 @@
 
 #include "no_clock_if.hpp"
 #include <systemc>
-#include <unordered_map>
+#include <map>
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -125,16 +125,16 @@ struct no_clock
 
   // Use following to create clock and retrieve pointer
   static no_clock& global // Global clock accessor
-  ( const char*      clock_name
-  , sc_core::sc_time tPERIOD
-  , double           duty     = 0.5
-  , sc_core::sc_time tOFFSET  = sc_core::SC_ZERO_TIME
-  , sc_core::sc_time tSAMPLE  = sc_core::SC_ZERO_TIME
-  , sc_core::sc_time tSETEDGE = sc_core::SC_ZERO_TIME
-  , bool             positive = true
+  ( const std::string& clock_name
+  , sc_core::sc_time   tPERIOD
+  , double             duty     = 0.5
+  , sc_core::sc_time   tOFFSET  = sc_core::SC_ZERO_TIME
+  , sc_core::sc_time   tSAMPLE  = sc_core::SC_ZERO_TIME
+  , sc_core::sc_time   tSETEDGE = sc_core::SC_ZERO_TIME
+  , bool               positive = true
   );
   // Use following to retrieve reference
-  static no_clock& global ( const char* clock_name);
+  static no_clock& global ( const std::string& clock_name);
 
   virtual ~no_clock(void); //< Destructor
 
@@ -146,7 +146,7 @@ struct no_clock
   void set_sample_time        ( sc_core::sc_time tSAMPLE   );
   void set_setedge_time       ( sc_core::sc_time tSETEDGE   );
   void set_time_shift         ( sc_core::sc_time tSHIFT    );
-  const char*      name       ( void ) const;
+  const char*      clock_name ( void ) const;
   sc_core::sc_time period     ( Clock_count_t cycles = 1 ) const;
   double           duty       ( void ) const;
   double           frequency  ( void ) const;
@@ -226,7 +226,7 @@ private:
   Clock_count_t       m_freq_count{0ul};    // counts how many times frequency was changed
   Clock_count_t       m_base_count{0ul};    // cycles up to last frequency change
   sc_core::sc_time    m_tSHIFT{sc_core::SC_ZERO_TIME};  // temporal shift
-  using clock_map_t = std::unordered_map<const char*,no_clock*>;
+  using clock_map_t = std::map<std::string,no_clock*>;
   static clock_map_t  s_global;
   static const char*  MSGID;
 };
@@ -282,10 +282,10 @@ inline Clock_count_t no_clock::clocks
 //------------------------------------------------------------------------------
 // Accessors
 //------------------------------------------------------------------------------
-inline const char*      no_clock::name      ( void ) const { return m_clock_name; }
-inline sc_core::sc_time no_clock::period    ( Clock_count_t cycles ) const { return cycles*m_tPERIOD; }
-inline double           no_clock::duty      ( void ) const { return m_duty; }
-inline double           no_clock::frequency ( void ) const { return sc_core::sc_time(1,sc_core::SC_SEC)/m_tPERIOD; }
+inline const char*      no_clock::clock_name ( void ) const { return m_clock_name; }
+inline sc_core::sc_time no_clock::period     ( Clock_count_t cycles ) const { return cycles*m_tPERIOD; }
+inline double           no_clock::duty       ( void ) const { return m_duty; }
+inline double           no_clock::frequency  ( void ) const { return sc_core::sc_time(1,sc_core::SC_SEC)/m_tPERIOD; }
 
 //------------------------------------------------------------------------------
 // Special conveniences

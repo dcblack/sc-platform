@@ -31,7 +31,7 @@ struct no_clock_if
   virtual void               set_duty_cycle      ( double           duty      ) = 0;
   virtual void               set_sample_time     ( sc_core::sc_time sample    ) = 0;
   virtual void               set_setedge_time    ( sc_core::sc_time setedge   ) = 0;
-  virtual const char*        name                ( void ) const = 0;
+  virtual const char*        clock_name          ( void ) const = 0;
   virtual sc_core::sc_time   period              ( Clock_count_t cycles = 0U ) const = 0;
   virtual double             duty                ( void ) const = 0;
   virtual double             frequency           ( void ) const = 0;

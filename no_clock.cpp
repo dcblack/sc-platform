@@ -30,13 +30,13 @@ const char* no_clock::MSGID = "/Doulos/no_clock";
 no_clock::clock_map_t no_clock::s_global;
 
 no_clock& no_clock::global // Global clock accessor
-( const char* clock_name
-, sc_time     tPERIOD
-, double      duty
-, sc_time     tOFFSET
-, sc_time     tSAMPLE
-, sc_time     tSETEDGE
-, bool        positive
+( const string& clock_name
+, sc_time       tPERIOD
+, double        duty
+, sc_time       tOFFSET
+, sc_time       tSAMPLE
+, sc_time       tSETEDGE
+, bool          positive
 )
 {
   string message;
@@ -46,12 +46,8 @@ no_clock& no_clock::global // Global clock accessor
     message += "'";
     SC_REPORT_FATAL(MSGID,message.c_str());
   }//endif
-  message = "Creating new global clock '";
-  message += clock_name;
-  message += "'";
-  SC_REPORT_INFO(MSGID,message.c_str());
   no_clock* clock_ptr = new no_clock
-  ( clock_name
+  ( clock_name.c_str()
   , tPERIOD
   , duty
   , tOFFSET
@@ -60,21 +56,23 @@ no_clock& no_clock::global // Global clock accessor
   , positive
   );
   s_global.insert(make_pair(clock_name,clock_ptr));
+  message = "Created new global clock '";
+  message += clock_name;
+  message += "'";
+  SC_REPORT_INFO_VERB( MSGID, message.c_str(), SC_MEDIUM );
   return *clock_ptr;
 }
 
 no_clock& no_clock::global
-( const char* clock_name
+( const string& clock_name
 )
 {
-  auto clock_it(s_global.find(clock_name));
-  if (clock_it == s_global.end()) {
+  if( s_global.count(clock_name) == 0 ) {
     string message("Missing definition for global clock '");
-    message += clock_name;
-    message += "'";
+    message += clock_name + "' with " + to_string( s_global.size() ) + " clocks defined";
     SC_REPORT_FATAL(MSGID,message.c_str());
   }//endif
-  return *(clock_it->second);
+  return *s_global[clock_name];
 }
 
 //------------------------------------------------------------------------------
