@@ -86,24 +86,25 @@ remove_path() {
   eval $(perl -M'Cwd(abs_path)' -e '$v=$ARGV[0];$p=abs_path($ARGV[1]);for(split(qr":",$ENV{$v})){$e=abs_path($_);if($p ne $e){$push(@e,$e);}};print "$v=",join(":",@e)' "$1" "$2")
 }
 
-PROJ_ROOT=$(dirname $(firstreal ./.git ../.git ../../.git ../../../.git ../../../../.git))
-PROJ_BIN="$(real_path $PROJ_ROOT/bin)"
+export PROJ_ROOT=$(realpath $(dirname $(firstreal ./.git ../.git ../../.git ../../../.git ../../../../.git)))
+PROJ_BIN="$PROJ_ROOT/bin"
 prepend_path PATH $PROJ_BIN
-header Platform 1>&2
+header -uc platform 1>&2
 if [[ "$(uname -s)" == "Darwin" ]]; then
   export CXX=clang++
-  export CPP=clang
+  export CC=clang
   module add clang
   module add boost
   module add systemc
 elif [[ "$(uname -s)" == "Linux" ]]; then
-  export CXX=g++
-  export CPP=gcc
-  module add devtools
+  export CXX=clang++
+  export CC=clang
+  module add clang
   module add boost
   module add systemc
 else
   echo "WARNING: Unsupported OS for setup.profile" 1>&2
 fi
 export CMAKE_MODULE_PATH=CMakeModules
+export SETUP_PROFILE=$(basename $PROJ_ROOT)
 module list
