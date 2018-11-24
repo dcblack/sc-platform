@@ -27,8 +27,8 @@ inline sc_core::sc_time operator "" _ps  (unsigned long long val) { return sc_co
 inline sc_core::sc_time operator "" _fs  (long double val)        { return sc_core::sc_time( val        , sc_core::SC_FS  );         }
 inline sc_core::sc_time operator "" _fs  (unsigned long long val) { return sc_core::sc_time( double(val), sc_core::SC_FS  );         }
 
-// The following makes time specification nicer:
-//    15.3_ns, 0.1_us, 0_sec, 1_min
+// The following makes frequency specification nicer:
+//    60.0_Hz 15.3_KHz, 2.1_GHz
 //
 inline sc_core::sc_time operator "" _Hz  (long double val)        { return sc_core::sc_time( 1.0/val        , sc_core::SC_SEC ); }
 inline sc_core::sc_time operator "" _Hz  (unsigned long long val) { return sc_core::sc_time( 1.0/double(val), sc_core::SC_SEC ); }
