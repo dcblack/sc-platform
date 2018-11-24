@@ -12,8 +12,8 @@ project(platform CXX)
 
 include(cmake/BuildTypes.cmake)
 include(cmake/SystemC.cmake)
-find_package(yaml-cpp CONFIG REQUIRED)
-find_package(Boost 1.66 REQUIRED)
+#find_package(yaml-cpp CONFIG REQUIRED)
+find_package(Boost 1.65 REQUIRED)
 
 add_compile_definitions(SC_INCLUDE_FX SC_INCLUDE_DYNAMIC_PROCESSES)
 include_directories(${Boost_INCLUDE_DIRS})
