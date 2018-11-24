@@ -30,6 +30,14 @@ void timer_test(void)
   sc_assert( cpu != nullptr );
 
   MESSAGE( "\n" );
+  RULER( 'B' );
+  MESSAGE( "Timer constants\n" );
+  MESSAGE( "  TIMER_QTY_MASK   =" << HEX << TIMER_QTY_MASK );
+  MESSAGE( "  TIMER_SCALE_MASK =" << HEX << TIMER_SCALE_MASK );
+  MESSAGE( "  TIMER_IRQ_MASK   =" << HEX << TIMER_IRQ_MASK );
+  MEND( MEDIUM );
+
+  MESSAGE( "\n" );
   RULER( 'T' );
   INFO( MEDIUM, "Testing timers" );
 
