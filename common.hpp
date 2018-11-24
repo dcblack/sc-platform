@@ -9,15 +9,12 @@
 #include "sc_cxx11.hpp"
 
 // Useful constants
-#define ns sc_core::sc_time( 1.0, sc_core::SC_NS )
-#define us sc_core::sc_time( 1.0, sc_core::SC_US )
-#define ms sc_core::sc_time( 1.0, sc_core::SC_MS )
 #define KB 1024ull
 #define MB (KB*KB)
 #define GB (KB*MB)
 
 #define MAX_ADDR (~Addr_t(0))
-using Addr_t  = uint64_t;
+using Addr_t  = sc_dt::uint64;
 using Depth_t = uint32_t; //< accommodate address map
 using byte_t  = uint8_t;
 enum class Feature { none, enabled };
