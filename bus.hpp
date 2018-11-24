@@ -46,8 +46,8 @@ struct Bus_module: sc_core::sc_module
 
 private:
   // Helpers
-  unsigned int decode_address( uint64_t address, uint64_t& masked_address );
-  uint64_t reconstruct_address( uint64_t address, int id );
+  unsigned int decode_address( Addr_t address, Addr_t& masked_address );
+  uint64_t reconstruct_address( Addr_t address, int id );
   bool mask_if_fits( Addr_t& address, Addr_t start, Depth_t depth ) const;
   bool config( tlm_payload_t& trans );
   void build_port_map( void );

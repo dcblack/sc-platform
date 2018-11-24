@@ -266,8 +266,8 @@ bool Bus_module::config
 //------------------------------------------------------------------------------
 unsigned int //< port index
 Bus_module::decode_address
-( uint64_t address,
-  uint64_t& masked_address
+( Addr_t  address,
+  Addr_t& masked_address
 )
 {
   INFO( DEBUG+1, "Decoding address " << HEX << address );
@@ -305,8 +305,8 @@ Bus_module::decode_address
 //------------------------------------------------------------------------------
 uint64_t // address
 Bus_module::reconstruct_address
-( uint64_t address
-  , int id
+( Addr_t address
+, int    id
 )
 {
 #ifndef CRUDE
