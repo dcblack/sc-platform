@@ -11,7 +11,7 @@ one bypasses the other in the architecture (e.g. a cache).
 
 Features
 --------
-- Can be used for Memory Protection (no mapping)
+- Can be used for Memory Protection Unit (no mapping)
 
 Block diagram
 -------------

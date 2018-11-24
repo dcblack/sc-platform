@@ -129,7 +129,8 @@ Top
 - Main buses are designated as North (nth), and South (sth)
 - North bus is closest to the "main" processor (cpu)
 - System clock 400MHz
-- Processor is RISC w/ FPU (Arm CM4F)
+- Processor is RISC (cm0+ or possibly w/ FPU e.g. Arm cm4f)
+- Cpu tasks provide initiator behaviors (e.g. memory test, processor emulation)
 - NTH is 32 bits 100MHz
 - STH is 16 bits  50MHz
 - rom is a type flash (fast write)
@@ -138,7 +139,7 @@ Top
 - Terminal communicates via TCP sockets
 - Video reads/writes files
 - Wifi sends/receives from web
-- Timer is expandable
+- Timer is expandable (1-16)
 - Memory has read-only option & supports DMI
 - Mmu has zero latency
 - DiskCtrl reads/writes real files
@@ -150,21 +151,65 @@ Top
 - Order of development is TBD, but simplest first
 - Four power regions labeled r0 through r3
 
+## <a name="Stats"></a>Module Status
+
+Each module will its status noted here. The following states are allowed:
+
+- Untouched - placeholder
+- Concept - documentation has begun
+- Started - initial coding (some files in various states)
+- Basic - basic functionality achieved with minimal coding
+- Tested - extensive testing completed
+
+| Class or Module     | Short Description                            | About | State   |
+| :------------------ | :------------------------------------------- | :---: | :------ |
+| `Bus_module`        | Interconnect                                 |   Y   | Basic   |
+| `Cpu_module`        | Initiator                                    |   Y   | Basic   |
+| `Memory_module`     | Target RAM                                   |   Y   | Basic   |
+| `Timer_module`      | Target timer                                 |   Y   | Basic   |
+| `no_clock`          | Substitute clock                             |   Y   | Basic   |
+| `Mailbox_module`    | Hardware communication between processors    |   Y   | Concept |
+| `Excl_proxy`        | Implements non-locking bus mutual exclusion. |   Y   | Started |
+| `Excl_extn`         | Request mutual exclusion.                    |   Y   | Started |
+| `Dma_module`        | Target/Initiator                             |   Y   | Concept |
+| `Pic_module`        | Interrupt distributor                        |   Y   | Started |
+| `Power` class       | Model power regions                          |   Y   | Started |
+| `Reset` class       | Model resets                                 |   Y   | Concept |
+| `Report` routines   | Simplify reporting                           |   Y   | Basic   |
+| `Secure_extn`       | Identify transactions to secure areas.       |   Y   | Started |
+| `Task_manager`      | Access tasks by name                         |   Y   | Concept |
+| `Wallclock`         | Platform independent timing                  |   Y   | Concept |
+| `Cache_module`      | Implement an associative cache               |   Y   | Concept |
+| `Cache_extn`        | Used to perform cache actions                |   Y   | Started |
+| `Mmu_module`        | MMU/MPU implementation                       |   Y   | Started |
+| `Config_extn`       | Used to interrogate instances                |   Y   | Basic   |
+| `armv6m` task       | Cpu task to emulate Arm Cortex-M0+ ISS       |   Y   | Started |
+| `memory_test`       | Cpu task to test memory block                |   Y   | Basic   |
+| `timer_test`        | Cpu task to test timer  block                |   Y   | Basic   |
+| `Timer` behavior    | Behavior of timer used by `Timer_module`     |   Y   | Basic   |
+| `Timer_api`         | API used `Timer_test`                        |   Y   | Basic   |
+| hexfile utils       | Save/load/dump hex data                      |   Y   | Basic   |
+| `Signal` class      | Specify how to handle CTRL-C                 |   Y   | Basic   |
+| `Interrupt` channel | Carry interrupts between modules             |   Y   | Concept |
+| `Summary` class     | Summarize execution                          |  TBS  | Concept |
+| `main`              | Beyond basics.                               |  TBS  | Concept |
+| `Top_module`        | Module connectivity                          |  TBS  | Concept |
+
 ## <a name="ToDo"></a>To Do List
 
 In order of priority:
 
 1. Add `Timer_module` and South Bus instantiation. Will include `no_clock`.
-   1. Create base timer
-   2. Add base `no_clock`
+   1. Create base timer - DONE
+   2. Add base `no_clock` - DONE
    3. Add South Bus
-2. Add `Global` class to replace `g_` variables
-3. Add `Pic_module`
-4. Add `Dma_module`
-5. Add power-down capability (?use CCI?) with reset
-6. Add timing to AT mode of `Bus_module` with analysis port support
-7. Add yaml or jason support for configuration
-8. Implement proxy interconnect
+2. Add `Pic_module`
+3. Add `Dma_module`
+4. Add power-down capability (?use CCI?) with reset
+5. Add timing to AT mode of `Bus_module` with analysis port support
+6. Add yaml or jason support for configuration
+7. Implement proxy interconnect
+8. Implement a CPU emulation (e.g. armv6m)
 
 Optional:
 
@@ -176,6 +221,7 @@ Optional:
 6. Add a `Mailbox_module` (2 FIFO\'s)
 7. Add a `Stack_module` (LIFO).
 8. Add a `SystemManager_module` to manage clocks/power/resets
+9. Add `Global` class to replace `g_` variables
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
