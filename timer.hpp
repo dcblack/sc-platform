@@ -91,7 +91,7 @@ private:
   Timer_reg& timer_reg_vec( int index );
   uint32_t scale( uint32_t status )
   {
-    return ( status & TIMER_SCALE_MASK ) >> TIMER_SCALE_LSB;
+    return (( status & TIMER_SCALE_MASK ) >> TIMER_SCALE_LSB) + 1;
   }
   bool irq_enabled( int index ) {
     return TIMER_IRQ_ENABLE == ( timer_reg_vec( index ).status & TIMER_INTERRUPT_MASK );

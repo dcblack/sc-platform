@@ -594,13 +594,15 @@ void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len
         case /*write*/ TIMER_LOAD_LO_REG:
         {
           timer_reg.load_hi = 0;
-          sc_time load_delay = clk.period( scale(timer_reg.status) * timer_reg.load_lo );
+          uint32_t timer_scale = scale(timer_reg.status);
+          sc_time load_delay = clk.period( timer_scale * timer_reg.load_lo );
           timer.set_load_delay( load_delay );
           break;
         }
         case /*write*/ TIMER_LOAD_HI_REG:
         {
-          sc_time load_delay = clk.period( scale(timer_reg.status) * (( uint64_t( timer_reg.load_hi ) << 32 ) + timer_reg.load_lo ));
+          uint32_t timer_scale = scale(timer_reg.status);
+          sc_time load_delay = clk.period( timer_scale * (( uint64_t( timer_reg.load_hi ) << 32 ) + timer_reg.load_lo ));
           timer.set_load_delay( load_delay );
           break;
         }
@@ -608,7 +610,8 @@ void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len
         {
           NOT_YET_IMPLEMENTED();
           timer_reg.curr_hi = 0;
-          //uint64_t prev_count =  ( curr_time(delay) - get_start_time() )/clk.period(scale(timer_reg.status));
+          uint32_t timer_scale = scale(timer_reg.status);
+          //uint64_t prev_count =  ( curr_time(delay) - get_start_time() )/clk.period(timer_scale);
           //uint64_t next_count = timer_reg.curr_lo;
           //timer.set_start_time( curr_time );
           break;
@@ -616,7 +619,8 @@ void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len
         case /*write*/ TIMER_CURR_HI_REG:
         {
           NOT_YET_IMPLEMENTED();
-          //uint64_t prev_count =  ( curr_time(delay) - get_start_time() )/clk.period(scale(timer_reg.status));
+          uint32_t timer_scale = scale(timer_reg.status);
+          //uint64_t prev_count =  ( curr_time(delay) - get_start_time() )/clk.period(timer_scale);
           //uint64_t next_count = ( uint64_t( timer_reg.curr_hi ) << 32 ) + timer_reg.curr_lo;
           //timer.set_start_time( curr_time );
           break;
@@ -689,14 +693,16 @@ void Timer_module::read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len,
         case /*read*/ TIMER_CURR_LO_REG:
         {
           sc_assert( timer.curr_time(delay) > timer.get_start_time() );
-          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(scale(timer_reg.status));
+          uint32_t timer_scale = scale(timer_reg.status);
+          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(timer_scale);
           timer_reg.curr_lo = uint32_t(curr_count);
           break;
         }
         case /*read*/ TIMER_CURR_HI_REG:
         {
           sc_assert( timer.curr_time(delay) > timer.get_start_time() );
-          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(scale(timer_reg.status));
+          uint32_t timer_scale = scale(timer_reg.status);
+          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(timer_scale);
           timer_reg.curr_hi = uint32_t(curr_count >> 32);
           break;
         }
@@ -718,7 +724,8 @@ void Timer_module::read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len,
         case /*read*/ TIMER_CURR_LO_REG:
         {
           sc_assert( timer.curr_time(delay) > timer.get_start_time() );
-          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(scale(timer_reg.status));
+          uint32_t timer_scale = scale(timer_reg.status);
+          uint64_t curr_count =  ( timer.curr_time(delay) - timer.get_start_time() )/clk.period(timer_scale);
           timer_reg.curr_hi = uint32_t(curr_count >> 32);
           timer_reg.curr_lo = uint32_t(curr_count);
           break;
