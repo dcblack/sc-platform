@@ -31,11 +31,6 @@ int sc_main(int argc, char *argv[])
     REPORT( INFO, "\n" << e.what() << "\n\n*** Please fix elaboration errors and retry. ***" );
     return Summary::report();
   }
-  catch ( exception& e )
-  {
-    REPORT( INFO, "\n" << e.what() << "\n\n*** Please fix elaboration errors and retry. ***" );
-    return Summary::report();
-  }
   catch ( ... )
   {
     REPORT( INFO, "Error: *** Caught unknown exception during elaboration. ***" );
@@ -57,11 +52,6 @@ int sc_main(int argc, char *argv[])
     {
       REPORT( WARNING, "Caught exception during active simulation.\n" << e.what() );
     }
-    catch ( exception& e )
-    {
-      REPORT( WARNING, "Caught non-SystemC exception during active simulation.\n" << e.what() );
-      Summary::increment_errors();
-    }
     catch ( ... )
     {
       REPORT( WARNING, "Error: Caught unknown exception during active simulation." );
@@ -82,11 +72,6 @@ int sc_main(int argc, char *argv[])
       catch ( sc_exception& e )
       {
         REPORT( WARNING, "Caught exception while stopping.\n" << e.what() );
-      }
-      catch ( exception& e )
-      {
-        REPORT( WARNING, "Caught non-SystemC exception while stopping.\n" << e.what() );
-        Summary::increment_errors();
       }
       catch(...) {
         REPORT( WARNING, "Error: Caught unknown exception while stopping." );
