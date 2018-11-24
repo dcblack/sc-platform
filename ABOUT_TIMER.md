@@ -17,7 +17,7 @@ Each timer contains four registers:
 Status consists of a number of fields and single bit flags:
 
 * QTY indicates the number of implemented timers
-* SCALE indicates the clock scaling factor for a particular timer
+* SCALE indicates the clock scaling factor for a particular timer (values are 0..15 => 1..16)
 * IRQ indicates the interrupt status of all implemented timers
 * RELOAD bit indicates whether timer should reload the trigger
 
