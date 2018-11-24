@@ -16,12 +16,13 @@ struct Timer_api
   ~Timer_api( void ) = default;
   // Convenience
   int timer( void ) const { return m_timer; }
-  void setup( uint32_t timer_count=0 )
+  void setup( uint32_t timer_count=0, uint32_t scale=1 )
   {
     Addr_t timer_addr = TMR_BASE + m_timer*TIMER_SIZE;
     m_cpu.write32( timer_addr + TIMER_LOAD_LO_REG, timer_count );
-    m_cpu.write32( timer_addr + TIMER_CTRLCLR_REG, TIMER_FLAGS_MASK );
-    m_cpu.write32( timer_addr + TIMER_CTRLSET_REG, TIMER_RELOAD | TIMER_CONTINUOUS | TIMER_IRQ_ENABLE);
+    m_cpu.write32( timer_addr + TIMER_CTRLCLR_REG, TIMER_FLAGS_MASK | TIMER_SCALE_MASK );
+    m_cpu.write32( timer_addr + TIMER_CTRLSET_REG, TIMER_RELOAD | TIMER_CONTINUOUS | TIMER_IRQ_ENABLE
+                                                   | ((scale<<TIMER_SCALE_LSB) & TIMER_SCALE_MASK ) );
     m_setup = true;
   }
 
