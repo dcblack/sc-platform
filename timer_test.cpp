@@ -70,3 +70,7 @@ void timer_test(void)
   TEST_TIMER( "Final status for", t0 );
   TEST_TIMER( "Final status for", t1 );
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Copyright 2018 by Doulos. All rights reserved.
+//END $Id$
