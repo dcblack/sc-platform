@@ -1,22 +1,63 @@
 #!/bin/bash
 #
 # $Info: Invoke cmake/make in build directory if present and generate logfile. $
-# $Syntax: build TARGET $
+# $Syntax: build [OPTIONS] TARGET $
+# $Options: -d => debug mode; -gdb => invoke with gdb; -run => execute after compile; -v => verbose compile
 
+# Check for proper environment
+let error_count=0
+function Error() {
+  echo "ERROR: $@" 1>&2
+  let error_count++
+}
+for var in SYSTEMC PROJ_ROOT CXX CC CMAKE_MODULE_PATH; do
+  perl -e 'exit (not exists $ENV{"$ARGV[0]"})' $var ||\
+    Error "Missing definition of \$$var."
+done
+sc_ver_file="$SYSTEMC/include/sysc/kernel/sc_ver.h"
+if [[ ! -r $sc_ver_file ]]; then
+  Error "SYSTEMC does not refer to a proper installation."
+fi
+if [[ error_count -gt 0 ]]; then
+  echo "Please fix errors and retry."
+  exit 1
+fi
+
+# Setup option defaults
 TARGET="platform" # default
 CMAKE_OPTS=""
 MAKE_OPTS=""
+RUN_OPTS=""
+RUN=0
+GDBP=""
+# If name of script is run...
+if [[ $0 =~ .*run ]]; then
+  RUN=1
+fi
 
 printf "|\n|\n|\n"
 clear;
 ruler '*'
+header -uc "$TARGET"
 
+# Scan command-line for option overrides
 while [[ "$1" =~ -.* ]]; do
   if [[ "$1" == "-v" ]]; then
     MAKE_OPTS="${MAKE_OPTS} VERBOSE=1"
-  shift
+    shift
+  elif [[ "$1" == "-norun" ]]; then
+    RUN=1
+    shift
+  elif [[ "$1" == "-run" ]]; then
+    RUN=1
+    shift
+  elif [[ "$1" == "-gdb" ]]; then
+    RUN=1
+    GDBP=gdb
+    shift
   elif [[ "$1" == "-d" ]]; then
     CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Debug"
+    RUN_OPTS="${RUN_OPTS} -debug"
     shift
   else
     break
@@ -28,6 +69,8 @@ if [[ $# > 0 ]]; then
 else
   echo "INFO: Using default target - $TARGET"
 fi
+
+# Move into build directory if present (recommended)
 BDIR="."
 if [[ -r build ]]; then
   BDIR=".."
@@ -35,6 +78,7 @@ if [[ -r build ]]; then
   cd build
 fi
 
+# Build
 rm -f make.log run.log $BDIR/make.log $BDIR/run.log
 if [[ -r CMakeLists.txt ]]; then
   echo "cmake ${CMAKE_OPTS}$BDIR 2>&1 | tee -a make.log"
@@ -42,4 +86,18 @@ if [[ -r CMakeLists.txt ]]; then
 fi
 echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $BDIR/make.log"
 make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $BDIR/make.log
+
+# Run
+if [[ $RUN == 1 ]]; then
+env DEBUG=1\
+    LD_LIBRARY_PATH=$SYSTEMC/lib \
+    DYLD_LIBRARY_PATH=$SYSTEMC/lib \
+  $GDBP ./$TARGET -- $RUN_OPTS ${ARGS} 2>&1 \
+  | tee run.log
+
+  if [[ "$BDIR" != "." ]]; then
+    filter-sclog <run.log >$BDIR/run.log;
+  fi
+fi
+
 # The end
