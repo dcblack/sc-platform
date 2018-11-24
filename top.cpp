@@ -21,6 +21,7 @@
 #include "memory.hpp"
 #include "memory_map.hpp"
 #include "timer.hpp"
+#include <set>
 using namespace sc_core;
 using namespace std;
 namespace {
