@@ -11,10 +11,12 @@ struct Interrupt_send_if
 struct Interrupt_recv_if
 : virtual sc_core::sc_interface
 {
-  virtual void wait( void ) = 0;
-  virtual size_t sent( void ) const = 0;
-  virtual size_t rcvd( void ) const = 0;
-};
+  virtual void   wait    ( void ) = 0;
+  virtual void   clear   ( void ) = 0;
+  virtual size_t sent    ( void ) const = 0;
+  virtual size_t rcvd    ( void ) const = 0;
+  virtual bool   active  ( void ) const = 0;
+  virtual bool   pending ( void ) const = 0;
 
 struct Interrupt_debug_if
 : virtual sc_core::sc_interface
