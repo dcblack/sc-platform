@@ -17,8 +17,8 @@ Usage Example
 {:CODE SNIPPETS:}
 ```
 
-Implementation
---------------
+Implementation Details
+----------------------
 
 {:EXPLANATION OF STRUCTURES AND APPROACH:}
 

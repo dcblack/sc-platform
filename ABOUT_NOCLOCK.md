@@ -69,4 +69,9 @@ void main_thread( void )
 }
 ```
 
+Implementation Details
+----------------------
+
+{:TBS:}
+
 ### The end

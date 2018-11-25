@@ -53,7 +53,7 @@ std::vector<sc_object> objects_vec = root.get_objects()
 
 ```
 
-Implementation
---------------
+Implementation Details
+----------------------
 
 ### The end

@@ -53,8 +53,8 @@ for( const auto& v : my_map ) {
 MEND( HIGH ); // or REPORT( WARNING, "" );
 ```
 
-Implementation
---------------
+Implementation Details
+----------------------
 
 {:EXPLANATION OF STRUCTURES AND APPROACH TO BE SUPPLIED:}
 

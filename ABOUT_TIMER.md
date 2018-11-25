@@ -97,8 +97,8 @@ Files
   `timer_beh.cpp`  | Implements simple `Timer` behavior
   `timer_beh.hpp`  | Header needed to instantiate `Timer`
 
-Implementation Design Details
------------------------------
+Implementation Details
+----------------------
 
 
 ### The end

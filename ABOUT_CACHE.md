@@ -13,7 +13,7 @@ Block Diagram
 Usage Example
 -------------
 
-Implementation
---------------
+Implementation Details
+----------------------
 
 ### The end

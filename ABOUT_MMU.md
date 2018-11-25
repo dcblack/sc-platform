@@ -26,8 +26,8 @@ Block diagram
    |
 ```
 
-Implementation
---------------
+Implementation Details
+----------------------
 
 When enabled lookup table will translate upper bits and obtain attributes as
 follows:

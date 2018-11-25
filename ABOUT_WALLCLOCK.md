@@ -17,7 +17,12 @@ Testing
 -------
 
 ```sh
-g++ -o wallclock.exe wallclock.cpp && ./wallclock.exe
+g++ -DTEST_WALLCLOCK -o wallclock.exe wallclock.cpp && ./wallclock.exe
 ```
+
+Implementation Details
+----------------------
+
+{:TBS:}
 
 ### The end

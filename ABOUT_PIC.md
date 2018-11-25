@@ -12,7 +12,7 @@ on this, but when packing registers, these are the assumptions.
 Dependent on the number of incoming attached interrupts, there
 are the following registers:
 
-```c++
+```cpp
 struct IrqReg
 {
   uint32_t:8 reserved1;
@@ -87,8 +87,8 @@ Usage Example
 {:CODE SNIPPETS:}
 ```
 
-Implementation
---------------
+Implementation Details
+----------------------
 
 Internally, `sc_vector<Interrupt> intrq_chan` has one
 entry per incoming `intrq_xport` binding. Received interrupts

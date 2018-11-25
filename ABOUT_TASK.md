@@ -59,4 +59,9 @@ namespace {
 }
 ```
 
+Implementation Details
+----------------------
+
+{:TBS:}
+
 ### The end

@@ -1,5 +1,5 @@
-About the DMA
-=============
+About Details the DMA
+---------------------
 
 Block diagram
 -------------

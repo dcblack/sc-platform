@@ -62,8 +62,8 @@ See also
 
 `Config_proxy` may be used to establish start address and depth of targets.
 
-Implementation
---------------
+Implementation Details
+----------------------
 
 {:TO BE SUPPLIED:}
 

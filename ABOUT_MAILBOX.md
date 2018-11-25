@@ -50,4 +50,9 @@ void cpu1_thread( void )
 }
 ```
 
+Implementation Details
+----------------------
+
+{:TBS:}
+
 ### The end
