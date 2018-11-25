@@ -53,8 +53,10 @@ struct Top_module::Impl {
   // Modules
   std::unique_ptr< Cpu_module    > cpu;
   std::unique_ptr< Bus_module    > nth;
+  std::unique_ptr< Bus_module    > sth;
   std::unique_ptr< Memory_module > rom;
   std::unique_ptr< Memory_module > ram;
+  std::unique_ptr< Memory_module > ddr;
   std::unique_ptr< Timer_module  > tmr;
 
   // Constructor
@@ -63,11 +65,17 @@ struct Top_module::Impl {
     m_interrupt.remove();
     parse_command_line();
     switch ( m_configuration ) { // Fall-thru intentional
+      case Configuration::NORTH_SOUTH:
+        sth = std::make_unique<Bus_module>   ( "sth" );
+        ddr = std::make_unique<Memory_module>( "ddr" , DDR_DEPTH, DDR_BASE,  Access::RW, 16,  8, DMI::enabled );
+        // fall thru
       case Configuration::TIMER:
         tmr = std::make_unique<Timer_module> ( "tmr" , 2, TMR_BASE, 1, 2, 2 );
+        // fall thru
       case Configuration::MEMORY:
         rom = std::make_unique<Memory_module>( "rom" , ROM_DEPTH, ROM_BASE,  Access::RO, 16, 32, DMI::enabled );
         nth = std::make_unique<Bus_module>   ( "nth" );
+        // fall thru
       case Configuration::TRIVIAL:
         ram = std::make_unique<Memory_module>( "ram" , RAM_DEPTH, RAM_BASE,  Access::RW, 16,  8, DMI::enabled );
         cpu = std::make_unique<Cpu_module>   ( "cpu" );
@@ -95,6 +103,16 @@ struct Top_module::Impl {
         tmr->intrq_port.bind ( cpu->intrq_xport );
         break;
 
+      case Configuration::NORTH_SOUTH:
+        cpu->init_socket.bind( nth->targ_socket );
+        nth->init_socket.bind( rom->targ_socket );
+        nth->init_socket.bind( ram->targ_socket );
+        nth->init_socket.bind( sth->targ_socket );
+        sth->init_socket.bind( ddr->targ_socket );
+        sth->init_socket.bind( tmr->targ_socket );
+        tmr->intrq_port.bind ( cpu->intrq_xport );
+        break;
+
       default:
         REPORT( FATAL, "Missing configuration." );
         break;
@@ -107,7 +125,7 @@ struct Top_module::Impl {
   void parse_command_line( void )
   {
     // Establish defaults
-    m_configuration = Configuration::TIMER;
+    m_configuration = Configuration::NORTH_SOUTH;
 
     for ( int iArg = 1; iArg < sc_argc(); ++iArg )
     {
@@ -205,6 +223,9 @@ struct Top_module::Impl {
         else if ( arg == "timer" ) {
           m_configuration = Configuration::TIMER;
         }
+        else if ( arg == "ns" ) {
+          m_configuration = Configuration::NORTH_SOUTH;
+        }
       }
 
     }//endforeach arg
@@ -222,20 +243,21 @@ struct Top_module::Impl {
   }
 
   // Attributes
-  enum class Configuration {
-    DEFAULT
-    , MEMORY
-    , TIMER
-    , PIC
-    , TRIVIAL
+  enum class Configuration 
+  { DEFAULT
+  , MEMORY
+  , TIMER
+  , NORTH_SOUTH
+  , PIC
+  , TRIVIAL
   }
   m_configuration;
-  enum class Test {
-    DEFAULT
-    , MEMORY
-    , TIMER
-    , PIC
-    , TRIVIAL
+  enum class Test
+  { DEFAULT
+  , MEMORY
+  , TIMER
+  , PIC
+  , TRIVIAL
   };
   std::set<Test> m_test_set;
   Signal         m_interrupt{ Signal::INTERRUPT };
