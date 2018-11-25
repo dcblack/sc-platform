@@ -7,9 +7,9 @@ enum Memory_map : uint64_t
 { NTH_BASE = 0x0000'0000ull, NTH_DEPTH =   4*GB , NTH_PORT = NA //  -  
 , STH_BASE = 0x4000'0000ull, STH_DEPTH =  64*KB , STH_PORT = NA //  -  
 , CPU_BASE = 0xF000'0000ull, CPU_DEPTH =    128 , CPU_PORT = NA //  -  
-, ROM_BASE = 0x0000'0000ull, ROM_DEPTH =  16*MB , ROM_PORT =  0 // NTH 
-, RAM_BASE = 0x1000'0000ull, RAM_DEPTH = 512*KB , RAM_PORT =  1 // NTH 
-, DDR_BASE = 0x2000'0000ull, DDR_DEPTH =   1*GB , DDR_PORT = NA // NTH 
+, ROM_BASE = 0x0000'0000ull, ROM_DEPTH =  96*MB , ROM_PORT =  0 // NTH 
+, RAM_BASE = 0x1000'0000ull, RAM_DEPTH = 128*KB , RAM_PORT =  1 // NTH 
+, DDR_BASE = 0x2000'0000ull, DDR_DEPTH = 256*MB , DDR_PORT = NA // NTH 
 , TMR_BASE = 0x4000'0000ull,                      TMR_PORT =  2 // sth 
 , GIO_BASE = 0x4000'1000ull, GIO_DEPTH =     32 , GIO_PORT = NA // sth 
 , CON_BASE = 0x4000'2000ull, CON_DEPTH =     32 , CON_PORT = NA // sth 
