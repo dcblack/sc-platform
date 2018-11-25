@@ -17,6 +17,7 @@ struct Interrupt_recv_if
   virtual size_t rcvd    ( void ) const = 0;
   virtual bool   active  ( void ) const = 0;
   virtual bool   pending ( void ) const = 0;
+};
 
 struct Interrupt_debug_if
 : virtual sc_core::sc_interface
