@@ -6,6 +6,7 @@ Table of Contents
   - [Block Diagram](#BlkDiag)
   - [Memory Map](#MemMap)
   - [Design Notes](#DNotes)
+  - [Module Status](#Stats)
   - [To Do List](#ToDo)
 + [Rules, Conventions, and Guidelines](#CRules)
 + [Instructions for Building](#HowTo)
@@ -48,31 +49,34 @@ make it easy to understand. Comment blocks are highly encouraged.
 ```
 Top
 +--------------------------------------------------------------+
-|                                                            r0|
-| .--------------.                                             |
-| |         .....|.....                                        |
-| | Cpu     : Dma|  r1: IrqCtrl   Gpio      Crypto             |
-| | +-----+ : +--^--+ : +-----+   +-----+   +-----+            |
-| | ! cpu ! : | dma ! : ! pic !   | gio !   |crypt!            |
-| | +--v-v+ : +--^--+ : +--^--+   +--^--+   +--^--+            |
-| |    | |  :....|....:    |         |         |     SBus      |
-| |    | |       |         |         |         |     +-----+   |
-| '--->| |       '---------x---------x---------x-----> spi !   |
-|      | '------.          |         |         |     +--v--+   |
-|   Mmu|        |          |         |         |        |      |
-|   +--v--+  +--v--+    +--v--+   +--v--+      |   .----'      |
-|   ! mmu !  | tcm |    | ssd |   |flash|      |   | Environ   |
-|   +v---v+  +-----+    +-----+   +-----+      |   | +-----+   |
-|   P|  S|   Memory     Ssd       Flash        |   x-> env |   |
-|    |   |                                     |   | +-----+   |
-| .--'   |  ...............................    |   |           |
-| | Cache|  : Ssd   r3: Mouse r4: Keybd r5:    |   | +-----+   |
-| | +----v+ : +-----+ : +-----+ : +-----+ :    |   '-> gps |   |
-| | | l2c | : | thb | : | ptr | : | kbd | :    |     +-----+   |
-| | +--v--+ : +--^--+ : +--^--+ : +--^--+ :    |     Gps       |
-| |    |    :....|....:....|....:....|....:    |               |
-| '--->|         '---------x---------'         |               |
-|      |                   |                   |               |
+| .--------------.                                           r0|
+| | Proc         |                                             |
+|.|..........    |                                             |
+|:| prc   r1:    |                                             |
+|:|         :    |                                             |
+|:|         :....|.....                                        |
+|:| Cpu     : Dma|  r2: Pic       Gpio      Crypto             |
+|:| +-----+ : +--^--+ : +-----+   +-----+   +-----+            |
+|:| ! cpu ! : | dma ! : ! pic !   | gio !   |crypt!            |
+|:| +--v-v+ : +--^--+ : +--^--+   +--^--+   +--^--+            |
+|:|    | |  :....|....:    |         |         |     SBus      |
+|:|    | |  :    |         |         |         |     +-----+   |
+|:'--->| |  :    '---------x---------x---------x-----> spi !   |
+|:     | '--:---.          |         |         |     +--v--+   |
+|:  Mmu|    :   |          |         |         |        |      |
+|:  +--v--+ :+--v--+    +--v--+   +--v--+      |   .----'      |
+|:  ! mmu ! :| tcm |    | ssd |   |flash|      |   | Environ   |
+|:  +v---v+ :+-----+    +-----+   +-----+      |   | +-----+   |
+|:  P|  S|  :Memory     Ssd       Flash        |   x-> env |   |
+|:   |   |  :                                  |   | +-----+   |
+|:.--'   |  ...............................    |   |           |
+|:| Cache|  : Ssd   r4: Mouse r5: Keybd r6:    |   | +-----+   |
+|:| +----v+ : +-----+ : +-----+ : +-----+ :    |   '-> gps |   |
+|:| | l2c | : | thb | : | ptr | : | kbd | :    |     +-----+   |
+|:| +--v--+ : +--^--+ : +--^--+ : +--^--+ :    |     Gps       |
+|:|    |    :....|....:....|....:....|....:    |               |
+|:'--->|    :    '---------x---------'         |               |
+|:.....|....:              |                   |               |
 |   Bus|      Disk      Usb|      Bus          |     Memory    |
 |   +--V--+   +-----+   +--^--+   +-----+      |     +-----+   |
 |   | nth |   | dsk !   | usb !   | sth >------x-----> ddr |   |
@@ -81,7 +85,7 @@ Top
 |      x---------x---------x---------x         x--------.      |
 |      |         |         |         |         |        |      |
 |      |         |    .....|.........|.....    |        |      |
-|      |         |    :    |         |  r2:    |        |      |
+|      |         |    :    |         |  r3:    |        |      |
 |   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+  +--v--+   |
 |   | ram |   | rom | : | net !   | vid ! : | tmr !  | ser !   |
 |   +-----+   +-----+ : +-----+   +-----+ : +-----+  +-----+   |
@@ -149,13 +153,14 @@ Top
 - Eventually Video or Wifi may become a hierarchical sub-system
 - Eventually one of the buses will become customized
 - Order of development is TBD, but simplest first
-- Four power regions labeled r0 through r3
+- Four power regions labeled r0 through r6
+- One hierarchical boundary in the `Proc_module` represented by r1
 
 ## <a name="Stats"></a>Module Status
 
 Each module will its status noted here. The following states are allowed:
 
-- Untouched - placeholder
+- Thought - placeholder from this document not yet tackled
 - Concept - documentation has begun
 - Started - initial coding (some files in various states)
 - Basic - basic functionality achieved with minimal coding
@@ -172,7 +177,7 @@ Each module will its status noted here. The following states are allowed:
 | `Excl_proxy`        | Implements non-locking bus mutual exclusion. |   Y   | Started |
 | `Excl_extn`         | Request mutual exclusion.                    |   Y   | Started |
 | `Dma_module`        | Target/Initiator                             |   Y   | Concept |
-| `Pic_module`        | Interrupt distributor                        |   Y   | Started |
+| `Pic_module`        | Priority Interrupt Controller                |   Y   | Started |
 | `Power` class       | Model power regions                          |   Y   | Started |
 | `Reset` class       | Model resets                                 |   Y   | Concept |
 | `Report` routines   | Simplify reporting                           |   Y   | Basic   |
@@ -188,12 +193,25 @@ Each module will its status noted here. The following states are allowed:
 | `timer_test`        | Cpu task to test timer  block                |   Y   | Basic   |
 | `Timer` behavior    | Behavior of timer used by `Timer_module`     |   Y   | Basic   |
 | `Timer_api`         | API used `Timer_test`                        |   Y   | Basic   |
-| hexfile utils       | Save/load/dump hex data                      |   Y   | Basic   |
+| `hexfile` utils     | Save/load/dump hex data                      |   Y   | Basic   |
 | `Signal` class      | Specify how to handle CTRL-C                 |   Y   | Basic   |
 | `Interrupt` channel | Carry interrupts between modules             |   Y   | Concept |
 | `Summary` class     | Summarize execution                          |  TBS  | Concept |
-| `main`              | Beyond basics.                               |  TBS  | Concept |
+| `sc_main`           | Beyond basics.                               |  TBS  | Concept |
 | `Top_module`        | Module connectivity                          |  TBS  | Concept |
+| `Proc_module`       | Hierarchical TLM                             |  TBS  | Thought |
+| `Disk_module`       | Disk simulation using file system            |  TBS  | Thought |
+| `SBus_module`       | Serial interconnect (SPI or I2C)             |  TBS  | Thought |
+| `Crypto_module`     | Cryptography unit                            |  TBS  | Thought |
+| `Gpio_module`       | General purpose I/O                          |  TBS  | Thought |
+| `Ssd_module`        | Solid state memory (possibly sophisticated)  |  TBS  | Thought |
+| `Flash_module`      | Flash memory unit (various types modeled)    |  TBS  | Thought |
+| `Environ_module`    | Environment sensors (temp, magnetic, ...)    |  TBS  | Thought |
+| `Usb_module`        | USB interconnect                             |  TBS  | Thought |
+| `Video_module`      | Video display (possibly GPU too)             |  TBS  | Thought |
+| `Usart_module`      | Serial port                                  |  TBS  | Thought |
+| `Gps_module`        | GPS location                                 |  TBS  | Thought |
+| `Wifi_module`       | WiFi using network to simulate               |  TBS  | Thought |
 
 ## <a name="ToDo"></a>To Do List
 
