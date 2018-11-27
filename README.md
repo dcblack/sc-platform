@@ -101,9 +101,9 @@ Top
 | Block | Base Address | Bus | Size | Irq | Module   |
 | ----- | :----------- | --- | ---: | --: | :-----   |
 | cpu   | 0xF000'0000  |  -  |  128 |  -  | Cpu      |
-| rom   | 0x0000'0000  | NTH |  16M |  -  | Memory   |
-| ram   | 0x1000'0000  | NTH | 512K |  -  | Memory   |
-| ddr   | 0x2000'0000  | NTH |   1G |  -  | Memory   |
+| rom   | 0x0000'0000  | NTH |  96M |  -  | Memory   |
+| ram   | 0x1000'0000  | NTH | 128K |  -  | Memory   |
+| ddr   | 0x2000'0000  | NTH | 256M |  -  | Memory   |
 | tmr   | 0x4000'0000  | sth |   32 |  1  | Timer    |
 | gio   | 0x4000'1000  | sth |   32 |  2  | Gpio     |
 | crypt | 0x4000'2000  | sth |   2K |  3  | Crypto   |
@@ -288,6 +288,7 @@ Optional:
 | `get_`    | const accessor method           |
 | `is_`     | returns bool status             |
 | `m_`      | class member attributes         |
+| `_ptr`    | pointer to object               |
 | `s_`      | class static attributes         |
 | `set_`    | modifying accessor method       |
 
