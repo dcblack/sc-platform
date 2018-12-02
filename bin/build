@@ -24,11 +24,14 @@ if [[ error_count -gt 0 ]]; then
 fi
 
 # Setup option defaults
+HERE=$(/bin/pwd)
 TARGET="platform" # default
 CMAKE_OPTS=""
 MAKE_OPTS=""
 RUN_OPTS=""
+ARGS=""
 RUN=0
+CLEAN=0
 GDBP=""
 # If name of script is run...
 if [[ $0 =~ .*run ]]; then
@@ -51,6 +54,9 @@ while [[ "$1" =~ -.* ]]; do
   elif [[ "$1" == "-run" ]]; then
     RUN=1
     shift
+  elif [[ "$1" == "-clean" ]]; then
+    CLEAN=1
+    shift
   elif [[ "$1" == "-gdb" ]]; then
     RUN=1
     GDBP=gdb
@@ -58,6 +64,10 @@ while [[ "$1" =~ -.* ]]; do
   elif [[ "$1" == "-d" ]]; then
     CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Debug"
     RUN_OPTS="${RUN_OPTS} -debug"
+    shift
+  elif [[ "$1" == "-a" ]]; then
+    shift
+    ARGS="$ARGS $1"
     shift
   else
     break
@@ -71,32 +81,44 @@ else
 fi
 
 # Move into build directory if present (recommended)
+RDIR="."
 BDIR="."
 if [[ -r build ]]; then
-  BDIR=".."
-  echo "cd build"
-  cd build
+  RDIR=".."
+  BDIR="build"
+  echo "cd $BDIR"
+  cd $BDIR
 fi
 
 # Build
-rm -f make.log run.log $BDIR/make.log $BDIR/run.log
-if [[ -r CMakeLists.txt ]]; then
-  echo "cmake ${CMAKE_OPTS}$BDIR 2>&1 | tee -a make.log"
-  cmake "${CMAKE_OPTS}" $BDIR
+rm -f make.log run.log $RDIR/make.log $RDIR/run.log
+if [[ -r $RDIR/CMakeLists.txt ]]; then
+  echo "cmake ${CMAKE_OPTS}$RDIR 2>&1 | tee -a make.log"
+  cmake "${CMAKE_OPTS}" $RDIR
 fi
-echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $BDIR/make.log"
-make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $BDIR/make.log
+if [[ $CLEAN == 1 ]]; then
+  echo "make clean 2>&1 | tee -a $RDIR/make.log"
+  make clean 2>&1 | tee -a $RDIR/make.log
+fi
+if [[ -x $TARGET ]]; then rm $TARGET; fi
+echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $RDIR/make.log"
+make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $RDIR/make.log
 
 # Run
 if [[ $RUN == 1 ]]; then
+cd $RDIR
 env DEBUG=1\
     LD_LIBRARY_PATH=$SYSTEMC/lib \
     DYLD_LIBRARY_PATH=$SYSTEMC/lib \
-  $GDBP ./$TARGET -- $RUN_OPTS ${ARGS} 2>&1 \
-  | tee run.log
+  $GDBP $BDIR/$TARGET -- $RUN_OPTS ${ARGS} 2>&1 \
+  | tee $BDIR/run.log
 
-  if [[ "$BDIR" != "." ]]; then
-    filter-sclog <run.log >$BDIR/run.log;
+  if [[ "$RDIR" != "$BDIR" ]]; then
+    filter-sclog <$BDIR/run.log >$RDIR/run.log;
+  else
+    filter-sclog <$RDIR/run.log >$RDIR/run2.log;
+    rm $BDIR/run.log
+    mv $BDIR/run2.log $RDIR/run.log
   fi
 fi
 
