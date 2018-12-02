@@ -1,0 +1,8 @@
+extends: default
+
+rules:
+  braces: disable
+  colons: disable
+  commas: { max-spaces-after: 100 }
+  line-length: { max: 100 }
+  octal-values: { forbid-implicit-octal: true }
