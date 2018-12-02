@@ -48,85 +48,100 @@ make it easy to understand. Comment blocks are highly encouraged.
 
 ```
 Top
-+--------------------------------------------------------------+
-| .--------------.                                           r0|
-| | Proc         |                                             |
-|.|..........    |                                             |
-|:| prc   r1:    |                                             |
-|:|         :    |                                             |
-|:|         :....|.....                                        |
-|:| Cpu     : Dma|  r2: Pic       Gpio      Crypto             |
-|:| +-----+ : +--^--+ : +-----+   +-----+   +-----+            |
-|:| ! cpu ! : | dma ! : ! pic !   | gio !   |crypt!            |
-|:| +--v-v+ : +--^--+ : +--^--+   +--^--+   +--^--+            |
-|:|    | |  :....|....:    |         |         |     SBus      |
-|:|    | |  :    |         |         |         |     +-----+   |
-|:'--->| |  :    '---------x---------x---------x-----> spi !   |
-|:     | '--:---.          |         |         |     +--v--+   |
-|:  Mmu|    :   |          |         |         |        |      |
-|:  +--v--+ :+--v--+    +--v--+   +--v--+      |   .----'      |
-|:  ! mmu ! :| tcm |    | ssd |   |flash|      |   | Environ   |
-|:  +v---v+ :+-----+    +-----+   +-----+      |   | +-----+   |
-|:  P|  S|  :Memory     Ssd       Flash        |   x-> env |   |
-|:   |   |  :                                  |   | +-----+   |
-|:.--'   |  ...............................    |   |           |
-|:| Cache|  : Ssd   r4: Mouse r5: Keybd r6:    |   | +-----+   |
-|:| +----v+ : +-----+ : +-----+ : +-----+ :    |   '-> gps |   |
-|:| | l2c | : | thb | : | ptr | : | kbd | :    |     +-----+   |
-|:| +--v--+ : +--^--+ : +--^--+ : +--^--+ :    |     Gps       |
-|:|    |    :....|....:....|....:....|....:    |               |
-|:'--->|    :    '---------x---------'         |               |
-|:.....|....:              |                   |               |
-|   Bus|      Disk      Usb|      Bus          |     Memory    |
-|   +--V--+   +-----+   +--^--+   +-----+      |     +-----+   |
-|   | nth |   | dsk !   | usb !   | sth >------x-----> ddr |   |
-|   +--V--+   +--^--+   +--^--+   +--^--+      |     +-----+   |
-|      |         |         |         |         |               |
-|      x---------x---------x---------x         x--------.      |
-|      |         |         |         |         |        |      |
-|      |         |    .....|.........|.....    |        |      |
-|      |         |    :    |         |  r3:    |        |      |
-|   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+  +--v--+   |
-|   | ram |   | rom | : | net !   | vid ! : | tmr !  | ser !   |
-|   +-----+   +-----+ : +-----+   +-----+ : +-----+  +-----+   |
-|   Memory    Memory  : Wifi      Video   : Timer    Usart     |
-|                     :...................:                    |
-|                                                              |
-+--------------------------------------------------------------+
++------------------------------------------------------------------+
+|               SystemMgr           Mcu                            |
+|                +-----+            +-----+                        |
+|                | sys |            |mcu2 |                        |
+|                +-----+            +--v--+                        |
+| Mcu                                  |                           |
+| +------------------------------------v-------------------------+ |
+| |mcu1                                |                       r0| |
+| | .--------------.                   |                         | |
+| | |              |      +-----+   +--v--+             +-----+  | |
+| | | Proc         |      | TBD |   | mbx |Mailbox      | TBD |  | |
+| |.|..........    |      +-----+   +--^--+             +-----+  | |
+| |:| prc   r1:    |                   |                         | |
+| |:|         :    |                   x---------.               | |
+| |:|         :....|.....                        |               | |
+| |:| Cpu     : Dma|  r2: Pic       Gpio         |      Crypto   | |
+| |:| +-----+ : +--^--+ : +-----+   +-----+      |      +-----+  | |
+| |:| ! cpu ! : | dma ! : ! pic !   | gio !      x------>crypt!  | |
+| |:| +--v-v+ : +--^--+ : +--^--+   +--^--+      |      +-----+  | |
+| |:|    | |  :....|....:    |         |         |               | |
+| |:|    | |  :    |         |         |         |               | |
+| |:'--->| |  :    '---------x---------x---------x      SBus     | |
+| |:     | '--:---.          |         |         |      +-----+  | |
+| |:  Mmu|    :   |          |         |         x------> spi !  | |
+| |:  +--v--+ :+--v--+    +--v--+   +--v--+      |      +--v--+  | |
+| |:  ! mmu ! :| tcm |    | ssd |   |flash|      |         |     | |
+| |:  +v---v+ :+-----+    +-----+   +-----+      |    .----'     | |
+| |:  P|  S|  :Memory     Ssd       Flash        |    | Environ  | |
+| |:   |   |  :                                  |    | +-----+  | |
+| |:.--'   |  ...............................    |    x-> env |  | |
+| |:| Cache|  : Ssd   r4: Mouse r5: Keybd r6:    |    | +-----+  | |
+| |:| +----v+ : +-----+ : +-----+ : +-----+ :    |    |          | |
+| |:| | l2c | : | thb | : | ptr | : | kbd | :    |    | +-----+  | |
+| |:| +--v--+ : +--^--+ : +--^--+ : +--^--+ :    |    '-> gps |  | |
+| |:|    |    :....|....:....|....:....|....:    |      +-----+  | |
+| |:'--->|    :    '---------x---------'         |      Gps      | |
+| |:.....|....:              |                   |               | |
+| |   Bus|      Disk      Usb|      Bus          |     Memory    | |
+| |   +--V--+   +-----+   +--^--+   +-----+      |     +-----+   | |
+| |   | nth |   | dsk !   | usb !   | sth >------x-----> ddr |   | |
+| |   +--V--+   +--^--+   +--^--+   +--^--+      |     +-----+   | |
+| |      |         |         |         |         |               | |
+| |      x---------x---------x---------x         x--------.      | |
+| |      |         |         |         |         |        |      | |
+| |      |         |    .....|.........|.....    |        |      | |
+| |      |         |    :    |         |  r3:    |        |      | |
+| |   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+  +--v--+   | |
+| |   | ram |   | rom | : | net !   | vid ! : | tmr !  | ser !   | |
+| |   +-----+   +-----+ : +-----+   +-----+ : +-----+  +-----+   | |
+| |   Memory    Memory  : Wifi      Video   : Timer    Usart     | |
+| |                     :...................:                    | |
+| |                                                              | |
+| +--------------------------------------------------------------+ |
++------------------------------------------------------------------+
+
 ```
 
 ## <a name="MemMap"></a>Memory Map
 ----------
 
-| Block | Base Address | Bus | Size | Irq | Module   |
-| ----- | :----------- | --- | ---: | --: | :-----   |
-| cpu   | 0xF000'0000  |  -  |  128 |  -  | Cpu      |
-| rom   | 0x0000'0000  | NTH |  96M |  -  | Memory   |
-| ram   | 0x1000'0000  | NTH | 128K |  -  | Memory   |
-| ddr   | 0x2000'0000  | NTH | 256M |  -  | Memory   |
-| tmr   | 0x4000'0000  | sth |   32 |  1  | Timer    |
-| gio   | 0x4000'1000  | sth |   32 |  2  | Gpio     |
-| crypt | 0x4000'2000  | sth |   2K |  3  | Crypto   |
-| pic   | 0x4000'3000  | sth |   1K |  4  | IrqCtrl  |
-| dma   | 0x4000'4000  | sth |   32 |  0  | Dma      |
-| flash | 0x4000'5000  | sth |   4K | 12  | Flash    |
-| spi   | 0x4000'6000  | sth |   32 |  5  | SBus     |
-| ser   | 0x4000'7000  | sth |   32 |  6  | Usart    |
-| dsk   | 0x4008'0000  | NTH |   1K |  7  | DiskC    |
-| net   | 0x4008'1000  | NTH |   32 |  8  | Wifi     |
-| mmu   | 0x4008'2000  | NTH |   32 |  9  | Mmu      |
-| usb   | 0x4008'3000  | NTH |   32 | 10  | Usb      |
-| ssd   | 0x6000'0000  | sth |   2M | 13  | Ssd      |
-| flash | 0x8000'0000  | sth |   1G |  7  | Flash    |
-| vid   | 0xC000'0000  | NTH |  16M | 11  | Video    |
-| gps   | spi:0x0      | spi |   32 |  -  | Gps      |
-| env   | spi:0x100    | spi |   32 |  -  | Environ  |
-| ptr   | usb:0        | usb |   32 |  -  | Mouse    |
-| kbd   | usb:1        | usb |   32 |  -  | Keyboard |
-| thb   | usb:2        | usb |  32G |  -  | Ssd      |
-| nth   | 0x0000'0000  |  -  |   4G |  -  | Bus      |
-| sth   | 0x4000'0000  |  -  |  64K |  -  | Bus      |
-| l2c   | n/a          |  -  |    - |  -  | Cache    |
+| Block | Base Address | Bus | Size | Irq | Module     |
+| ----- | :----------- | --- | ---: | --: | :-----     |
+| cpu   | 0xF000'0000  |  -  |  128 |  -  | Cpu        |
+| rom   | 0x0000'0000  | NTH |  96M |  -  | Memory     |
+| ram   | 0x1000'0000  | NTH | 128K |  -  | Memory     |
+| ddr   | 0x2000'0000  | NTH | 256M |  -  | Memory     |
+| tmr   | 0x4000'0000  | sth |   32 |  2  | Timer      |
+| gio   | 0x4000'1000  | sth |   32 |  3  | Gpio       |
+| crypt | 0x4000'2000  | sth |   2K |  4  | Crypto     |
+| pic   | 0x4000'3000  | sth |   1K |  5  | IrqCtrl    |
+| dma   | 0x4000'4000  | sth |   32 |  1  | Dma        |
+| flash | 0x4000'5000  | sth |   4K | 13  | Flash      |
+| spi   | 0x4000'6000  | sth |   32 |  6  | SBus       |
+| ser   | 0x4000'7000  | sth |   32 |  7  | Usart      |
+| mbx   | 0x4000'7000  | sth |   32 | 14  | Mailbox    |
+| dsk   | 0x4008'0000  | NTH |   1K |  8  | DiskC      |
+| net   | 0x4008'1000  | NTH |   32 |  9  | Wifi       |
+| mmu   | 0x4008'2000  | NTH |   32 | 10  | Mmu        |
+| usb   | 0x4008'3000  | NTH |   32 | 11  | Usb        |
+| ssd   | 0x6000'0000  | sth |   2M | 14  | Ssd        |
+| flash | 0x8000'0000  | sth |   1G |  8  | Flash      |
+| vid   | 0xC000'0000  | NTH |  16M | 12  | Video      |
+| gps   | spi:0x0      | spi |   32 |  -  | Gps        |
+| env   | spi:0x100    | spi |   32 |  -  | Environ    |
+| ptr   | usb:0        | usb |   32 |  -  | Mouse      |
+| kbd   | usb:1        | usb |   32 |  -  | Keyboard   |
+| thb   | usb:2        | usb |  32G |  -  | Ssd        |
+| nth   | 0x0000'0000  |  -  |   4G |  -  | Bus        |
+| sth   | 0x4000'0000  |  -  |  64K |  -  | Bus        |
+| l2c   | n/a          |  -  |    - |  -  | Cache      |
+| prc   | n/a          |  -  |    - |  -  | Proc       |
+| mcu1  | n/a          |  -  |    - |  -  | Mcu        |
+| mcu2  | n/a          |  -  |    - |  -  | Mcu        |
+| sys   | n/a          |  -  |    - |  -  | SystemMgr  |
 
 ## <a name="DNotes"></a>Design Notes
 
@@ -155,6 +170,7 @@ Top
 - Order of development is TBD, but simplest first
 - Four power regions labeled r0 through r6
 - One hierarchical boundary in the `Proc_module` represented by r1
+- SystemManager manages clocks/power/resets
 
 ## <a name="Stats"></a>Module Status
 
@@ -212,6 +228,10 @@ Each module will its status noted here. The following states are allowed:
 | `Usart_module`      | Serial port                                  |  TBS  | Thought |
 | `Gps_module`        | GPS location                                 |  TBS  | Thought |
 | `Wifi_module`       | WiFi using network to simulate               |  TBS  | Thought |
+| `Proc_module`       | Simple hierarchical wrapper                  |  TBS  | Thought |
+| `Mcu_module`        | Simple hierarchical wrapper                  |  TBS  | Thought |
+| `Mailbox_module`    | Mailbox for heterogenous interconnect        |  TBS  | Thought |
+| `SystemMgr_module`  | System manager for clocks/power/resets       |  TBS  | Thought |
 
 ## <a name="ToDo"></a>To Do List
 
@@ -236,10 +256,8 @@ Optional:
 3. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
 4. Consider refactor `Memory_module` to use PIMPL
 5. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
-6. Add a `Mailbox_module` (2 FIFO\'s)
-7. Add a `Stack_module` (LIFO).
-8. Add a `SystemManager_module` to manage clocks/power/resets
-9. Add `Global` class to replace `g_` variables
+6. Add a `Stack_module` (LIFO).
+7. Add `Global` class to replace `g_` variables
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
@@ -298,9 +316,9 @@ Numerous extras have been added including:
 
 - `report.h` is provided to simplify message reporting. See `report.h` comments
   for more information.
-- `config.h` and `config.cpp` provide a generalized configuration mechanism that
-  may be used to configure memory maps and other features.
-- `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `config`
+- `configuration.h` and `configuration.cpp` provide a generalized configuration mechanism that
+  used to configure memory maps and other features.
+- `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `Configuration`
   built in.
 
 # <a name="HowTo"></a>Instructions for Building

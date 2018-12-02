@@ -1,9 +1,28 @@
 About the bus
 =============
 
-`Bus_module` is an implementation of a generic TLM bus interconnect
-component. A memory map is constructed either from a `Config_extn`
-probed in the targets, or via a YAML memory map file.
+`Bus_module` is an implementation of a generic TLM bus interconnect component.
+A memory map is constructed from a combbination of `Config_extn` probes in the
+targets combined with a YAML memory map file.  Efforts are also made to
+validate the map including checks for:
+
+- No missing port information (lack of Config_extn data update)
+- No overlapping address regions
+- No loops
+
+The memory map is constructed as follows:
+1. Optionally, before `start_of_simulation()`, an implementation may modify
+   configuration settings used in probing or alter the `memory_map.yaml` file.
+2. At `start_of_simulation()`, `build_port_map()` is called.
+3. YAML file is loaded.
+4. For each bus probes its target socket connections using
+   `transport_dbg()` to obtain Configuration data, which must include the target
+   module's full `name()` and `kind()`. Data may include the target's depth.
+   If not zero, the depth returned will be used in preference to any data in 
+   the YAML file. This allows devices to be instantiated with different sizes.
+5. Memory map is constructed by comparing the names in the port probes to the
+   names found in the YAML file.
+6. The resultant memory map is checked for overlapping data.
 
 Block diagram
 -------------
@@ -17,15 +36,23 @@ Block diagram
          |
          v
       +--v--+
-      | bus | - - Uses memory_map
+      | bus1| - - - Uses memory_map.yaml
       +--v--+
          v
-         |
-   .-----x-----.
-   |           |
-+--v--+     +--v--+
-|targ0|     |targ1|
-+-----+     +-----+
+         | level 1
+   .-----x-----.----------.
+   |           |          |
+   |           |          V
++--v--+     +--v--+    +--v--+
+|targ0|     |targ1|    | bus2| - - - Uses memory_map.yaml
++-----+     +-----+    +--v--+
+                          v
+                          | level 2
+                    .-----x-----.
+                    |           |
+                 +--v--+     +--v--+
+                 |targ2|     |targ3|
+                 +-----+     +-----+
 ```
 
 Usage Example
