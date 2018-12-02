@@ -46,7 +46,8 @@ Top_module::~Top_module( void )
 
 ///////////////////////////////////////////////////////////////////////////////
 // Private implementation
-struct Top_module::Impl {
+struct Top_module::Impl
+{
   // Clock
   no_clock& clk { no_clock::global( "system_clock", 100_MHz ) };
 
