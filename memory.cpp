@@ -26,7 +26,6 @@ using namespace std;
 Memory_module::Memory_module // Constructor
 ( sc_module_name instance_name
 , Depth_t        target_size
-, Addr_t         target_base
 , Access         access
 , size_t         max_burst
 , size_t         alignment
@@ -36,7 +35,7 @@ Memory_module::Memory_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: m_target_size            { target_depth    }
+: m_target_size             { target_size     }
 //m_target_base not needed
 , m_dmi_allowed             { dmi_allowed     }
 , m_access                  { access          }
@@ -59,8 +58,7 @@ Memory_module::Memory_module // Constructor
   m_configuration.set( "name",         string(name())  );
   m_configuration.set( "kind",         string(kind())  );
   m_configuration.set( "object_ptr",   uintptr_t(this) );
-  m_configuration.set( "target_base", target_start    );
-  m_configuration.set( "target_size", target_depth    );
+  m_configuration.set( "target_size",  target_size     );
   m_configuration.set( "dmi_allowed",  dmi_allowed     );
   m_configuration.set( "access",       access          );
   m_configuration.set( "byte_enables", byte_enables    );
@@ -143,7 +141,7 @@ bool Memory_module::configure( tlm_payload_t& trans )
     } else {
       m_configuration.update( extn->configuration );
       // Update local copies
-      extn->configuration.get( "target_size",  m_target_depth );
+      extn->configuration.get( "target_size",  m_target_size  );
       extn->configuration.get( "dmi_allowed ", m_dmi_allowed  );
       extn->configuration.get( "access"      , m_access       );
       extn->configuration.get( "byte_enables", m_byte_enables );

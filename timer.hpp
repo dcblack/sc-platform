@@ -49,7 +49,6 @@ struct Timer_module: sc_core::sc_module
   Timer_module //< Constructor
   ( sc_core::sc_module_name instance_name
   , size_t                  timer_quantity
-  , Addr_t                  target_base = 0
   , uint32_t                addr_clocks  = 1
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 2

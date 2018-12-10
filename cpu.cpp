@@ -283,6 +283,15 @@ Cpu_module::record_transaction
 }
 
 //------------------------------------------------------------------------------
+Addr_t Cpu_module::find_address ( string path ) const
+{
+  auto target_ptr = Memory_map::target_path({ name(), path });
+  sc_assert( target_ptr );
+  sc_assert( target_ptr->base != BAD_ADDR );
+  return target_ptr->base;
+}
+
+//------------------------------------------------------------------------------
 void
 Cpu_module::transport
 ( tlm_command command
@@ -364,15 +373,15 @@ Cpu_module::transport
       // Regular transaction
       //
       // Grab a new transaction from the memory manager
-      tlm_payload_t& trans{ *m_mm.allocate_acquire() };
-      trans.set_command        ( command  );
-      trans.set_address        ( address  );
-      trans.set_data_ptr       ( data_ptr );
-      trans.set_data_length    ( data_len );
-      trans.set_streaming_width( data_len );
-      trans.set_byte_enable_ptr( nullptr  );
-      trans.set_dmi_allowed    ( false    );
-      trans.set_response_status( TLM_INCOMPLETE_RESPONSE );
+      tlm_payload_t& trans
+      { *m_mm.allocate_acquire_and_set
+          ( command
+          , address
+          , data_ptr
+          , data_len
+          , data_len
+          )
+      };
 
       sc_time delay = m_qk.get_local_time();
       init_socket->b_transport( trans, delay );
@@ -421,15 +430,15 @@ Cpu_module::transport
     Cpu_module::tlm_phase_t phase;
     sc_time delay{ SC_ZERO_TIME };
     // Grab a new transaction from the memory manager
-    tlm_payload_t& trans{ *m_mm.allocate_acquire() };
-    trans.set_command        ( command  );
-    trans.set_address        ( address  );
-    trans.set_data_ptr       ( data_ptr );
-    trans.set_data_length    ( data_len );
-    trans.set_streaming_width( data_len );
-    trans.set_byte_enable_ptr( nullptr  );
-    trans.set_dmi_allowed    ( false    );
-    trans.set_response_status( TLM_INCOMPLETE_RESPONSE );
+    tlm_payload_t& trans
+    { *m_mm.allocate_acquire_and_set
+        ( command
+        , address
+        , data_ptr
+        , data_len
+        , data_len
+        )
+    };
 
     // Initiator must honor BEGIN_REQ/END_REQ exclusion rule
     if ( m_request_in_progress != nullptr ) {

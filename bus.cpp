@@ -14,6 +14,9 @@
 #include "config_extn.hpp"
 #include "route_extn.hpp"
 #include <memory>
+#include <tuple>
+#include <map>
+
 namespace {
   const char* MSGID{ "/Doulos/Example/TLM-bus" };
 }
@@ -139,8 +142,8 @@ Bus_module::get_direct_mem_ptr
 
   bool status = init_socket[target]->get_direct_mem_ptr( trans, dmi_data );
 
-  dmi_data.set_start_address( reconstruct_address( dmi_data.get_start_address(), id ) );
-  dmi_data.set_end_address( reconstruct_address( dmi_data.get_end_address(),   id ) );
+  dmi_data.set_start_address( reconstruct_address( dmi_data.get_start_address(), id, false ) );
+  dmi_data.set_end_address  ( reconstruct_address( dmi_data.get_end_address(),   id, true  ) );
 
   return status;
 }
@@ -150,9 +153,10 @@ unsigned int
 Bus_module::transport_dbg( int id, tlm_payload_t& trans )
 {
   uint64 address{ trans.get_address() };
-  bool config_only{config( trans )};
 
-  if(  config_only and address == MAX_ADDR ) {
+  if(  configure( trans ) and address == MAX_ADDR ) {
+    // The only purpose for this transport_dbg was to obtain the configuration
+    // information for the caller.
     trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
     trans.set_response_status( TLM_OK_RESPONSE );
     return 0;
@@ -209,8 +213,8 @@ Bus_module::invalidate_direct_mem_ptr
 )
 {
   // Reconstruct address range in system memory map
-  sc_dt::uint64 bw_start_range = reconstruct_address( start_range, id );
-  sc_dt::uint64 bw_end_range   = reconstruct_address( end_range,   id );
+  sc_dt::uint64 bw_start_range = reconstruct_address( start_range, id, false );
+  sc_dt::uint64 bw_end_range   = reconstruct_address( end_range,   id, true  );
 
   // Propagate call backward to all initiators
   for ( unsigned int i = 0; i < targ_socket.size(); i++ ) {
@@ -240,7 +244,7 @@ Bus_module::mask_if_fits( Addr_t& address, Addr_t start, Depth_t depth ) const
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Bus_module::config
+bool Bus_module::configure
 ( tlm_payload_t& trans
 )
 {
@@ -249,14 +253,14 @@ bool Bus_module::config
 
   if( config_extn != nullptr ) {
     // Ensure we have the correct name locally
-    m_config.set( "name", string( name() ) );
-    m_config.set( "kind", string( kind() ) );
+    m_configuration.set( "name", string( name() ) );
+    m_configuration.set( "kind", string( kind() ) );
 
-    if( config_extn->config.empty() ) {
-      config_extn->config = m_config;
+    if( config_extn->configuration.empty() ) {
+      config_extn->configuration = m_configuration;
     }
     else {
-      m_config.update( config_extn->config );
+      m_configuration.update( config_extn->configuration );
     }
   }
 
@@ -270,69 +274,72 @@ Bus_module::decode_address
   Addr_t& masked_address
 )
 {
-  INFO( DEBUG+1, "Decoding address " << HEX << address );
-  masked_address = address;
-#ifndef CRUDE
+  INFO( DEBUG, "Decoding address " << HEX << address );
 
-  // Probing
-  if( m_port_vec.empty() ) {
-    build_port_map();
-  }
+  // In case of failure
+  Addr_t base = BAD_ADDR;
+  masked_address = BAD_ADDR;
 
   // Lookup for appropriate start, depth
-  for ( int port = 0; port < init_socket.size(); ++port ) {
-    if( mask_if_fits( masked_address, m_port_vec[port].start, m_port_vec[port].depth ) ) {
-      return m_port_vec[port].port;
-    }
+  auto lookup = m_addr_map.lower_bound( address );
+  if( lookup == m_addr_map.end() ) {
+    REPORT( WARNING, "No address => port match found!" );
+    return BAD_PORT;
   }
-  REPORT( WARNING, "No address => port match found!" );
-
-  return ~0;
-#else
-  // Crude - only allows for fixed one layer North bus
-  if( mask_if_fits( masked_address, ROM_BASE, ROM_DEPTH ) ) {
-    return ROM_PORT;
+  base = lookup->first;
+  if( base == MAX_ADDR ) {
+    REPORT( WARNING, "No address => port match found! Unintialized entry." );
+    return BAD_PORT;
   }
-
-  if( mask_if_fits( masked_address, RAM_BASE, RAM_DEPTH ) ) {
-    return RAM_PORT;
+  if( address > lookup->second.last ) {
+    REPORT( WARNING, "No address => port match found. Goes beyond closest port's maximum." );
+    return BAD_PORT;
   }
-
-  return ~0;
-#endif
+  masked_address = address - base;
+  return lookup->second.port;
 }
 
 //------------------------------------------------------------------------------
 uint64_t // address
 Bus_module::reconstruct_address
 ( Addr_t address
-, int    id
+, Port_t port
+, bool bias_upwards
 )
 {
-#ifndef CRUDE
-  Addr_t  start = m_port_vec[id].start;
-  Depth_t depth = m_port_vec[id].depth;
-  Addr_t  reconstructed{ start + address };
-
-  // Clip as required
-  if( reconstructed >= ( start + depth ) ) {
-    reconstructed = start + depth - 1;
+  Addr_t base{ BAD_ADDR };
+  Addr_t last;
+  Addr_t min_address{ MAX_ADDR};
+  Addr_t max_address{ 0 };
+  Addr_t reconstructed{ BAD_ADDR };
+  for( const auto& mapping : m_addr_map ) {
+    if( mapping.second.port != port ) continue;
+    base = mapping.second.base;
+    last = mapping.second.last;
+    if( base < min_address ) min_address = base;
+    if( last > max_address ) max_address = last;
+    if( base <= address and address <= last ) {
+      // Exact match!
+      reconstructed = base + address;
+      break;
+    }
+  }
+  if( reconstructed == BAD_ADDR ) {
+    if( address < max_address ) address = max_address;
+    if( bias_upwards ) {
+    }
+    else {
+    }
   }
 
   return reconstructed;
-#else
+}
 
-  // Crude
-  if( id == ROM_PORT ) {
-    return ROM_BASE + address;
+void Bus_module::start_of_simulation( void )
+{
+  if( m_addr_map.empty() ) {
+    build_port_map();
   }
-
-  if( id == RAM_PORT ) {
-    return RAM_BASE + address;
-  }
-
-#endif
-  return MAX_ADDR;
 }
 
 //------------------------------------------------------------------------------
@@ -340,69 +347,90 @@ void
 Bus_module::build_port_map( void )
 {
   INFO( MEDIUM, "Building port map for " << name() );
+  // Get memory map configuration
+  m_addr_map = Memory_map::get_address_map( name() );
 
+  //----------------------------------------------------------------------------
+  // Get port info by probing each target for its configuration
+  //----------------------------------------------------------------------------
   // Create a transaction for probing
-  tlm_payload_t& trans{ *m_mm.allocate_acquire() };
-  trans.set_command( TLM_IGNORE_COMMAND );
-  // Add sticky extension as needed
-  Config_extn* config_extn{ trans.get_extension<Config_extn>() };
-
+  tlm_payload_t& probe_trans{ *m_mm.allocate_acquire_and_set() };
+  // Add/reset configuration extension
+  Config_extn* config_extn{ probe_trans.get_extension<Config_extn>() };
   if( config_extn == nullptr ) {
     config_extn = new Config_extn;
-    trans.set_extension( config_extn );
+    probe_trans.set_extension( config_extn );
   }
   else {
-    config_extn->config.set_defaults();
+    config_extn->configuration.set_defaults();
   }
 
-  // Setup port mapping vector
-  m_port_vec.resize( init_socket.size() );
-
-  // Foreach initiator port
   for ( int port = 0; port < init_socket.size(); ++port ) {
     // Initialize fields that need refreshing on every transaction
-    trans.set_address( MAX_ADDR );
-    trans.set_response_status( TLM_INCOMPLETE_RESPONSE );
-    trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
+    probe_trans.set_address( BAD_ADDR );
+    probe_trans.set_response_status( TLM_INCOMPLETE_RESPONSE );
+    probe_trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
     // Make sure data is cleared to compel receiver to fill
-    config_extn->config.clear_data();
-    int count = init_socket[port]->transport_dbg( trans );
-    INFO( DEBUG, "transport_db response: " << trans.get_response_string() );
-    NOINFO( DEBUG, "Got " << config_extn->config );
+    config_extn->configuration.clear_data();
+    int count = init_socket[port]->transport_dbg( probe_trans );
+    INFO( DEBUG, "transport_db response: " << probe_trans.get_response_string() );
+    NOINFO( DEBUG, "Got " << config_extn->configuration );
 
-    if( trans.get_response_status() == TLM_OK_RESPONSE ) {
-      if( config_extn->config.has_key( "target_start" )
-           and config_extn->config.has_key( "target_depth" )
-           and config_extn->config.has_key( "name" )
-           and config_extn->config.has_key( "kind" )
-         ) {
-        m_port_vec[port].port = port;
-        config_extn->config.get( "name",         m_port_vec[port].name );
-        config_extn->config.get( "kind",         m_port_vec[port].kind );
-        config_extn->config.get( "target_start", m_port_vec[port].start );
-        config_extn->config.get( "target_depth", m_port_vec[port].depth );
+    if( probe_trans.get_response_status() == TLM_OK_RESPONSE ) {
+      if( config_extn->configuration.has_key( "target_size" )
+      and config_extn->configuration.has_key( "name" )
+      and config_extn->configuration.has_key( "kind" )
+      ) {
+        string  name;
+        string  kind;
+        Depth_t size;
+        Addr_t  last;
+        config_extn->configuration.get("name", name);
+        config_extn->configuration.get("kind", kind);
+        config_extn->configuration.get("target_size", size);
+        // For each mapping that matches the name, we update the
+        // port, kind, and optionally the size if not yet specified.
+        for( auto& mapping : m_addr_map ) {
+          Addr_t       addr{ mapping.first  };
+          Target_info& info{ mapping.second };
+          if( info.name == name ) {
+            info.port = port;
+            info.kind = kind;
+            if( info.size == UNASSIGNED ) {
+              info.size = size;
+            } else {
+              size = info.size;
+            }
+            sc_assert( size > 0 );
+            info.last = info.base + size - 1;
+          }
+        }
       }
     }
   }//endfor port
 
-  config_extn->config.clear_data();
-  trans.release();
-  check_port_map();
-}
+  config_extn->configuration.clear_data();
+  probe_trans.release();
+  check_port_map_and_update_configuration();
+}//end Bus_module::build_port_map()
 
 //------------------------------------------------------------------------------
 void
 Bus_module::dump_port_map( int level )
 {
-  MESSAGE( "Port map for " << name() << ":" );
+  MESSAGE( "Port map for " << name() << ":\n" );
 
-  for ( int port = 0; port < init_socket.size(); ++port ) {
-    MESSAGE( "\n   port: " << port
-             << "\n   - name:  " << m_port_vec[port].name
-             << "\n   - kind:  " << m_port_vec[port].kind
-             << HEX
-             << "\n   - start: " << m_port_vec[port].start
-             << "\n   - depth: " << m_port_vec[port].depth
+  for( auto rit = m_addr_map.rbegin(); rit!=m_addr_map.rend(); ++rit ) {
+    const Addr_t&      addr{ rit->first  };
+    const Target_info& info{ rit->second };
+    MESSAGE( HEX << "  - {"
+             << " base: " << setw(10) << info.base
+             << " last: " << setw(10) << info.last
+             << " size: " << setw(6) << info.size
+             << " port: " << setw(2) << DEC << info.port
+             << " name: " << info.name
+             << " kind: " << info.kind
+             << " }\n";
            );
   }
 
@@ -411,85 +439,91 @@ Bus_module::dump_port_map( int level )
 
 //------------------------------------------------------------------------------
 void
-Bus_module::check_port_map( void )
+Bus_module::check_port_map_and_update_configuration( void )
 {
   dump_port_map( SC_DEBUG );
   INFO( MEDIUM, "Checking port map for " << name() );
-  Addr_t  min_addr{ MAX_ADDR };
-  Addr_t  max_addr{ 0 };
-  size_t  errors  { 0 };
+  Addr_t  min_address{ MAX_ADDR }; // used to update bus configuration
+  Addr_t  max_address{ 0 };        // used to update bus configuration
+  size_t  mapping_errors  { 0 };
 
-  for ( int port = 0; port < init_socket.size(); ++port ) {
-    Addr_t  start = m_port_vec[port].start;
-    Depth_t depth = m_port_vec[port].depth;
+  // Examine each mapping for consistency and overlaps
+  for( const auto& mapping : m_addr_map ) {
+    const Addr_t       addr{ mapping.first  };
+    const Target_info& info{ mapping.second };
 
-    if( start == MAX_ADDR ) {
-      if( errors++ == 0 ) {
+    if( info.base == BAD_ADDR ) {
+      if( mapping_errors++ == 0 ) {
         MESSAGE( "Port map errors detected:" );
       }
 
-      MESSAGE( "\n  - Port " << port << " from "
-               << m_port_vec[port].kind << " " << m_port_vec[port].name << " "
-               << "missing mapping" );
+      MESSAGE( "\n  - Address " << addr << " from "
+               << info.kind << " " << info.name << " "
+               << "doesn't match contained address" );
       continue;
     }
 
-    if( start + depth < start ) {
-      if( errors++ == 0 ) {
+    if( info.last < info.base ) {
+      if( mapping_errors++ == 0 ) {
         MESSAGE( "Port map errors detected:" );
       }
 
-      MESSAGE( "\n  - Port " << port << " from "
-               << m_port_vec[port].kind << " " << m_port_vec[port].name << " "
+      MESSAGE( "\n  - Address " << addr << " from "
+               << info.kind << " " << info.name << " "
                << "address range wraps around 64 bits!" );
       continue;
     }
 
-    if( start < min_addr ) {
-      min_addr = start;
+    if( info.base < min_address ) {
+      min_address = info.base;
     }
 
-    if( start + depth > max_addr ) {
-      max_addr = start + depth;
+    if( info.last > max_address ) {
+      max_address = info.last;
     }
 
     // Check for overlapping address ranges
-    for ( int prev = 0; prev < port; ++prev ) {
-      if( m_port_vec[prev].start == MAX_ADDR ) {
+    for( const auto& next_mapping : m_addr_map ) {
+      const Addr_t       next_addr{ next_mapping.first  };
+      const Target_info& next_info{ next_mapping.second };
+
+      // Don't compare what we've seen so far
+      if( next_addr <= addr ) {
         continue;
       }
 
-      if( start < ( m_port_vec[prev].start + m_port_vec[prev].depth )
-           and m_port_vec[prev].start < ( start + depth ) ) {
-        if( errors++ == 0 ) {
+      if( next_addr <= info.last ) {
+        if( mapping_errors++ == 0 ) {
           MESSAGE( "Port map errors detected:" );
         }
 
         MESSAGE( "\n  - Overlapping regions in Bus address map: " << HEX
-                 << m_port_vec[port].kind << " " << m_port_vec[port].name << " "
-                 << start << ".." << m_port_vec[port].start + depth - 1
+                 << info.kind << " " << info.name << " "
+                 << addr << ".." << info.last
                  << " and "
-                 << m_port_vec[prev].kind << " " << m_port_vec[prev].name << " "
-                 << m_port_vec[prev].start << ".." << m_port_vec[prev].start + m_port_vec[prev].depth - 1
-               );
+                 << next_info.kind << " " << next_info.name << " "
+                 << next_info.base << ".." << next_info.last
+        );
       }
-    }//endfor prev
-  }//endfor port
+    }//endforeach next_mapping
+  }//endforeach mapping
 
-  if( errors > 0 ) {
-    REPORT( ERROR, "\n\nTotal of " << errors << " detected mapping errors." );
+  if( mapping_errors > 0 ) {
+    REPORT( ERROR, "\n\nTotal of " << mapping_errors << " mapping errors detected for " << name());
   }
   else {
     INFO( MEDIUM, "Port map valid for " << name() );
   }
 
-  m_config.set( "name", string( name() ) );
-  m_config.set( "kind", string( kind() ) );
-  m_config.set( "object_ptr", uintptr_t( this ) );
-  m_config.set( "target_start", min_addr );
-  m_config.set( "target_depth", Depth_t( max_addr - min_addr ) );
-  INFO( DEBUG, "Bus config:\n" << m_config );
-}
+  // Update our own configuration data
+  m_configuration.set( "name", string( name() ) );
+  m_configuration.set( "kind", string( kind() ) );
+  m_configuration.set( "object_ptr", uintptr_t( this ) );
+  m_configuration.set( "target_base", min_address );
+  m_configuration.set( "target_size", Depth_t( max_address - min_address ) );
+  INFO( DEBUG, "Bus configuration:\n" << m_configuration );
+
+}//end check_port_map_and_update_configuration()
 
 ////////////////////////////////////////////////////////////////////////////////
 // Copyright 2018 by Doulos. All rights reserved.

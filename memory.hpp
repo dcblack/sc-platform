@@ -35,7 +35,6 @@ struct Memory_module: sc_core::sc_module
   Memory_module //< Constructor
   ( sc_core::sc_module_name instance_name
   , Depth_t                 target_size = 0/*bytes*/
-  , Addr_t                  target_base = 0
   , Access                  access       = Access::none
   , size_t                  max_burst    = 8/*bytes*/
   , size_t                  alignment    = 4/*bytes*/

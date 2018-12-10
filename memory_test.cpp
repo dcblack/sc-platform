@@ -31,6 +31,8 @@ void memory_test(void)
   Cpu_module* cpu{ dynamic_cast<Cpu_module*>(mgr.obj()) };
   sc_assert( cpu != nullptr );
 
+  const Addr_t RAM_BASE{ cpu->find_address( "top.ram" ) };
+
   MESSAGE( "\n" );
   RULER( 'M' );
   INFO( MEDIUM, "Testing writing/reading memory" );

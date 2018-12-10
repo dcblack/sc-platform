@@ -12,7 +12,7 @@ project(platform CXX)
 
 include(cmake/BuildTypes.cmake)
 include(cmake/SystemC.cmake)
-#find_package(yaml-cpp CONFIG REQUIRED)
+find_package(yaml-cpp CONFIG REQUIRED)
 find_package(Boost 1.65 REQUIRED)
 
 add_compile_definitions(SC_INCLUDE_FX SC_INCLUDE_DYNAMIC_PROCESSES)
@@ -30,10 +30,12 @@ add_executable( platform
   main.cpp
   top.cpp
   signal.cpp
-  config.cpp
+  configuration.cpp
   config_extn.cpp
   config_proxy.cpp
   hexfile.cpp
+  memory_map.cpp
+  options.cpp
   cpu.cpp
 # program.cpp
   memory.cpp
@@ -60,16 +62,16 @@ add_executable( platform
 # environ.cpp
 # gps.cpp
 )
+target_link_libraries( platform yaml-cpp )
 
 ################################################################################
 add_executable( config
-  config.cpp
+  configuration.cpp
   report.cpp
   wallclock.cpp
   summary.cpp
   common.cpp
 )
-
 target_compile_definitions( config PRIVATE CONFIG_EXAMPLE )
 
 ################################################################################
@@ -91,8 +93,18 @@ add_executable( timer
   summary.cpp
   no_clock.cpp
 )
-
 target_compile_definitions( timer PRIVATE TIMER_EXAMPLE )
+
+################################################################################
+add_executable( xyaml
+  xyaml.cpp
+  report.cpp
+  wallclock.cpp
+  summary.cpp
+  common.cpp
+)
+target_compile_definitions( xyaml PRIVATE YAML_EXAMPLE )
+target_link_libraries( xyaml yaml-cpp )
 
 ################################################################################
 # Syntax reminders

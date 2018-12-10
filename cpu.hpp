@@ -24,6 +24,7 @@
 #include "interrupt.hpp"
 #include "task.hpp"
 #include "memory_manager.hpp"
+#include "memory_map.hpp"
 #include <map>
 using sc_core::sc_time;
 using sc_core::sc_event;
@@ -84,6 +85,7 @@ private:
 
 public:
   // Convenience
+  Addr_t find_address( std::string path ) const;
   void write64  ( Addr_t address, uint64_t data )
     { write( address, reinterpret_cast<uint8_t*>( &data ), 8 ); }
   void read64   ( Addr_t address, uint64_t& data )

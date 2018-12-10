@@ -30,36 +30,59 @@
 #define REQUIRES_CPP 11
 #include "require_cxx_version.hpp"
 #include <tlm>
+#include <forward_list>
 
+// Templated singleton class
 template<typename T=tlm::tlm_generic_payload>
 struct Memory_manager: tlm::tlm_mm_interface, sc_core::sc_object
 {
 
   // Methods
+  //----------------------------------------------------------------------------
   static Memory_manager& instance( void );
+  //----------------------------------------------------------------------------
   T* allocate( void );
+  //----------------------------------------------------------------------------
   T* allocate_acquire( void );
+  //----------------------------------------------------------------------------
+  T* allocate_acquire_and_set
+  ( tlm::tlm_command command            = tlm::TLM_IGNORE_COMMAND
+  , sc_dt::uint64    address            = ~0ull
+  , unsigned char*   data_ptr           = nullptr
+  , uint32_t         data_length        = 0
+  , uint32_t         streaming_width    = ~0u
+  , unsigned char*   byte_enable_ptr    = nullptr
+  , uint32_t         byte_enable_length = 0
+  );
+  //----------------------------------------------------------------------------
+  void set
+  ( T* t
+  , tlm::tlm_command command            = tlm::TLM_IGNORE_COMMAND
+  , sc_dt::uint64    address            = ~0ull
+  , unsigned char*   data_ptr           = nullptr
+  , uint32_t         data_length        = 0
+  , uint32_t         streaming_width    = ~0u
+  , unsigned char*   byte_enable_ptr    = nullptr
+  , uint32_t         byte_enable_length = 0
+  );
+  //----------------------------------------------------------------------------
   void  free( T* trans );
 
 private:
-  Memory_manager( void ); //< Constructor
+  // Basics
+  //----------------------------------------------------------------------------
+  Memory_manager( void ); //< Default constructor
   virtual ~Memory_manager( void ); //< Destructor
-  Memory_manager( const Memory_manager& ) = delete;
-  Memory_manager( Memory_manager&& ) = delete;
-  Memory_manager& operator=( const Memory_manager& ) = delete;
-  Memory_manager& operator=( Memory_manager&& ) = delete;
-  // Local classes
-  struct Access_t
-  {
-    T* trans;
-    Access_t* next;
-    Access_t* prev;
-  };
+  Memory_manager( const Memory_manager& ) = delete; // Copy constructor
+  Memory_manager( Memory_manager&& ) = delete; // Move constructor
+  Memory_manager& operator=( const Memory_manager& ) = delete; // Copy assignment
+  Memory_manager& operator=( Memory_manager&& ) = delete; // Move assignment
+
   // Attributes
-  int     m_count_allocated;
-  int     m_count_created;
-  Access_t* free_list;
-  Access_t* empties;
+  //----------------------------------------------------------------------------
+  int     m_count_allocated; //< debug aid
+  int     m_count_created;   //< debug aid
+  std::forward_list<T*> free_list;
 };
 
 #define MSGID "/Doulos/Example/Memory_manager"
@@ -80,8 +103,6 @@ template<typename T>
 Memory_manager<T>::Memory_manager( void )
 : sc_core::sc_object{ typeid(Memory_manager<T>).name() }
 , m_count_allocated { 0       }
-, free_list         { nullptr }
-, empties           { nullptr }
 {
   INFO( ALWAYS, "Constructed " << name() );
   sc_core::sc_report_handler::set_actions("/Doulos/Example/Memory_manager", sc_core::SC_DO_NOTHING);
@@ -99,30 +120,9 @@ template<typename T>
 Memory_manager<T>::~Memory_manager( void )
 {
   INFO( DEBUG, "Destructor: transaction count = " << m_count_allocated );
-  T* ptr;
 
-  while (free_list)
-  {
-    ptr = free_list->trans;
-
-    // Delete generic payload and all extensions
-    sc_assert(ptr);
+  for( auto ptr : free_list ) {
     delete ptr;
-
-    Access_t* x = free_list;
-    free_list = free_list->next;
-    
-    // Delete free list Access_t struct
-    delete x;
-  }
-
-  while (empties)
-  {
-    Access_t* x = empties;
-    empties = empties->prev;
-
-    // Delete free list access struct
-    delete x;
   }
 }
 
@@ -133,15 +133,46 @@ T* Memory_manager<T>::allocate_acquire( void )
     T* t=allocate();
     sc_assert( t!=nullptr );
     t->acquire();
-    t->set_address( ~0ull );           //< preventative
-    t->set_data_ptr( nullptr );        //< preventative
-    t->set_data_length( 0 );           //< preventative
-    t->set_streaming_width( ~0u );     //< maximum
-    t->set_byte_enable_ptr( nullptr );
-    t->set_byte_enable_length( 0 );    //< preventative
-    t->set_dmi_allowed( false );
-    t->set_response_status( tlm::TLM_INCOMPLETE_RESPONSE );
     return t;
+}
+
+//------------------------------------------------------------------------------
+template<typename T>
+void Memory_manager<T>::set
+( T* t
+, tlm::tlm_command command
+, sc_dt::uint64    address
+, unsigned char*   data_ptr
+, uint32_t         data_length
+, uint32_t         streaming_width
+, unsigned char*   byte_enable_ptr
+, uint32_t         byte_enable_length
+) {
+  t->set_command            ( command            );
+  t->set_address            ( address            );
+  t->set_data_ptr           ( data_ptr           );
+  t->set_data_length        ( data_length        );
+  t->set_streaming_width    ( streaming_width    );
+  t->set_byte_enable_ptr    ( byte_enable_ptr    );
+  t->set_byte_enable_length ( byte_enable_length );
+  t->set_dmi_allowed        ( false );
+  t->set_response_status    ( tlm::TLM_INCOMPLETE_RESPONSE );
+}
+
+//------------------------------------------------------------------------------
+template<typename T>
+T* Memory_manager<T>::allocate_acquire_and_set
+( tlm::tlm_command command
+, sc_dt::uint64    address
+, unsigned char*   data_ptr
+, uint32_t         data_length
+, uint32_t         streaming_width
+, unsigned char*   byte_enable_ptr
+, uint32_t         byte_enable_length
+) {
+  T* t{ allocate_acquire() };
+  set(t, command, address, data_ptr, data_length, streaming_width, byte_enable_ptr, byte_enable_length );
+  return t;
 }
 
 //------------------------------------------------------------------------------
@@ -150,11 +181,10 @@ T* Memory_manager<T>::allocate()
 {
   INFO( DEBUG, "allocate: transaction count = " << ++m_count_allocated );
   T* ptr;
-  if (free_list)
+  if (not free_list.empty() )
   {
-    ptr = free_list->trans;
-    empties = free_list;
-    free_list = free_list->next;
+    ptr = free_list.front();
+    free_list.pop_front();
   }
   else
   {
@@ -170,17 +200,7 @@ void Memory_manager<T>::free(T* trans)
 {
   INFO( DEBUG, "free: transaction count = " << --m_count_allocated );
   trans->reset(); // Delete auto extensions
-  if (!empties)
-  {
-    empties = new Access_t;
-    empties->next = free_list;
-    empties->prev = nullptr;
-    if (free_list)
-      free_list->prev = empties;
-  }
-  free_list = empties;
-  free_list->trans = trans;
-  empties = free_list->prev;
+  free_list.push_front( trans );
 }
 #undef MSGID
 

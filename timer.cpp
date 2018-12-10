@@ -26,13 +26,11 @@ using namespace std;
 Timer_module::Timer_module // Constructor
 ( sc_module_name instance_name
   , size_t         timer_quantity // Number of timers
-  , Addr_t         target_base
   , uint32_t       addr_clocks
   , uint32_t       read_clocks
   , uint32_t       write_clocks
 )
   : m_target_size             { Depth_t( timer_quantity * TIMER_SIZE + sizeof( uint32_t ) ) }
-    //m_target_base not needed
   , m_timer_quantity          { timer_quantity  }
   , m_addr_clocks             { addr_clocks     }
   , m_read_clocks             { read_clocks     }
@@ -54,8 +52,7 @@ Timer_module::Timer_module // Constructor
   m_configuration.set( "name",         string( name() ) );
   m_configuration.set( "kind",         string( kind() ) );
   m_configuration.set( "object_ptr",   uintptr_t( this ) );
-  m_configuration.set( "target_base", target_start );
-  m_configuration.set( "target_size", m_target_depth );
+  m_configuration.set( "target_size",  m_target_size );
   m_configuration.set( "addr_clocks",  addr_clocks );
   m_configuration.set( "read_clocks",  read_clocks );
   m_configuration.set( "write_clocks", write_clocks );
@@ -203,10 +200,10 @@ bool Timer_module::configure( tlm_payload_t& trans )
     else {
       m_configuration.update( extn->configuration );
       // Update local copies
-      extn->configuration.get( "target_size", m_target_depth );
-      extn->configuration.get( "addr_clocks" , m_addr_clocks );
-      extn->configuration.get( "read_clocks" , m_read_clocks );
-      extn->configuration.get( "write_clocks", m_write_clocks );
+      extn->configuration.get( "target_size",  m_target_size   );
+      extn->configuration.get( "addr_clocks" , m_addr_clocks   );
+      extn->configuration.get( "read_clocks" , m_read_clocks   );
+      extn->configuration.get( "write_clocks", m_write_clocks  );
       INFO( DEBUG, "Updated configuration " << m_configuration );
     }
   }

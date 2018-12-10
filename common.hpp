@@ -9,13 +9,17 @@
 #include "sc_cxx11.hpp"
 
 // Useful constants
-#define KB 1024ull
-#define MB (KB*KB)
-#define GB (KB*MB)
+#define KB         1024ull
+#define MB         ( KB*KB )
+#define GB         ( KB*MB )
+#define MAX_ADDR   ( ~Addr_t(0)  )
+#define BAD_ADDR   ( MAX_ADDR-1  )
+#define BAD_DEPTH  ( ~Depth_t(0) )
+#define BAD_PORT   ( ~Port_t(0)  )
 
-#define MAX_ADDR (~Addr_t(0))
 using Addr_t  = sc_dt::uint64;
 using Depth_t = uint32_t; //< accommodate address map
+using Port_t = int; //< for port/socket identification
 using byte_t  = uint8_t;
 enum class Feature { none, enabled };
 using DMI = Feature;

@@ -6,21 +6,30 @@
 //   11 => 201103L
 //   14 => 201402L
 //   17 => 201703L
+//
+// Warning: Defines CPP_VERSION only on first encounter (i.e. not defined)
 
-#ifdef  _VERSION
-# undef _VERSION
-#endif
 #ifdef REQUIRES_CPP
 #  if   (REQUIRES_CPP == 03) && (__cplusplus >= 199711L)
-#    define _VERSION 1998
+#    ifndef CPP_VERSION
+#      define CPP_VERSION 1998
+#    endif
 #  elif (REQUIRES_CPP == 11) && (__cplusplus >= 201103L)
-#    define _VERSION 2011
+#    ifndef CPP_VERSION
+#      define CPP_VERSION 2011
+#    endif
 #  elif (REQUIRES_CPP == 14) && (__cplusplus >= 201402L)
-#    define _VERSION 2014
+#    ifndef CPP_VERSION
+#      define CPP_VERSION 2014
+#    endif
 #  elif (REQUIRES_CPP == 17) && (__cplusplus >= 201703L)
-#    define _VERSION 2017
+#    ifndef CPP_VERSION
+#      define CPP_VERSION 2017
+#    endif
 #  else
-#    define _VERSION "unknown"
+#    ifndef CPP_VERSION
+#      define CPP_VERSION "unknown"
+#    endif
 #    ifdef WIN32
 #      pragma message(__cplusplus # "Does not meet minimum requirement of C++" # REQUIRES_CPP)
 #    else
@@ -29,16 +38,12 @@
 #  endif
 #  undef REQUIRES_CPP
 #else
-#  define _VERSION "unspecified"
+#  ifndef CPP_VERSION
+#    define CPP_VERSION "unspecified"
+#  endif
 #  ifdef WIN32
 #    pragma message("error REQUIRES_CPP not defined")
 #  else
 #    error REQUIRES_CPP not defined
 #  endif
 #endif
-
-#ifndef CPP_VERSION
-#define CPP_VERSION _VERSION
-#endif
-
-#undef _VERSION

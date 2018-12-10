@@ -59,7 +59,7 @@ int Summary::report( void )
     MESSAGE( "\n" );
     RULER( '#' );
     MESSAGE( "Compilation information for " << sc_argv()[0] << ":\n" );
-    MESSAGE( "  C++ std version: " << __cplusplus << " (" << CPP_VERSION << ")" << "\n" );
+    MESSAGE( "  C++ std version: " << __cplusplus << " (ISO/IEC 14882:" <<CPP_VERSION << ")" << "\n" );
     MESSAGE( "  SystemC version: " << SYSTEMC_VERSION << "\n" );
     MESSAGE( "  TLM     version: " << TLM_VERSION << "\n" );
     #ifdef BOOST_LIB_VERSION

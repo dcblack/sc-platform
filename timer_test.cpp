@@ -29,6 +29,8 @@ void timer_test(void)
   Cpu_module* cpu{ dynamic_cast<Cpu_module*>(mgr.obj()) };
   sc_assert( cpu != nullptr );
 
+  const Addr_t TMR_BASE{ cpu->find_address( "top.tmr" ) };
+
   MESSAGE( "\n" );
   RULER( 'B' );
   MESSAGE( "Timer constants\n" );
@@ -50,7 +52,7 @@ void timer_test(void)
   cpu->read32( timer_addr + TIMER_LOAD_LO_REG, timer_recv );
   INFO( MEDIUM, "Read timer_load_lo and got " << VALUE(timer_recv) );
 
-  Timer_api t0{ *cpu };
+  Timer_api t0{ *cpu, TMR_BASE };
   t0.setup( 10 );
   TEST_TIMER( "Setup for 10 on", t0 );
   t0.start();
@@ -61,7 +63,7 @@ void timer_test(void)
   MESSAGE( "\n" );
   RULER( '-' );
   MEND(MEDIUM);
-  Timer_api t1{ *cpu };
+  Timer_api t1{ *cpu, TMR_BASE };
   t1.setup( 30 );
   TEST_TIMER( "Setup for 30 on", t1 );
   t1.start();
