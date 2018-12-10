@@ -1,0 +1,67 @@
+%YAML 1.2
+---
+# Memory mapping
+top.cpu:
+  type: initiator
+  targ:
+    top.nth:  { addr: 0, siz: 0, irq: 0, kind: Bus_module }
+#    top.tcm:  { addr: 0, siz: 0, irq: 0, kind: Memory_module }
+top.dma:
+  type: initiator
+  targ:
+    top.nth:  { addr: 0, siz: 0, irq: 0, kind: Bus_module }
+top.mmu:
+  type: initiator
+  targ:
+    top.nth:  { addr: 0, siz: 0, irq: 0, kind: Mmu_module }
+#   top.l2c:  { addr: 0, siz: 0, irq: 0, kind: Cache_module }
+top.l2c:
+  type: initiator
+  targ:
+    top.nth:  { addr: 0, siz: 0, irq: 0, kind: Bus_module }
+top.nth:
+  type: router
+  addr: 0x0000'0000
+  size: 0
+  targ:
+    top.cpu:   { addr: 0xF000'0000, size:  "128B", irq:  0, kind: "Cpu_module"      }
+    top.rom:   { addr: 0x0000'0000, size:  "96MB", irq:  0, kind: "Memory_module"   }
+    top.ram:   { addr: 0x1000'0000, size: "128KB", irq:  0, kind: "Memory_module"   }
+    top.ddr:   { addr: 0x2000'0000, size: "256MB", irq:  0, kind: "Memory_module"   }
+    top.sth:   { addr: 0x4000'0000, size:  "64KB", irq:  0, kind: "Bus_module"      }
+    top.dsk:   { addr: 0x4008'0000, size:   "1KB", irq:  8, kind: "Disk_module"     }
+    top.net:   { addr: 0x4008'1000, size:   "32B", irq:  9, kind: "Wifi_module"     }
+    top.mmu:   { addr: 0x4008'2000, size:   "32B", irq: 10, kind: "Mmu_module"      }
+    top.usb:   { addr: 0x4008'3000, size:   "32B", irq: 11, kind: "Usb_module"      }
+    top.vid:   { addr: 0xC000'0000, size:  "16MB", irq: 12, kind: "Video_module"    }
+    top.ssd:   { addr: 0x2000'0000, size:   "2MB", irq: 14, kind: "Ssd_module"      }
+    top.flash: { addr: 0x4000'0000, size:   "1GB", irq:  8, kind: "Flash_module"    }
+top.sth:
+  type: router
+  addr: 0x4000'0000
+  size: 0x0000'8000
+  targ:
+    top.tmr:   { addr: 0x0000'0000, size:   "32B", irq:  2, kind: "Timer"           }
+    top.gio:   { addr: 0x0000'1000, size:   "32B", irq:  3, kind: "Gpio"            }
+    top.crypt: { addr: 0x0000'2000, size:   "2KB", irq:  4, kind: "Crypto"          }
+    top.pic:   { addr: 0x0000'3000, size:   "1KB", irq:  5, kind: "IrqCtrl"         }
+    top.dma:   { addr: 0x0000'4000, size:   "32B", irq:  1, kind: "Dma"             }
+    top.flash: { addr: 0x0000'5000, size:   "4KB", irq: 13, kind: "Flash"           }
+    top.spi:   { addr: 0x0000'6000, size:   "32B", irq:  6, kind: "SBus"            }
+    top.ser:   { addr: 0x0000'7000, size:   "32B", irq:  7, kind: "Usart"           }
+top.spi:
+  type: router
+  addr: 0
+  size: 7
+  targ:
+    top.gps:   { addr: 0x0,        size:   "32B", irq:  0, kind: "Gps_module"      }
+    top.env:   { addr: 0x1,        size:   "32B", irq:  0, kind: "Environ_module"  }
+top.usb:
+  type: router
+  addr: 0
+  size: 7
+  targ:
+    top.ptr:   { addr: 0,          size:   "32B", irq:  0, kind: "Mouse_module"    }
+    top.kbd:   { addr: 1,          size:   "32B", irq:  0, kind: "Keyboard_module" }
+    top.thb:   { addr: 2,          size:  "32GB", irq:  0, kind: "Ssd_module"      }
+...

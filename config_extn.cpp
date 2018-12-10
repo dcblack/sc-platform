@@ -17,7 +17,7 @@ tlm_extension_base*
 Config_extn::clone( void ) const
 {
   Config_extn* extn = new Config_extn();
-  extn->config = config;
+  extn->configuration = configuration;
   return extn;
 }
  
@@ -27,7 +27,7 @@ Config_extn::copy_from( tlm_extension_base const& extn )
 {
   auto config_extn = dynamic_cast<const Config_extn*>( &extn );
   sc_assert( config_extn != nullptr );
-  config = config_extn->config;
+  configuration = config_extn->configuration;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

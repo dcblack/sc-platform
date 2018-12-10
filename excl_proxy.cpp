@@ -36,7 +36,7 @@ Excl_proxy::Excl_proxy
   excl_depth.resize( excl_locks );
   targ_socket.bind(*this);
   init_socket.bind(*this);
-  INFO( ALWAYS, "Constructed " << name() << " with config:\n" << m_config );
+  INFO( ALWAYS, "Constructed " << name() << " with configuration:\n" << m_configuration );
 }
 
 //------------------------------------------------------------------------------
@@ -69,11 +69,6 @@ bool Excl_proxy::get_direct_mem_ptr( tlm_payload_t& trans, tlm_dmi& dmi_data )
 //------------------------------------------------------------------------------
 unsigned int Excl_proxy::transport_dbg( tlm_payload_t& trans )
 {
-  if( config(trans) ) {
-    INFO( DEBUG, "config_only" );
-    trans.set_response_status( TLM_OK_RESPONSE );
-    return 0;
-  }
   return init_socket->transport_dbg( trans );
 }
 

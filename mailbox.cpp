@@ -25,8 +25,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 Memory_module::Memory_module // Constructor
 ( sc_module_name instance_name
-, Depth_t        target_depth
-, Addr_t         target_start
+, Depth_t        target_size
+, Addr_t         target_base
 , Access         access    
 , size_t         max_burst
 , size_t         alignment
@@ -36,8 +36,8 @@ Memory_module::Memory_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: m_target_depth            { target_depth    }
-//m_target_start not needed
+: m_target_size            { target_depth    }
+//m_target_base not needed
 , m_dmi_allowed             { dmi_allowed     }
 , m_access                  { access          }
 , m_byte_enables            { byte_enables    }
@@ -56,21 +56,21 @@ Memory_module::Memory_module // Constructor
   targ_socket.register_nb_transport_fw    ( this, &Memory_module::nb_transport_fw );
   targ_socket.register_get_direct_mem_ptr ( this, &Memory_module::get_direct_mem_ptr );
   targ_socket.register_transport_dbg      ( this, &Memory_module::transport_dbg );
-  m_config.set( "name",         string(name())  );
-  m_config.set( "kind",         string(kind())  );
-  m_config.set( "object_ptr",   uintptr_t(this) );
-  m_config.set( "target_start", target_start    );
-  m_config.set( "target_depth", target_depth    );
-  m_config.set( "dmi_allowed",  dmi_allowed     );
-  m_config.set( "access",       access          );
-  m_config.set( "byte_enables", byte_enables    );
-  m_config.set( "alignment",    alignment       );
-  m_config.set( "max_burst",    max_burst       );
-  m_config.set( "addr_clocks",  addr_clocks     );
-  m_config.set( "read_clocks",  read_clocks     );
-  m_config.set( "write_clocks", write_clocks    );
-  m_config.set( "coding_style", Style::AT       );
-  INFO( ALWAYS, "Constructed " << name() << " with config:\n" << m_config );
+  m_configuration.set( "name",         string(name())  );
+  m_configuration.set( "kind",         string(kind())  );
+  m_configuration.set( "object_ptr",   uintptr_t(this) );
+  m_configuration.set( "target_base", target_start    );
+  m_configuration.set( "target_size", target_depth    );
+  m_configuration.set( "dmi_allowed",  dmi_allowed     );
+  m_configuration.set( "access",       access          );
+  m_configuration.set( "byte_enables", byte_enables    );
+  m_configuration.set( "alignment",    alignment       );
+  m_configuration.set( "max_burst",    max_burst       );
+  m_configuration.set( "addr_clocks",  addr_clocks     );
+  m_configuration.set( "read_clocks",  read_clocks     );
+  m_configuration.set( "write_clocks", write_clocks    );
+  m_configuration.set( "coding_style", Style::AT       );
+  INFO( ALWAYS, "Constructed " << name() << " with configuration:\n" << m_configuration );
 }
 
 //------------------------------------------------------------------------------
@@ -106,10 +106,10 @@ Memory_module::transport_dbg
 )
 {
   INFO( DEBUG, "Executing " << name() << "." << __func__ << "::transport_dbg" );
-  bool config_only{config(trans)};
+  bool config_only{configure(trans)};
   // shrink as needed
-  if( m_target_depth < m_mem_vec.size() ) {
-    resize( m_target_depth );
+  if( m_target_size < m_mem_vec.size() ) {
+    resize( m_target_size );
   }
   if( config_only ) {
     INFO( DEBUG, "config_only" );
@@ -119,8 +119,8 @@ Memory_module::transport_dbg
   // Allow for length beyond end by truncating
   Addr_t  adr = trans.get_address();
   Depth_t len = trans.get_data_length();
-  if( ( adr + len - 1 ) > m_target_depth ) {
-    len -= ( adr + len - 1 ) - m_target_depth;
+  if( ( adr + len - 1 ) > m_target_size ) {
+    len -= ( adr + len - 1 ) - m_target_size;
   }
 
   if( not payload_is_ok( trans, len, Style::LT ) ) {
@@ -132,27 +132,27 @@ Memory_module::transport_dbg
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Memory_module::config( tlm_payload_t& trans )
+bool Memory_module::configure( tlm_payload_t& trans )
 {
   Config_extn* extn{trans.get_extension<Config_extn>()};
   if( extn != nullptr ) {
     INFO( DEBUG, "Configuring " << name() );
-    if (extn->config.empty()) {
-      NOINFO( DEBUG, "Sending config:\n" << m_config );
-      extn->config = m_config;
+    if (extn->configuration.empty()) {
+      NOINFO( DEBUG, "Sending configuration:\n" << m_configuration );
+      extn->configuration = m_configuration;
     } else {                                   
-      m_config.update( extn->config );
+      m_configuration.update( extn->configuration );
       // Update local copies
-      extn->config.get( "target_depth", m_target_depth );
-      extn->config.get( "dmi_allowed ", m_dmi_allowed  );
-      extn->config.get( "access"      , m_access       );
-      extn->config.get( "byte_enables", m_byte_enables );
-      extn->config.get( "alignment"   , m_alignment    );
-      extn->config.get( "max_burst"   , m_max_burst    );
-      extn->config.get( "addr_clocks" , m_addr_clocks  );
-      extn->config.get( "read_clocks" , m_read_clocks  );
-      extn->config.get( "write_clocks", m_write_clocks );
-      INFO( DEBUG, "Updated config " << m_config );
+      extn->configuration.get( "target_size", m_target_depth   );
+      extn->configuration.get( "dmi_allowed ", m_dmi_allowed   );
+      extn->configuration.get( "access"      , m_access        );
+      extn->configuration.get( "byte_enables", m_byte_enables  );
+      extn->configuration.get( "alignment"   , m_alignment     );
+      extn->configuration.get( "max_burst"   , m_max_burst     );
+      extn->configuration.get( "addr_clocks" , m_addr_clocks   );
+      extn->configuration.get( "read_clocks" , m_read_clocks   );
+      extn->configuration.get( "write_clocks", m_write_clocks  );
+      INFO( DEBUG, "Updated configuration " << m_configuration );
     }
   }
   trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
@@ -162,7 +162,7 @@ bool Memory_module::config( tlm_payload_t& trans )
 //------------------------------------------------------------------------------
 void Memory_module::resize( int depth, int pattern )
 {
-  sc_assert( depth > 0 and depth <= m_target_depth );
+  sc_assert( depth > 0 and depth <= m_target_size );
   m_mem_vec.resize( depth, pattern );
   m_used_vec.resize( depth, false );
 }
@@ -206,7 +206,7 @@ Memory_module::get_direct_mem_ptr
   m_dmi_granted = true;
   dmi_data.set_dmi_ptr( m_mem_vec.data() );
   dmi_data.set_start_address( 0 );
-  dmi_data.set_end_address( m_target_depth - 1 );
+  dmi_data.set_end_address( m_target_size - 1 );
   dmi_data.set_read_latency( clk.period( m_read_clocks ) );
   dmi_data.set_write_latency( clk.period( m_write_clocks ) );
   if( m_access == Access::RO ) {
@@ -359,7 +359,7 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
 
-  if( ( adr+len ) >= m_target_depth ) {
+  if( ( adr+len ) >= m_target_size ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -419,12 +419,12 @@ Memory_module::transport
   Addr_t     adr = trans.get_address();
   uint8_t*   ptr = trans.get_data_ptr();
   Depth_t    sbw = targ_socket.get_bus_width()/8;
-  sc_assert( adr+len < m_target_depth );
+  sc_assert( adr+len < m_target_size );
   if( m_mem_vec.size() < (adr+len) ) {
     // Expand to nearest 1K
     Depth_t new_size = (adr+len) + 1*KB;
     // Limited by configured size
-    new_size = std::min( new_size, m_target_depth );
+    new_size = std::min( new_size, m_target_size );
     resize( new_size );
   }
   uint8_t*   mem = m_mem_vec.data();

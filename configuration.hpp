@@ -1,5 +1,5 @@
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#ifndef CONFIGURATION_HPP
+#define CONFIGURATION_HPP
 
 #include <tlm>
 #include <string>
@@ -16,16 +16,16 @@ using sc_core::sc_time;
 using sc_core::SC_ZERO_TIME;
 using std::string;
 
-struct Config
+struct Configuration
 {
-  const char* MSGID{ "/Doulos/Example/Config" };
+  const char* MSGID{ "/Doulos/Example/Configuration" };
 
-  Config( bool use_defaults = true ); //< Constructor
+  Configuration( bool use_defaults = true ); //< Constructor
 
-  Config( const Config& rhs ); // Copy constructor
-  Config& operator=( const Config& rhs ); // Copy assignment
-  virtual ~Config( void ) = default;
-  bool operator==( const Config& rhs ) const;
+  Configuration( const Configuration& rhs ); // Copy constructor
+  Configuration& operator=( const Configuration& rhs ); // Copy assignment
+  virtual ~Configuration( void ) = default;
+  bool operator==( const Configuration& rhs ) const;
 
   //----------------------------------------------------------------------------
   using Printer_t = std::function<void( std::ostream&, const boost::any& )>;
@@ -47,11 +47,12 @@ struct Config
     Assign_t  assign;
   };
 
-  void update( const Config& rhs );  //< Does not remove pre-existing data unless overwritten
+  void update( const Configuration& rhs );  //< Does not remove pre-existing data unless overwritten
   void erase( const string& field ); //< remove one
 
-  void clear_data( void ); //< remove all data
-  void clear_keys( void ); //< remove all field defaults
+  void clear_data  ( void ); //< remove all data
+  void clear_keys  ( void ); //< remove all field defaults
+  void set_defaults( void );
 
   //------------------------------------------------------------------------------
   void addkey( const string& field, boost::any value, bool reqd = false );
@@ -65,19 +66,17 @@ struct Config
   bool has_reqd( void ) const; //< all required keys have values
   int  count( void ) const; //< number of keys set
   int  avail( void ) const; //< number of possible keys
-  friend std::ostream& operator<<( std::ostream& os, const Config& rhs );
-
-  void set_defaults( void );
+  friend std::ostream& operator<<( std::ostream& os, const Configuration& rhs );
 
   //----------------------------------------------------------------------------
   void set( const string& field, boost::any value )
   {
     // Is it legal
-    if ( ( m_dflt.count( field ) == 1 )
-         and ( m_data[field].empty() or ( m_data[field].type().hash_code() == value.type().hash_code() ) )
+    if ( ( m_dflt_map.count( field ) == 1 )
+         and ( m_data_map[field].empty() or ( m_data_map[field].type().hash_code() == value.type().hash_code() ) )
        )
     {
-      m_data[field] = value;
+      m_data_map[field] = value;
     }
     else {
       REPORT( WARNING, "Unable to set value for " << field << " due to misspelling or type mismatch." );
@@ -88,11 +87,11 @@ struct Config
   template<typename T>
   void get( const string& field, T& value )
   {
-    if ( m_data.count( field ) == 1 and m_data[field].type().hash_code() == typeid( T ).hash_code() ) {
-      value = boost::any_cast<T>( m_data[field] );
+    if ( m_data_map.count( field ) == 1 and m_data_map[field].type().hash_code() == typeid( T ).hash_code() ) {
+      value = boost::any_cast<T>( m_data_map[field] );
     }
-    else if ( m_dflt.count( field ) == 1 and m_dflt[field].type().hash_code() == typeid( T ).hash_code() ) {
-      value = boost::any_cast<T>( m_dflt[field] );
+    else if ( m_dflt_map.count( field ) == 1 and m_dflt_map[field].type().hash_code() == typeid( T ).hash_code() ) {
+      value = boost::any_cast<T>( m_dflt_map[field] );
     }
     else {
       REPORT( WARNING, "Unable to get value for " << field 
@@ -106,22 +105,22 @@ struct Config
 private:
 
   // Attributes
-  std::unordered_map<string, boost::any>  m_data;
-  std::unordered_map<string, boost::any>  m_dflt;
-  std::unordered_set<string>       m_reqd;
+  std::unordered_map<string, boost::any>  m_data_map;
+  std::unordered_map<string, boost::any>  m_dflt_map;
+  std::unordered_set<string>              m_reqd_key_set;
 
 };
 
 //------------------------------------------------------------------------------
 template <typename T>
-void config_key( Config& config, const string& field, const T& value, bool reqd = false )
+void config_key( Configuration& configuration, const string& field, const T& value, bool reqd = false )
 {
-  config.addkey( field, value, reqd );
+  configuration.addkey( field, value, reqd );
 
   // Add functor entries as needed
   size_t type_hash = typeid(T).hash_code();
-  if( Config::s_function.count(type_hash) == 0) {
-    Config::s_function[type_hash] = std::make_unique<Config::Function_t>
+  if( Configuration::s_function.count(type_hash) == 0) {
+    Configuration::s_function[type_hash] = std::make_unique<Configuration::Function_t>
     ( /*printer*/[]( std::ostream& os, const boost::any& a )
       {
         try {
@@ -136,7 +135,7 @@ void config_key( Config& config, const string& field, const T& value, bool reqd 
             os << ta;
           }
         } catch( boost::bad_any_cast& e ) {
-          const char* MSGID{ "/Doulos/config/printer" };
+          const char* MSGID{ "/Doulos/configuration/printer" };
           REPORT( WARNING, "Failed cast of field" );
         }
       }
@@ -148,7 +147,7 @@ void config_key( Config& config, const string& field, const T& value, bool reqd 
       }
     , /*assign*/[]( const std::string& f, boost::any& a, const boost::any& b )
       {
-        const char* MSGID{ "/Doulos/config/assign" };
+        const char* MSGID{ "/Doulos/configuration/assign" };
         INFO( DEBUG+1, "Assigning " << f );
         try {
           a = boost::any_cast<const T&>( b );
@@ -161,6 +160,6 @@ void config_key( Config& config, const string& field, const T& value, bool reqd 
 }
 
 //------------------------------------------------------------------------------
-std::ostream& operator<<( std::ostream& os, const Config& rhs );
+std::ostream& operator<<( std::ostream& os, const Configuration& rhs );
 
-#endif /*CONFIG_HPP*/
+#endif /*CONFIGURATION_HPP*/

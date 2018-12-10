@@ -26,13 +26,13 @@ using namespace std;
 Timer_module::Timer_module // Constructor
 ( sc_module_name instance_name
   , size_t         timer_quantity // Number of timers
-  , Addr_t         target_start
+  , Addr_t         target_base
   , uint32_t       addr_clocks
   , uint32_t       read_clocks
   , uint32_t       write_clocks
 )
-  : m_target_depth            { Depth_t( timer_quantity * TIMER_SIZE + sizeof( uint32_t ) ) }
-    //m_target_start not needed
+  : m_target_size             { Depth_t( timer_quantity * TIMER_SIZE + sizeof( uint32_t ) ) }
+    //m_target_base not needed
   , m_timer_quantity          { timer_quantity  }
   , m_addr_clocks             { addr_clocks     }
   , m_read_clocks             { read_clocks     }
@@ -51,16 +51,16 @@ Timer_module::Timer_module // Constructor
   targ_socket.register_b_transport( this, &Timer_module::b_transport );
   targ_socket.register_nb_transport_fw( this, &Timer_module::nb_transport_fw );
   targ_socket.register_transport_dbg( this, &Timer_module::transport_dbg );
-  m_config.set( "name",         string( name() ) );
-  m_config.set( "kind",         string( kind() ) );
-  m_config.set( "object_ptr",   uintptr_t( this ) );
-  m_config.set( "target_start", target_start );
-  m_config.set( "target_depth", m_target_depth );
-  m_config.set( "addr_clocks",  addr_clocks );
-  m_config.set( "read_clocks",  read_clocks );
-  m_config.set( "write_clocks", write_clocks );
-  m_config.set( "coding_style", Style::AT );
-  INFO( ALWAYS, "Constructed " << name() << " with config:\n" << m_config );
+  m_configuration.set( "name",         string( name() ) );
+  m_configuration.set( "kind",         string( kind() ) );
+  m_configuration.set( "object_ptr",   uintptr_t( this ) );
+  m_configuration.set( "target_base", target_start );
+  m_configuration.set( "target_size", m_target_depth );
+  m_configuration.set( "addr_clocks",  addr_clocks );
+  m_configuration.set( "read_clocks",  read_clocks );
+  m_configuration.set( "write_clocks", write_clocks );
+  m_configuration.set( "coding_style", Style::AT );
+  INFO( ALWAYS, "Constructed " << name() << " with configuration:\n" << m_configuration );
 }
 
 //------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ Timer_module::transport_dbg
 )
 {
   INFO( DEBUG, "Executing " << name() << "." << __func__ << "::transport_dbg" );
-  bool config_only{config( trans )};
+  bool config_only{ configure( trans ) };
 
   if ( config_only ) {
     INFO( DEBUG, "config_only" );
@@ -165,8 +165,8 @@ Timer_module::transport_dbg
   Addr_t  adr = trans.get_address();
   Depth_t len = trans.get_data_length();
 
-  if ( ( adr + len - 1 ) > m_target_depth ) {
-    len -= ( adr + len - 1 ) - m_target_depth;
+  if ( ( adr + len - 1 ) > m_target_size ) {
+    len -= ( adr + len - 1 ) - m_target_size;
   }
 
   if ( not payload_is_ok( trans, len, Style::LT ) ) {
@@ -189,25 +189,25 @@ Timer_module::transport_dbg
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Timer_module::config( tlm_payload_t& trans )
+bool Timer_module::configure( tlm_payload_t& trans )
 {
   Config_extn* extn{trans.get_extension<Config_extn>()};
 
   if ( extn != nullptr ) {
     INFO( DEBUG, "Configuring " << name() );
 
-    if ( extn->config.empty() ) {
-      NOINFO( DEBUG, "Sending config:\n" << m_config );
-      extn->config = m_config;
+    if ( extn->configuration.empty() ) {
+      NOINFO( DEBUG, "Sending configuration:\n" << m_configuration );
+      extn->configuration = m_configuration;
     }
     else {
-      m_config.update( extn->config );
+      m_configuration.update( extn->configuration );
       // Update local copies
-      extn->config.get( "target_depth", m_target_depth );
-      extn->config.get( "addr_clocks" , m_addr_clocks );
-      extn->config.get( "read_clocks" , m_read_clocks );
-      extn->config.get( "write_clocks", m_write_clocks );
-      INFO( DEBUG, "Updated config " << m_config );
+      extn->configuration.get( "target_size", m_target_depth );
+      extn->configuration.get( "addr_clocks" , m_addr_clocks );
+      extn->configuration.get( "read_clocks" , m_read_clocks );
+      extn->configuration.get( "write_clocks", m_write_clocks );
+      INFO( DEBUG, "Updated configuration " << m_configuration );
     }
   }
 
@@ -388,7 +388,7 @@ bool Timer_module::payload_is_ok( tlm_payload_t& trans, Depth_t len, Style codin
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
 
-  if ( ( adr + len ) >= m_target_depth or ( adr & 3 ) != 0 ) {
+  if ( ( adr + len ) >= m_target_size or ( adr & 3 ) != 0 ) {
     if ( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -448,7 +448,7 @@ Timer_module::transport
   Addr_t     adr = trans.get_address();
   uint8_t*   ptr = trans.get_data_ptr();
   Depth_t    sbw = targ_socket.get_bus_width() / 8;
-  sc_assert( adr + len < m_target_depth );
+  sc_assert( adr + len < m_target_size );
   uint8_t*   reg = m_register_vec.data();
   delay += clk.period( m_addr_clocks );
 

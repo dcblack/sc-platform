@@ -24,7 +24,7 @@
 #include <vector>
 #include <string>
 #include "common.hpp"
-#include "config.hpp"
+#include "configuration.hpp"
 #include "no_clock.hpp"
 using sc_core::sc_time;
 using sc_core::sc_event;
@@ -49,7 +49,7 @@ struct Timer_module: sc_core::sc_module
   Timer_module //< Constructor
   ( sc_core::sc_module_name instance_name
   , size_t                  timer_quantity
-  , Addr_t                  target_start = 0
+  , Addr_t                  target_base = 0
   , uint32_t                addr_clocks  = 1
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 2
@@ -82,7 +82,7 @@ private:
   void send_end_req( tlm_payload_t& trans );
   void send_response( tlm_payload_t& trans );
   void execute_transaction_process( void );
-  bool config( tlm_payload_t& trans );
+  bool configure( tlm_payload_t& trans );
   bool payload_is_ok( tlm_payload_t& trans, Depth_t len, Style coding_style );
   Depth_t transport( tlm_payload_t& trans, sc_time& delay, Depth_t len );
 
@@ -104,11 +104,11 @@ private:
   //----------------------------------------------------------------------------
   // Attributes
   no_clock&                 clk { no_clock::global( "system_clock" ) };
-  Config                    m_config;
+  Configuration             m_configuration;
 
   //----------------------------------------------------------------------------
   // Internal attributes
-  Depth_t                   m_target_depth;
+  Depth_t                   m_target_size;
   size_t                    m_timer_quantity;
   uint32_t                  m_addr_clocks;   // time to receive address/control
   uint32_t                  m_read_clocks;   // time per bus beat to respond with data

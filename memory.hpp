@@ -21,7 +21,7 @@
 #include <vector>
 #include <string>
 #include "common.hpp"
-#include "config.hpp"
+#include "configuration.hpp"
 #include "no_clock.hpp"
 using sc_core::sc_time;
 
@@ -34,8 +34,8 @@ struct Memory_module: sc_core::sc_module
 
   Memory_module //< Constructor
   ( sc_core::sc_module_name instance_name
-  , Depth_t                 target_depth = 0/*bytes*/
-  , Addr_t                  target_start = 0
+  , Depth_t                 target_size = 0/*bytes*/
+  , Addr_t                  target_base = 0
   , Access                  access       = Access::none
   , size_t                  max_burst    = 8/*bytes*/
   , size_t                  alignment    = 4/*bytes*/
@@ -66,14 +66,14 @@ private:
   void send_end_req( tlm_payload_t& trans );
   void send_response( tlm_payload_t& trans );
   void execute_transaction_process( void );
-  bool config( tlm_payload_t& trans );
+  bool configure( tlm_payload_t& trans );
   void resize( int depth, int pattern=0xEAU );
 
   // Attributes
   no_clock&            clk { no_clock::global( "system_clock" ) };
-  Config               m_config;
+  Configuration        m_configuration;
   // Internal attributes
-  Depth_t              m_target_depth;
+  Depth_t              m_target_size;
   Feature              m_dmi_allowed;
   Access               m_access;        // Default RW, optional RO
   Feature              m_byte_enables;

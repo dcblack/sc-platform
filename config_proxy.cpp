@@ -23,8 +23,7 @@ using namespace std;
 // Constructor
 Config_proxy::Config_proxy
 ( sc_module_name instance_name
-, Depth_t        target_depth
-, Addr_t         target_start
+, Depth_t        target_size
 , Access         access    
 , size_t         max_burst
 , size_t         alignment
@@ -37,19 +36,18 @@ Config_proxy::Config_proxy
 {
   targ_socket.bind(*this);
   init_socket.bind(*this);
-  m_config.set( "name",         string(name())  );
-  m_config.set( "kind",         string(kind())  );
-  m_config.set( "object_ptr",   uintptr_t(this) );
-  m_config.set( "target_start", target_start    );
-  m_config.set( "target_depth", target_depth    );
-  m_config.set( "access",       access          );
-  m_config.set( "max_burst",    max_burst       );
-  m_config.set( "alignment",    alignment       );
-  m_config.set( "addr_clocks",  addr_clocks     );
-  m_config.set( "read_clocks",  read_clocks     );
-  m_config.set( "write_clocks", write_clocks    );
-  m_config.set( "coding_style", Style::AT       );
-  INFO( ALWAYS, "Constructed " << name() << " with config:\n" << m_config );
+  m_configuration.set( "name",         string(name())  );
+  m_configuration.set( "kind",         string(kind())  );
+  m_configuration.set( "object_ptr",   uintptr_t(this) );
+  m_configuration.set( "target_size",  target_size     );
+  m_configuration.set( "access",       access          );
+  m_configuration.set( "max_burst",    max_burst       );
+  m_configuration.set( "alignment",    alignment       );
+  m_configuration.set( "addr_clocks",  addr_clocks     );
+  m_configuration.set( "read_clocks",  read_clocks     );
+  m_configuration.set( "write_clocks", write_clocks    );
+  m_configuration.set( "coding_style", Style::AT       );
+  INFO( ALWAYS, "Constructed " << name() << " with configuration:\n" << m_configuration );
 }
 
 //------------------------------------------------------------------------------
@@ -82,7 +80,7 @@ bool Config_proxy::get_direct_mem_ptr( tlm_payload_t& trans, tlm_dmi& dmi_data )
 //------------------------------------------------------------------------------
 unsigned int Config_proxy::transport_dbg( tlm_payload_t& trans )
 {
-  if( config(trans) ) {
+  if( configure(trans) ) {
     INFO( DEBUG, "config_only" );
     trans.set_response_status( TLM_OK_RESPONSE );
     return 0;
@@ -110,14 +108,14 @@ void Config_proxy::invalidate_direct_mem_ptr( uint64 start_range , uint64 end_ra
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Config_proxy::config ( tlm_payload_t& trans)
+bool Config_proxy::configure ( tlm_payload_t& trans)
 {
   Config_extn* extn{trans.get_extension<Config_extn>()};
   if( extn != nullptr ) {
     INFO( DEBUG, "Configuring " << name() );
-    if (extn->config.empty()) {
-      NOINFO( DEBUG, "Sending config:\n" << m_config );
-      extn->config = m_config;
+    if (extn->configuration.empty()) {
+      NOINFO( DEBUG, "Sending configuration:\n" << m_configuration );
+      extn->configuration = m_configuration;
     }
   }
   trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );

@@ -29,8 +29,7 @@ struct Config_proxy
 
   Config_proxy //< Constructor
   ( sc_core::sc_module_name instance_name
-  , Depth_t                 target_depth = 0/*bytes*/
-  , Addr_t                  target_start = 0
+  , Depth_t                 target_size = 0/*bytes*/
   , Access                  access       = Access::none
   , size_t                  max_burst    = 8/*bytes*/
   , size_t                  alignment    = 4/*bytes*/
@@ -53,11 +52,11 @@ private:
   void invalidate_direct_mem_ptr( sc_dt::uint64 start_range, sc_dt::uint64 end_range );
 
   // Helpers
-  bool config( tlm_payload_t& trans );
+  bool configure( tlm_payload_t& trans );
 
   // Attributes
-  Config       m_config;
-  Config_extn* m_extn{nullptr};
+  Configuration m_configuration;
+  Config_extn*  m_extn{nullptr};
 };
 
 #endif /*CONFIG_PROXY_HPP*/

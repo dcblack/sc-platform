@@ -20,7 +20,7 @@
 #include <tlm_utils/instance_specific_extensions.h>
 #include "common.hpp"
 #include "memory_manager.hpp"
-#include "config.hpp"
+#include "configuration.hpp"
 #include <map>
 
 struct Mmu_module: sc_core::sc_module

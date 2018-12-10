@@ -1,5 +1,5 @@
-//FILE: config.cpp (systemc)
-#include "config.hpp"
+//FILE: configuration.cpp (systemc)
+#include "configuration.hpp"
 #include "report.hpp"
 #include <cstdint>
 #include <vector>
@@ -9,11 +9,11 @@ using namespace sc_dt;
 using namespace tlm;
 using namespace std;
 
-std::unordered_map<size_t, std::unique_ptr<Config::Function_t>> Config::s_function;
+std::unordered_map<size_t, std::unique_ptr<Configuration::Function_t>> Configuration::s_function;
 
 //------------------------------------------------------------------------------
 // Constructor
-Config::Config( bool use_defaults )
+Configuration::Configuration( bool use_defaults )
 {
   if ( use_defaults ) {
     set_defaults();
@@ -22,50 +22,50 @@ Config::Config( bool use_defaults )
 
 //------------------------------------------------------------------------------
 // Copy constructor
-Config::Config( const Config& rhs )
+Configuration::Configuration( const Configuration& rhs )
 {
-  for( auto& v : rhs.m_data ) {
-    INFO( MEDIUM, "Assigning m_data[" << v.first << "]" );
+  for( auto& v : rhs.m_data_map ) {
+    INFO( MEDIUM, "Assigning m_data_map[" << v.first << "]" );
     size_t v_type_hash = v.second.type().hash_code();
     //< Use stored assign functor
-    Config::s_function[v_type_hash]
-    ->assign( v.first, m_data[v.first], v.second);
+    Configuration::s_function[v_type_hash]
+    ->assign( v.first, m_data_map[v.first], v.second);
   }
-  for( auto& v : rhs.m_dflt ) {
+  for( auto& v : rhs.m_dflt_map ) {
     size_t v_type_hash = v.second.type().hash_code();
     //< Use stored assign functor
-    Config::s_function[v_type_hash]
-    ->assign( v.first, m_dflt[v.first], v.second);
+    Configuration::s_function[v_type_hash]
+    ->assign( v.first, m_dflt_map[v.first], v.second);
   }
-  m_reqd = rhs.m_reqd;
+  m_reqd_key_set = rhs.m_reqd_key_set;
 }
 
 //------------------------------------------------------------------------------
 // Copy assignment
-Config& Config::operator=( const Config& rhs )
+Configuration& Configuration::operator=( const Configuration& rhs )
 {
   if( this != &rhs ) {
-    m_data.clear();
-    for( auto& v : rhs.m_data ) {
+    m_data_map.clear();
+    for( auto& v : rhs.m_data_map ) {
       size_t v_type_hash = v.second.type().hash_code();
       //< Use stored assign functor
-      Config::s_function[v_type_hash]
-      ->assign( v.first, m_data[v.first], v.second);
+      Configuration::s_function[v_type_hash]
+      ->assign( v.first, m_data_map[v.first], v.second);
     }
-    m_dflt.clear();
-    for( auto& v : rhs.m_dflt ) {
+    m_dflt_map.clear();
+    for( auto& v : rhs.m_dflt_map ) {
       size_t v_type_hash = v.second.type().hash_code();
       //< Use stored assign functor
-      Config::s_function[v_type_hash]
-      ->assign( v.first, m_dflt[v.first], v.second);
+      Configuration::s_function[v_type_hash]
+      ->assign( v.first, m_dflt_map[v.first], v.second);
     }
-    m_reqd = rhs.m_reqd;
+    m_reqd_key_set = rhs.m_reqd_key_set;
   }
   return *this;
 }
 
 //------------------------------------------------------------------------------
-void Config::set_defaults( void )
+void Configuration::set_defaults( void )
 {
   // Remove all old
   clear_keys();
@@ -78,9 +78,9 @@ void Config::set_defaults( void )
   // Desired coding style (AT or LT)
   config_key( *this, "coding_style",  Style::UNKNOWN );
   // Number of addresses responded to
-  config_key( *this, "target_depth",  Depth_t( 0 ), true );
+  config_key( *this, "target_size",  Depth_t( 0 ), true );
   // Base address
-  config_key( *this, "target_start",  Addr_t( ~0ULL ), true );
+  config_key( *this, "target_base",  Addr_t( ~0ULL ), true );
   // If DMI is supported, this optionally enables it
   config_key( *this, "dmi_allowed",   Feature::none );
   // Read/write access type
@@ -102,13 +102,13 @@ void Config::set_defaults( void )
 }
 
 //------------------------------------------------------------------------------
-bool Config::operator==( const Config& rhs ) const
+bool Configuration::operator==( const Configuration& rhs ) const
 {
-  if( m_data.size() != rhs.m_data.size() ) return false;
-  for( auto& v : m_data ) {
-    auto p = rhs.m_data.find( v.first );
+  if( m_data_map.size() != rhs.m_data_map.size() ) return false;
+  for( auto& v : m_data_map ) {
+    auto p = rhs.m_data_map.find( v.first );
     // Does the key exist on the rhs?
-    if ( p == rhs.m_data.end() ) return false;
+    if ( p == rhs.m_data_map.end() ) return false;
     // Are they the same type?
     size_t v_type_hash = v.second.type().hash_code();
     size_t p_type_hash = p->second.type().hash_code();
@@ -122,35 +122,35 @@ bool Config::operator==( const Config& rhs ) const
 
 //------------------------------------------------------------------------------
 // Copy all data present from argument
-void Config::update( const Config& rhs )
+void Configuration::update( const Configuration& rhs )
 {
-  for( auto v : rhs.m_data ) {
-    m_data[v.first] = v.second;
+  for( auto v : rhs.m_data_map ) {
+    m_data_map[v.first] = v.second;
   }
 }
 
 //------------------------------------------------------------------------------
 // Remove data for specified field
-void Config::erase( const string& field )
+void Configuration::erase( const string& field )
 {
-  m_data.erase( field );
+  m_data_map.erase( field );
 }
 
 //------------------------------------------------------------------------------
 // Remove all data
-void Config::clear_data( void )
+void Configuration::clear_data( void )
 {
-  m_data.clear();
+  m_data_map.clear();
 }
 
 //------------------------------------------------------------------------------
 // Add a key
-void Config::addkey( const string& field, boost::any value, bool reqd )
+void Configuration::addkey( const string& field, boost::any value, bool reqd )
 {
   // Don't add if it already exists
-  if ( m_dflt.count( field ) != 0 ) {
+  if ( m_dflt_map.count( field ) != 0 ) {
     // Warn if different type
-    if( m_dflt[field].type() != value.type() ) {
+    if( m_dflt_map[field].type() != value.type() ) {
       REPORT( WARNING, "Field '" << field << "' type mismatch." );
     } else {
       REPORT( WARNING, "Field '" << field << "' already defined "
@@ -162,64 +162,64 @@ void Config::addkey( const string& field, boost::any value, bool reqd )
   }
 
   // Insert default value
-  m_dflt[field] = value;
+  m_dflt_map[field] = value;
 
   if ( reqd ) {
-    m_reqd.insert( field );
+    m_reqd_key_set.insert( field );
   }
 }
 
 //------------------------------------------------------------------------------
 // Remove a key
-void Config::delkey( const string& field )
+void Configuration::delkey( const string& field )
 {
-  m_dflt.erase( field );
-  m_reqd.erase( field );
+  m_dflt_map.erase( field );
+  m_reqd_key_set.erase( field );
 }
 
 //------------------------------------------------------------------------------
 // Remove all keys
-void Config::clear_keys( void )
+void Configuration::clear_keys( void )
 {
-  m_dflt.clear();
-  m_reqd.clear();
+  m_dflt_map.clear();
+  m_reqd_key_set.clear();
 }
 
 //------------------------------------------------------------------------------
-bool Config::is_key( const string& field ) const
+bool Configuration::is_key( const string& field ) const
 {
-  return m_dflt.count( field ) == 1;
+  return m_dflt_map.count( field ) == 1;
 }
 
 //------------------------------------------------------------------------------
-bool Config::has_key( const string& field ) const
+bool Configuration::has_key( const string& field ) const
 {
-  return m_data.count( field ) == 1;
+  return m_data_map.count( field ) == 1;
 }
 
 //------------------------------------------------------------------------------
-bool Config::is_reqd( const string& field ) const
+bool Configuration::is_reqd( const string& field ) const
 {
-  return m_reqd.count( field ) == 1;
+  return m_reqd_key_set.count( field ) == 1;
 }
 
 //------------------------------------------------------------------------------
-bool Config::full( void ) const
+bool Configuration::full( void ) const
 {
-  return m_data.size() == m_dflt.size();
+  return m_data_map.size() == m_dflt_map.size();
 }
 
 //------------------------------------------------------------------------------
-bool Config::empty( void ) const
+bool Configuration::empty( void ) const
 {
-  return m_data.empty();
+  return m_data_map.empty();
 }
 
 //------------------------------------------------------------------------------
-bool Config::has_reqd( void ) const
+bool Configuration::has_reqd( void ) const
 {
-  for( const auto& v : m_reqd ) {
-    if ( m_data.count( v ) == 0 ) {
+  for( const auto& v : m_reqd_key_set ) {
+    if ( m_data_map.count( v ) == 0 ) {
       return false;
     }
   }
@@ -228,33 +228,33 @@ bool Config::has_reqd( void ) const
 }
 
 //------------------------------------------------------------------------------
-int Config::count( void ) const
+int Configuration::count( void ) const
 {
-  return m_data.size();
+  return m_data_map.size();
 }
 
 //------------------------------------------------------------------------------
-int Config::avail( void ) const
+int Configuration::avail( void ) const
 {
-  return m_dflt.size();
+  return m_dflt_map.size();
 }
 
 //------------------------------------------------------------------------------
-std::ostream& operator<<( std::ostream& os, const Config& rhs )
+std::ostream& operator<<( std::ostream& os, const Configuration& rhs )
 {
   std::vector<string> fields;
   static std::vector<string> special 
   { "name"
   , "kind"
   , "object_ptr"
-  , "target_start"
-  , "target_depth"
+  , "target_base"
+  , "target_size"
   };
   size_t max_width = 0;
 
-  size_t n = rhs.m_data.size();
-  fields.reserve( rhs.m_data.size() );
-  for( auto v : rhs.m_data ) {
+  size_t n = rhs.m_data_map.size();
+  fields.reserve( rhs.m_data_map.size() );
+  for( auto v : rhs.m_data_map ) {
     if( max_width < v.first.length() ) {
       max_width = v.first.length();
     }
@@ -267,19 +267,19 @@ std::ostream& operator<<( std::ostream& os, const Config& rhs )
   std::sort( fields.begin(), fields.end() );
 
   for( const string& field : special ) {
-    if( rhs.m_data.count( field ) == 0 ) continue;
+    if( rhs.m_data_map.count( field ) == 0 ) continue;
     os << "  " << setw(max_width) << (field + ": ");
-    boost::any v{ rhs.m_data.find( field )->second };
+    boost::any v{ rhs.m_data_map.find( field )->second };
     size_t v_type_hash = v.type().hash_code();
-    Config::s_function[v_type_hash]->printer( os, v); //< Use stored printing functor
+    Configuration::s_function[v_type_hash]->printer( os, v); //< Use stored printing functor
     if( --n ) os << "\n";
   }
 
   for( const string& field : fields ) {
     os << "  " << setw(max_width) << (field + ": ");
-    boost::any v{ rhs.m_data.find( field )->second };
+    boost::any v{ rhs.m_data_map.find( field )->second };
     size_t v_type_hash = v.type().hash_code();
-    Config::s_function[v_type_hash]->printer( os, v); //< Use stored printing functor
+    Configuration::s_function[v_type_hash]->printer( os, v); //< Use stored printing functor
     if( --n ) os << "\n";
   }
 
@@ -299,7 +299,7 @@ std::ostream& operator<<( std::ostream& os, const Config& rhs )
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef CONFIG_EXAMPLE
 // This serves both as an example and a simple unit test
-#include "config.hpp"
+#include "configuration.hpp"
 #include "report.hpp"
 #include "summary.hpp"
 #include <iostream>
@@ -320,46 +320,46 @@ SC_MODULE( Top_module )
   //----------------------------------------------------------------------------
   SC_CTOR( Top_module ) {
     SC_THREAD( test_thread );
-    m_config.set( "name", string( name() ) );
-    m_config.set( "kind", string( kind() ) );
-    m_config.set( "object_ptr", uintptr_t( this ) );
+    m_configuration.set( "name", string( name() ) );
+    m_configuration.set( "kind", string( kind() ) );
+    m_configuration.set( "object_ptr", uintptr_t( this ) );
   }
 
   //----------------------------------------------------------------------------
   void test_thread( void ) {
-    INFO( MEDIUM, "Initial m_config\n" << m_config );
-    INFO( MEDIUM, "m_config has "  << m_config.avail() << " available options." );
-    INFO( MEDIUM, "m_config has "  << m_config.count() << " entries." );
-    INFO( MEDIUM, "m_config is "   << is( !m_config.empty() ) << "empty." );
-    INFO( MEDIUM, "m_config does " << is( m_config.has_reqd() ) << "meet requirements." );
+    INFO( MEDIUM, "Initial m_configuration\n" << m_configuration );
+    INFO( MEDIUM, "m_configuration has "  << m_configuration.avail() << " available options." );
+    INFO( MEDIUM, "m_configuration has "  << m_configuration.count() << " entries." );
+    INFO( MEDIUM, "m_configuration is "   << is( !m_configuration.empty() ) << "empty." );
+    INFO( MEDIUM, "m_configuration does " << is( m_configuration.has_reqd() ) << "meet requirements." );
 
-    config_key( m_config, "debug", false );
+    config_key( m_configuration, "debug", false );
 
     // Set some values
-    Config t_config;
-    INFO( MEDIUM, "t_config has "  << t_config.count() << " entries." );
-    INFO( MEDIUM, "t_config is "   << is( t_config.empty() ) << "empty." );
-    t_config.set( "target_depth",  Depth_t( 4 * KB ) );
-    t_config.set( "target_start",  Addr_t( 0xC0DE'0000'CAFE ) );
-    t_config.set( "read_clocks",  uint32_t(2) );
-    m_config.set( "write_clocks", uint32_t(3) );
+    Configuration t_configuration;
+    INFO( MEDIUM, "t_configuration has "  << t_configuration.count() << " entries." );
+    INFO( MEDIUM, "t_configuration is "   << is( t_configuration.empty() ) << "empty." );
+    t_configuration.set( "target_size",  Depth_t( 4 * KB ) );
+    t_configuration.set( "target_base",  Addr_t( 0xC0DE'0000'CAFE ) );
+    t_configuration.set( "read_clocks",  uint32_t(2) );
+    m_configuration.set( "write_clocks", uint32_t(3) );
 
     // Test update
-    m_config.update( t_config );
+    m_configuration.update( t_configuration );
     uint32_t t;
-    m_config.get( "read_clocks", t );
+    m_configuration.get( "read_clocks", t );
     INFO( MEDIUM, "read clocks is " << t );
-    m_config.get( "write_clocks", t );
+    m_configuration.get( "write_clocks", t );
     INFO( MEDIUM, "write clocks is " << t );
 
     // Test copy and assign
-    Config t2( m_config );
+    Configuration t2( m_configuration );
     INFO( MEDIUM, "Copy constructed." );
-    Config t3;
-    t3 = m_config;
+    Configuration t3;
+    t3 = m_configuration;
     INFO( MEDIUM, "Assigned." );
     INFO( MEDIUM, "t3 contains:\n" << t3 );
-    INFO( MEDIUM, "t3 is " << is( t3 == m_config ) << "equivalent to m_config" );
+    INFO( MEDIUM, "t3 is " << is( t3 == m_configuration ) << "equivalent to m_configuration" );
     sc_stop();
   }
 
@@ -378,7 +378,7 @@ SC_MODULE( Top_module )
     return "Top_module";
   }
   // Attributes
-  Config m_config;
+  Configuration m_configuration;
 };
 
 //------------------------------------------------------------------------------
