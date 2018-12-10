@@ -10,7 +10,7 @@ function Error() {
   echo "ERROR: $@" 1>&2
   let error_count++
 }
-for var in SYSTEMC PROJ_ROOT CXX CC CMAKE_MODULE_PATH; do
+for var in SYSTEMC PROJ_ROOT CXX CC ; do
   perl -e 'exit (not exists $ENV{"$ARGV[0]"})' $var ||\
     Error "Missing definition of \$$var."
 done
@@ -25,7 +25,7 @@ fi
 
 # Setup option defaults
 HERE=$(/bin/pwd)
-TARGET="platform" # default
+TARGET="" # default
 CMAKE_OPTS=""
 MAKE_OPTS=""
 RUN_OPTS=""
@@ -38,15 +38,19 @@ if [[ $0 =~ .*run ]]; then
   RUN=1
 fi
 
+# Put up a big banner
 printf "|\n|\n|\n"
 clear;
 ruler '*'
+if [[ "$TARGET" != "" ]]; then
 header -uc "$TARGET"
+fi
 
 # Scan command-line for option overrides
 while [[ "$1" =~ -.* ]]; do
   if [[ "$1" == "-v" ]]; then
     MAKE_OPTS="${MAKE_OPTS} VERBOSE=1"
+    VERBOSE=1
     shift
   elif [[ "$1" == "-norun" ]]; then
     RUN=1
@@ -76,6 +80,8 @@ done
 if [[ $# > 0 ]]; then
   TARGET="$1"
   shift
+elif [[ "$TARGET" == "" ]]; then
+  echo "INFO: Using default target - all"
 else
   echo "INFO: Using default target - $TARGET"
 fi
@@ -99,6 +105,10 @@ fi
 if [[ $CLEAN == 1 ]]; then
   echo "make clean 2>&1 | tee -a $RDIR/make.log"
   make clean 2>&1 | tee -a $RDIR/make.log
+fi
+if [[ "$TARGET" == "" ]]; then
+  TARGET=$(make help | perl -lane '/^\.\.\. .*\.x$/ && print $F[1]')
+  header -uc "$TARGET"
 fi
 if [[ -x $TARGET ]]; then rm $TARGET; fi
 echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $RDIR/make.log"

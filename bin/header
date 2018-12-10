@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-eval 'exec perl -S $0 ${1+"$@"}' # vim600:sw=2:tw=0
-  if 0;#running_under_some_shell
+eval 'exec perl -S $0 ${1+"$@"}'
+  if 0;#running_under_some_shell;
 
 # @(#)$Info: header - Variation of banner tool for horizontal banners. $ {{{
 #
