@@ -1,22 +1,22 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
-//  #####                                                                        
-//  #                   ##                                                       
-//  #                    #                                                       
-//  ##### ##  ##  ####   #          ####  # ###   ####  ##  ## #   #             
-//  #       ##   #       #          #   # ##     #    #   ##    # #              
-//  #       ##   #       #          ####  #      #    #   ##     #               
-//  ##### ##  ##  ####  ###  ###### #     #       ####  ##  ##   #               
+//  ##### #     #  ####  #            ##### ### #     #######                     
+//  #      #   #  #    # #            #      #  #        #                        
+//  #       # #   #      #            #      #  #        #                        
+//  #####    #    #      #            #####  #  #        #                        
+//  #       # #   #      #            #      #  #        #                        
+//  #      #   #  #    # #            #      #  #        #                        
+//  ##### #     #  ####  ##### ###### #     ### #####    #                        
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef EXCL_PROXY_HPP
-#define EXCL_PROXY_HPP
+#ifndef EXCL_FILT_HPP
+#define EXCL_FILT_HPP
 
 #include <tlm>
 #include "common.hpp"
 #include "excl_extn.hpp"
 
-struct Excl_proxy
+struct Excl_filt
 : sc_core::sc_module
 , tlm::tlm_bw_transport_if<>
 , tlm::tlm_fw_transport_if<>
@@ -27,14 +27,14 @@ struct Excl_proxy
   tlm::tlm_initiator_socket<> init_socket;
   tlm::tlm_target_socket<>    targ_socket;
 
-  Excl_proxy //< Constructor
+  Excl_filt //< Constructor
   ( sc_core::sc_module_name instance_name
   , Depth_t                 excl_locks = 1
   , Depth_t                 excl_size  = 4/*bytes*/
-  , Excl_proxy*             global =  nullptr;
+  , Excl_filt*              global =  nullptr;
   );
-  virtual ~Excl_proxy( void );
-  virtual const char* kind( void ) const { return "Excl_proxy"; }
+  virtual ~Excl_filt( void );
+  virtual const char* kind( void ) const { return "Excl_filt"; }
 
 private:
   // Forward interface
@@ -51,7 +51,7 @@ private:
 
   // Attributes
   std::vector<bool> m_excl;
-  Excl_proxy*       m_global{ nullptr };
+  Excl_filt*        m_global{ nullptr };
 };
 
-#endif /*EXCL_PROXY_HPP*/
+#endif /*EXCL_FILT_HPP*/
