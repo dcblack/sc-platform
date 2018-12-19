@@ -10,6 +10,7 @@ with `SC_REPORT_*` macros.
 Syntax
 ------
 
+- `ASSERT(expression, message_stream)`
 - `REPORT(message_type, message_stream);`
 - `INFO(verbosity_level, message_stream);`
 - `MESSAGE(message_stream);`
@@ -41,6 +42,7 @@ Usage Example
 
 ```cpp
 #include "report.hpp"
+ASSERT( n > -2, "Value of n may only be positive or -1. Currently " << n );
 namespace { static const char* MSGID{ "/Doulos/Example/Report" }; }
 REPORT(ERROR,"Data " << data << " doesn't match expected " << expected);
 INFO(DEBUG,"Packet contains " << packet);
