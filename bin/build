@@ -42,9 +42,6 @@ fi
 printf "|\n|\n|\n"
 clear;
 ruler '*'
-if [[ "$TARGET" != "" ]]; then
-header -uc "$TARGET"
-fi
 
 # Scan command-line for option overrides
 while [[ "$1" =~ -.* ]]; do
@@ -77,6 +74,9 @@ while [[ "$1" =~ -.* ]]; do
     break
   fi
 done
+if [[ -r CMakeLists.txt ]]; then
+  TARGET=$(perl -lane 'if(m{add_executable[\(] *([^[:space:]]+)}){print $1; exit 0;}' CMakeLists.txt)
+fi
 if [[ $# > 0 ]]; then
   TARGET="$1"
   shift
@@ -85,50 +85,53 @@ elif [[ "$TARGET" == "" ]]; then
 else
   echo "INFO: Using default target - $TARGET"
 fi
+if [[ "$TARGET" != "" ]]; then
+header -uc "$TARGET"
+fi
 
 # Move into build directory if present (recommended)
-RDIR="."
-BDIR="."
-if [[ -r build ]]; then
-  RDIR=".."
-  BDIR="build"
-  echo "cd $BDIR"
-  cd $BDIR
+ROOT_DIR="."
+BUILD_DIR="."
+if [[ -r ./build ]]; then
+  ROOT_DIR=".."
+  BUILD_DIR="build"
+  echo "cd $BUILD_DIR"
+  cd $BUILD_DIR
 fi
 
 # Build
-rm -f make.log run.log $RDIR/make.log $RDIR/run.log
-if [[ -r $RDIR/CMakeLists.txt ]]; then
-  echo "cmake ${CMAKE_OPTS}$RDIR 2>&1 | tee -a make.log"
-  cmake "${CMAKE_OPTS}" $RDIR
+rm -f make.log run.log $ROOT_DIR/make.log $ROOT_DIR/run.log
+if [[ -r $ROOT_DIR/CMakeLists.txt ]]; then
+  echo "cmake ${CMAKE_OPTS}$ROOT_DIR 2>&1 | tee -a make.log"
+  cmake "${CMAKE_OPTS}" $ROOT_DIR
 fi
 if [[ $CLEAN == 1 ]]; then
-  echo "make clean 2>&1 | tee -a $RDIR/make.log"
-  make clean 2>&1 | tee -a $RDIR/make.log
+  echo "make clean 2>&1 | tee -a $ROOT_DIR/make.log"
+  make clean 2>&1 | tee -a $ROOT_DIR/make.log
 fi
 if [[ "$TARGET" == "" ]]; then
   TARGET=$(make help | perl -lane '/^\.\.\. .*\.x$/ && print $F[1]')
   header -uc "$TARGET"
 fi
 if [[ -x $TARGET ]]; then rm $TARGET; fi
-echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $RDIR/make.log"
-make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $RDIR/make.log
+echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $ROOT_DIR/make.log"
+make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $ROOT_DIR/make.log
 
 # Run
 if [[ $RUN == 1 ]]; then
-cd $RDIR
-env DEBUG=1\
+  cd $ROOT_DIR;
+  env DEBUG=1\
     LD_LIBRARY_PATH=$SYSTEMC/lib \
     DYLD_LIBRARY_PATH=$SYSTEMC/lib \
-  $GDBP $BDIR/$TARGET -- $RUN_OPTS ${ARGS} 2>&1 \
-  | tee $BDIR/run.log
+  $GDBP $BUILD_DIR/$TARGET -- $RUN_OPTS ${ARGS} 2>&1 \
+  | tee $BUILD_DIR/run.log;
 
-  if [[ "$RDIR" != "$BDIR" ]]; then
-    filter-sclog <$BDIR/run.log >$RDIR/run.log;
+  if [[ "$ROOT_DIR" != "$BUILD_DIR" ]]; then
+    filter-sclog $BUILD_DIR/run.log >run.log;
   else
-    filter-sclog <$RDIR/run.log >$RDIR/run2.log;
-    rm $BDIR/run.log
-    mv $BDIR/run2.log $RDIR/run.log
+    filter-sclog $BUILD_DIR/run.log >$BUILD_DIR/run2.log;
+    rm $BUILD_DIR/run.log
+    mv $BUILD_DIR/run2.log run.log
   fi
 fi
 
