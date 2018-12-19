@@ -49,7 +49,15 @@ Options::Options( void )
   // Establish defaults
   m_configuration = Interconnect::NORTH_SOUTH;
 
-  // Pars command-line
+  // Display command-line
+  MESSAGE( "Invocation:\n%" );
+  for ( int iArg = 0; iArg < sc_argc(); ++iArg )
+  {
+    MESSAGE( " " << sc_argv()[iArg] );
+  }
+  MEND( ALWAYS );
+
+  // Parse command-line
   for ( int iArg = 1; iArg < sc_argc(); ++iArg )
   {
     std::string arg( sc_argv()[iArg] );
