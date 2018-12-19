@@ -13,13 +13,13 @@ using namespace sc_core;
 #include <iostream>
 #include <cassert>
 
-int main( int argc, char* argv[] )
+int sc_main( int argc, char* argv[] )
 {
   assert( typeid(__cplusplus) == typeid(long int) );
   std::cout << "         sc_release()=" <<           sc_release()        << std::endl;
   std::cout << "          __cplusplus=" <<            __cplusplus << "L" << std::endl;
   std::cout << "         SC_CPLUSPLUS=" <<           SC_CPLUSPLUS << "L" << std::endl;
-  std::cout << "  IEEE_1666_CPLUSPLUS=" <<    IEEE_1666_CPLUSPLUS << "L" << std::endl;
+  std::cout << "  IEEE_1666_CPLUSPLUS=" <<    IEEE_1666_CPLUSPLUS << "L" << "(aka SystemC standard)" << std::endl;
   return 0;
 }
 EOF
