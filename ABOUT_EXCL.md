@@ -1,7 +1,7 @@
 About Excl
 ==========
 
-The `Excl_proxy` (exclusive) implements the read-lock/conditional-modify
+The `Excl_filt` (exclusives filter) implements the read-lock/conditional-modify
 concept.  For write operations, this would be identical to the
 load-lock/store-compare operation also known as exclusive monitor by Arm with
 a twist. Store can be any operation other than `read`.
@@ -9,15 +9,23 @@ a twist. Store can be any operation other than `read`.
 Implementation makes use of an ignorable auto-extension, `Excl_extn`.
 
 Adding an `Excl_extn` to a transaction makes it an exclusive operation. The
-extension may be marked shared, in which case a global proxy needs to be
+extension may be marked shared, in which case a global filter needs to be
 setup.
+
+This is a filter in the sense that it prevents exclusive non-read transactions
+from passing further unless the exclusive status for the specified address has
+been set.
+
+To support the global concept, when a transaction marked as exclusive fails,
+a fake transport debug transaction is created and forwarded on to pass the
+exclusives status to potentially subsequent global filters.
 
 Block Diagram
 -------------
 
 ```
           "Local"       "Shared"  "Global"  
-Cpu1      Excl_proxy    Bus       Excl_proxy  Memory
+Cpu1      Excl_filt     Bus       Excl_filt   Memory
 +------+   +------+     +------+   +------+   +------+
 |      |   | cpu1 |     |      |   | xram |   |      |
 | cpu1 >---> excl >-----> xbus >---> excl >---> xram |
@@ -25,13 +33,18 @@ Cpu1      Excl_proxy    Bus       Excl_proxy  Memory
 +------+   +------+  |  +------+   +------+   +------+
                      |  
           "Local"    |  
-Cpu2      Excl_proxy |  
+Cpu2      Excl_filt  |  
 +------+   +------+  |  
 |      |   | cpu2 |  |  
 | cpu2 >---> excl >--'
 |      |   |      |     
 +------+   +------+     
 ```
+
+Limitations
+-----------
+Only works as a 1:1 filter. In other words, this requires
+a point-to-point connection.
 
 Usage Example
 -------------
@@ -40,11 +53,11 @@ Usage Example
 Top:
   std::unique_ptr < Cpu_module    > cpu1;
   std::unique_ptr < Cpu_module    > cpu2;
-  std::unique_ptr < Excl_proxy    > cpu1_excl;
-  std::unique_ptr < Excl_proxy    > cpu2_excl;
+  std::unique_ptr < Excl_filt     > cpu1_excl;
+  std::unique_ptr < Excl_filt     > cpu2_excl;
   std::unique_ptr < Bus_module    > xbus;
   std::unique_ptr < Memory_module > xram;
-  std::unique_ptr < Excl_proxy    > xram_excl;
+  std::unique_ptr < Excl_filt     > xram_excl;
   ...
   cpu1      = std::make_unique < Cpu_module    > ( "cpu1" );
   cpu2      = std::make_unique < Cpu_module    > ( "cpu2" );
