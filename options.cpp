@@ -12,7 +12,10 @@
 #include "options.hpp"
 #include "common.hpp"
 #include "report.hpp"
+#include "memory_map.hpp"
 #include <string>
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
 using namespace sc_core;
 using namespace std;
 namespace {
@@ -23,6 +26,21 @@ Options* const Options::instance( void )
 {
   static Options options{};
   return &options;
+}
+
+inline bool Options::has_flag( std::string flag_name )
+{
+  return instance()->m_flag_map.count( flag_name ) != 0;
+}
+
+std::string Options::get_flag( std::string flag_name )
+{
+  if( has_flag( flag_name ) ) {
+    return instance()->m_flag_map[flag_name];
+  } else {
+    REPORT( WARNING, "Missing option: " << flag_name );
+    return std::string();
+  }
 }
 
 Options::Options( void )
@@ -49,6 +67,7 @@ Options::Options( void )
                << "Options:\n"
                << "\n"
                << "  -help        \n"
+               << "  -map FILEPATH\n"
                << "  -hyper       \n"
                << "  -debug+1     \n"
                << "  -debug       \n"
@@ -60,6 +79,7 @@ Options::Options( void )
                << "  -AT          \n"
                << "  -LT          \n"
                << "  -error-at-target\n"
+               << "  -v(erbose)   \n"
                << "\n"
              );
       RULER( '-' );
@@ -85,6 +105,10 @@ Options::Options( void )
     }
     else if ( arg == "-high" ) {
       sc_report_handler::set_verbosity_level( SC_HIGH );
+    }
+    // Application verbosity
+    else if ( arg == "-verbose" or arg == "-v" ) {
+      sc_report_handler::set_verbosity_level( SC_DEBUG + 1 );
     }
     else if ( arg == "-medium" ) {
       sc_report_handler::set_verbosity_level( SC_MEDIUM );
@@ -113,6 +137,27 @@ Options::Options( void )
     }
 
     //--------------------------------------------------------------------------
+    // YAML memory map file name
+    else if ( arg == "-map" ) {
+      if( iArg+1 >= sc_argc() ) {
+        REPORT( ERROR, "Missing required argument for " << arg << " option." );
+      }
+      arg = sc_argv()[++iArg];
+      // Does it match file naming expectations?
+      if( ( arg.find(".yaml") != arg.length()-5 ) or ( arg.find(".yml") != arg.length()-4 ) ) {
+        REPORT( WARNING, "Memory maps are specified as YAML and filename should end with '.yaml' or '.yml'" );
+      }
+      // Test reasonableness
+      path p{ sc_argv()[iArg] };
+      if( exists(p) and is_regular_file(p) and file_size(p) > 0 ) {
+        Memory_map::set_filename( arg );
+      }
+      else {
+        REPORT( ERROR, "No such file '" << arg << "' or file is unreadable" );
+      }
+    }
+
+    //--------------------------------------------------------------------------
     // Configuration of top
     else if ( arg == "-cfg" ) {
       if( iArg+1 >= sc_argc() ) {
@@ -130,6 +175,18 @@ Options::Options( void )
       }
       else if ( arg == "ns" ) {
         m_configuration = Interconnect::NORTH_SOUTH;
+      }
+    }
+    else if ( arg[0] == '-' ) {
+      size_t pos = arg.find_first_of('=');
+      if( pos == std::string::npos ) {
+        if( arg.length() == pos+1 ) {
+          m_flag_map[arg.substr(0,pos)]="";
+        } else {
+          m_flag_map[arg.substr(0,pos)] = arg.substr(pos+1);
+        }
+      } else {
+          m_flag_map[arg]=arg;
       }
     }
 
