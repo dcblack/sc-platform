@@ -9,7 +9,7 @@
 
 using namespace sc_core;
 namespace {
-  const char* const MSGID { "/Doulos/example/timer_beh" };
+  const char* const MSGID { "/Doulos/Example/timer_beh" };
 }
 
 //------------------------------------------------------------------------------

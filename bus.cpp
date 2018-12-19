@@ -154,7 +154,7 @@ Bus_module::transport_dbg( int id, tlm_payload_t& trans )
 {
   uint64 address{ trans.get_address() };
 
-  if(  configure( trans ) and address == MAX_ADDR ) {
+  if(  configure( trans ) and address == BAD_ADDR ) {
     // The only purpose for this transport_dbg was to obtain the configuration
     // information for the caller.
     trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
@@ -274,6 +274,10 @@ Bus_module::decode_address
   Addr_t& masked_address
 )
 {
+  if( address == BAD_ADDR ) {
+    REPORT( ERROR, "Unable to decode BAD_ADDR" );
+    return BAD_PORT;
+  }
   INFO( DEBUG, "Decoding address " << HEX << address );
 
   // In case of failure
@@ -287,7 +291,7 @@ Bus_module::decode_address
     return BAD_PORT;
   }
   base = lookup->first;
-  if( base == MAX_ADDR ) {
+  if( base == MAX_ADDR || base == BAD_ADDR ) {
     REPORT( WARNING, "No address => port match found! Unintialized entry." );
     return BAD_PORT;
   }
@@ -297,7 +301,7 @@ Bus_module::decode_address
   }
   masked_address = address - base;
   return lookup->second.port;
-}
+}//end Bus_module::decode_address
 
 //------------------------------------------------------------------------------
 uint64_t // address
@@ -346,7 +350,7 @@ void Bus_module::start_of_simulation( void )
 void
 Bus_module::build_port_map( void )
 {
-  INFO( MEDIUM, "Building port map for " << name() );
+  INFO( HIGH, "Building port map for " << name() );
   // Get memory map configuration
   m_addr_map = Memory_map::get_address_map( name() );
 
@@ -354,7 +358,7 @@ Bus_module::build_port_map( void )
   // Get port info by probing each target for its configuration
   //----------------------------------------------------------------------------
   // Create a transaction for probing
-  tlm_payload_t& probe_trans{ *m_mm.allocate_acquire_and_set() };
+  tlm_payload_t& probe_trans{ *m_mm.allocate_acquire_and_set(TLM_IGNORE_COMMAND) };
   // Add/reset configuration extension
   Config_extn* config_extn{ probe_trans.get_extension<Config_extn>() };
   if( config_extn == nullptr ) {
@@ -369,43 +373,55 @@ Bus_module::build_port_map( void )
     // Initialize fields that need refreshing on every transaction
     probe_trans.set_address( BAD_ADDR );
     probe_trans.set_response_status( TLM_INCOMPLETE_RESPONSE );
-    probe_trans.set_gp_option( TLM_FULL_PAYLOAD_ACCEPTED );
+    probe_trans.set_gp_option( TLM_FULL_PAYLOAD );
     // Make sure data is cleared to compel receiver to fill
     config_extn->configuration.clear_data();
+    INFO( DEBUG, "Probing port " << port << " from " << name() );
     int count = init_socket[port]->transport_dbg( probe_trans );
-    INFO( DEBUG, "transport_db response: " << probe_trans.get_response_string() );
-    NOINFO( DEBUG, "Got " << config_extn->configuration );
+    INFO( DEBUG, "Got\n" << config_extn->configuration );
 
     if( probe_trans.get_response_status() == TLM_OK_RESPONSE ) {
       if( config_extn->configuration.has_key( "target_size" )
       and config_extn->configuration.has_key( "name" )
       and config_extn->configuration.has_key( "kind" )
       ) {
-        string  name;
-        string  kind;
-        Depth_t size;
-        Addr_t  last;
-        config_extn->configuration.get("name", name);
-        config_extn->configuration.get("kind", kind);
-        config_extn->configuration.get("target_size", size);
+        string  config_name;
+        string  config_kind;
+        Depth_t config_size;
+        config_extn->configuration.get("name", config_name);
+        config_extn->configuration.get("kind", config_kind);
+        config_extn->configuration.get("target_size", config_size);
         // For each mapping that matches the name, we update the
         // port, kind, and optionally the size if not yet specified.
+        size_t matches{ 0 };
         for( auto& mapping : m_addr_map ) {
           Addr_t       addr{ mapping.first  };
-          Target_info& info{ mapping.second };
-          if( info.name == name ) {
-            info.port = port;
-            info.kind = kind;
-            if( info.size == UNASSIGNED ) {
-              info.size = size;
+          Target_info& mapped{ mapping.second };
+          if( mapped.name == config_name ) {
+            ++matches;
+            INFO( DEBUG, "Found port match at " << HEX << addr );
+            mapped.port = port;
+            mapped.kind = config_kind;
+            if( config_size == UNASSIGNED ) {
+              config_size = mapped.size; // {:TBD:should send back:}
             } else {
-              size = info.size;
+              mapped.size = config_size;
             }
-            sc_assert( size > 0 );
-            info.last = info.base + size - 1;
+            if( config_size == 0 ) {
+              REPORT( ERROR, "Configured size of " << config_name << " is zero!" );
+            }
+            mapped.last = mapped.base + config_size - 1;
           }
+        }//endfor
+        if( matches == 0 ) {
+          REPORT( ERROR, "No matches on port " << config_name << " => connectivity mismatch!" );
         }
       }
+    }
+    else {
+      REPORT( ERROR, "Bad response on port " << port
+                  << " " << probe_trans.get_response_string()
+            );
     }
   }//endfor port
 
@@ -442,7 +458,7 @@ void
 Bus_module::check_port_map_and_update_configuration( void )
 {
   dump_port_map( SC_DEBUG );
-  INFO( MEDIUM, "Checking port map for " << name() );
+  INFO( MEDIUM+1, "Checking port map for " << name() );
   Addr_t  min_address{ MAX_ADDR }; // used to update bus configuration
   Addr_t  max_address{ 0 };        // used to update bus configuration
   size_t  mapping_errors  { 0 };
@@ -452,7 +468,7 @@ Bus_module::check_port_map_and_update_configuration( void )
     const Addr_t       addr{ mapping.first  };
     const Target_info& info{ mapping.second };
 
-    if( info.base == BAD_ADDR ) {
+    if( info.base == BAD_ADDR or info.base == MAX_ADDR ) {
       if( mapping_errors++ == 0 ) {
         MESSAGE( "Port map errors detected:" );
       }
@@ -512,7 +528,7 @@ Bus_module::check_port_map_and_update_configuration( void )
     REPORT( ERROR, "\n\nTotal of " << mapping_errors << " mapping errors detected for " << name());
   }
   else {
-    INFO( MEDIUM, "Port map valid for " << name() );
+    INFO( MEDIUM+1, "Port map valid for " << name() );
   }
 
   // Update our own configuration data

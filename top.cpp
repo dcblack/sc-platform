@@ -21,12 +21,12 @@
 #include "memory.hpp"
 #include "memory_map.hpp"
 #include "timer.hpp"
+#include "stub.hpp"
 #include <set>
 using namespace sc_core;
 using namespace std;
 namespace {
-  const char* const MSGID="/Doulos/Example/Platform";
-  const char* const RCSID="$Id: top.cpp,v 1.0 2018/11/03 06:27:55 dcblack Exp $";
+  const char* const MSGID="/Doulos/Example/Platform/top";
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,9 @@ struct Top_module::Impl
   std::unique_ptr< Memory_module > rom;
   std::unique_ptr< Memory_module > ram;
   std::unique_ptr< Memory_module > ddr;
+  std::unique_ptr< Stub_module   > gio;
   std::unique_ptr< Timer_module  > tmr;
+  std::unique_ptr< Stub_module   > pic;
 
   // Constructor
   Impl( void )
@@ -72,6 +74,8 @@ struct Top_module::Impl
         // fall thru
       case Interconnect::TIMER:
         tmr = std::make_unique<Timer_module> ( "tmr" , 2, 1, 2, 2 );
+        gio = std::make_unique<Stub_module>  ( "gio" );
+        pic = std::make_unique<Stub_module>  ( "pic" );
         // fall thru
       case Interconnect::MEMORY:
         rom = std::make_unique<Memory_module>( "rom" , 1*KB, Access::RO, 16, 32, DMI::enabled );
@@ -100,7 +104,9 @@ struct Top_module::Impl
         cpu->init_socket.bind( nth->targ_socket );
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );
+        nth->init_socket.bind( gio->targ_socket );
         nth->init_socket.bind( tmr->targ_socket );
+        nth->init_socket.bind( pic->targ_socket );
         tmr->intrq_port.bind ( cpu->intrq_xport );
         break;
 
@@ -108,9 +114,11 @@ struct Top_module::Impl
         cpu->init_socket.bind( nth->targ_socket );
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );
+        nth->init_socket.bind( ddr->targ_socket );
         nth->init_socket.bind( sth->targ_socket );
-        sth->init_socket.bind( ddr->targ_socket );
+        sth->init_socket.bind( gio->targ_socket );
         sth->init_socket.bind( tmr->targ_socket );
+        sth->init_socket.bind( pic->targ_socket );
         tmr->intrq_port.bind ( cpu->intrq_xport );
         break;
 
@@ -127,7 +135,7 @@ struct Top_module::Impl
 
 void Top_module::end_of_elaboration( void )
 {
-  MESSAGE( "Design complete" );
+  MESSAGE( "End of elaboration\n" );
   MEND( ALWAYS );
   // TODO: Netlist
 }
@@ -137,12 +145,14 @@ void Top_module::start_of_simulation( void )
   Summary::starting_simulation();
   MESSAGE( "\n" );
   RULER('!');
+  MESSAGE( "Start of simulation\n" );
   MESSAGE( "Clock period is " << pImpl->clk.period() );
   MEND( ALWAYS );
 }
 
 void Top_module::end_of_simulation( void )
 {
+  INFO( ALWAYS, "End of simulation\n" );
   Summary::finished_simulation();
 }
 

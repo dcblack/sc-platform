@@ -40,9 +40,10 @@ void memory_test(void)
   uint32_t data32;
   uint16_t data16;
   uint8_t  data8;
-  TEST_RAM( 8,  0, 0xEF );
-  TEST_RAM( 8,  1, 0xBE );
-  TEST_RAM( 16, 2, 0xCAFE );
+  //        bits, offset, value
+  TEST_RAM(    8,   0,     0xEF );
+  TEST_RAM(    8,   1,     0xBE );
+  TEST_RAM(   16,   2,   0xCAFE );
   data32 = 0u;
   cpu->read32( RAM_BASE + 0, data32 );
   INFO( MEDIUM, "read 0:" << VALUE(data32) );

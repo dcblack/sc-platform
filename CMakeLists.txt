@@ -13,7 +13,7 @@ project(platform CXX)
 include(cmake/BuildTypes.cmake)
 include(cmake/SystemC.cmake)
 find_package(yaml-cpp CONFIG REQUIRED)
-find_package(Boost 1.65 REQUIRED)
+find_package(Boost 1.65 REQUIRED filesystem)
 
 add_compile_definitions(SC_INCLUDE_FX SC_INCLUDE_DYNAMIC_PROCESSES)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -21,6 +21,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 ################################################################################
 add_executable( platform
   common.cpp
+  sc_freq.cpp
   log2.cpp
   report.cpp
   wallclock.cpp
@@ -38,6 +39,7 @@ add_executable( platform
   options.cpp
   cpu.cpp
 # program.cpp
+  stub.cpp
   memory.cpp
   memory_test.cpp
   bus.cpp
@@ -62,7 +64,7 @@ add_executable( platform
 # environ.cpp
 # gps.cpp
 )
-target_link_libraries( platform yaml-cpp )
+target_link_libraries( platform yaml-cpp Boost::filesystem)
 
 ################################################################################
 add_executable( config
@@ -71,6 +73,7 @@ add_executable( config
   wallclock.cpp
   summary.cpp
   common.cpp
+  sc_freq.cpp
 )
 target_compile_definitions( config PRIVATE CONFIG_EXAMPLE )
 
@@ -88,6 +91,7 @@ target_compile_definitions( signal PRIVATE SIGNAL_EXAMPLE )
 add_executable( timer
   timer_beh.cpp
   common.cpp
+  sc_freq.cpp
   report.cpp
   wallclock.cpp
   summary.cpp
@@ -102,9 +106,27 @@ add_executable( xyaml
   wallclock.cpp
   summary.cpp
   common.cpp
+  sc_freq.cpp
 )
 target_compile_definitions( xyaml PRIVATE YAML_EXAMPLE )
 target_link_libraries( xyaml yaml-cpp )
+
+################################################################################
+add_executable( map_test
+  map_test.cpp
+  memory_map.cpp
+  report.cpp
+  wallclock.cpp
+  summary.cpp
+  common.cpp
+  sc_freq.cpp
+)
+target_link_libraries( map_test yaml-cpp )
+
+################################################################################
+add_executable( freq_test
+  freq_test.cpp
+)
 
 ################################################################################
 # Syntax reminders

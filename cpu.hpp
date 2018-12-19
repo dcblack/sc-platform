@@ -28,6 +28,7 @@
 #include <map>
 using sc_core::sc_time;
 using sc_core::sc_event;
+using sc_core::sc_signal;
 
 struct Cpu_module: sc_core::sc_module
 {
@@ -40,7 +41,8 @@ struct Cpu_module: sc_core::sc_module
   no_clock&                                       clk         { no_clock::global( "system_clock" ) };
 
   // Local signals
-  Interrupt                                       intrq_chan  { "intrq_signal" };
+  Interrupt           intrq_chan    { "intrq_signal"  };
+  sc_signal<bool>     intrq_enabled { "intrq_enabled" };
 
   // Fundamentals
   SC_CTOR( Cpu_module );
@@ -55,7 +57,7 @@ struct Cpu_module: sc_core::sc_module
   tlm::tlm_sync_enum nb_transport_bw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );
   void invalidate_direct_mem_ptr( Addr_t start_range, Addr_t end_range );
 
-  // Overrides
+  // Overrides (callbacks)
   void start_of_simulation( void ) override;
   void end_of_simulation( void ) override;
 private:
@@ -85,6 +87,8 @@ private:
 
 public:
   // Convenience
+  //----------------------------------------------------------------------------
+  // Obtain base address of a peripheral based on its hierarchical path name.
   Addr_t find_address( std::string path ) const;
   void write64  ( Addr_t address, uint64_t data )
     { write( address, reinterpret_cast<uint8_t*>( &data ), 8 ); }
@@ -113,6 +117,8 @@ public:
   void read     ( Addr_t address, uint8_t* const data, Depth_t len )
     { transport( tlm::TLM_READ_COMMAND, address, data, len );  INFO( DEBUG, "Read  " << to_string( data, len ) << " fm " << HEX << address ); }
 
+  //----------------------------------------------------------------------------
+  // Transport debug conveniences
   void put( Addr_t address, std::vector<uint8_t>& vec );
   void get( Addr_t address, Depth_t depth, std::vector<uint8_t>& vec );
 

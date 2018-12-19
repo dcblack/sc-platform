@@ -68,9 +68,11 @@ void timer_test(void)
   TEST_TIMER( "Setup for 30 on", t1 );
   t1.start();
 
-  cpu->clk.wait( 150 );
+  cpu->clk.wait( 70 );
+  t0.stop();
   TEST_TIMER( "Final status for", t0 );
   TEST_TIMER( "Final status for", t1 );
+  t1.stop();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

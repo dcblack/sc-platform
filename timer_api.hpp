@@ -13,6 +13,7 @@ struct Timer_api
   , m_base( base )
   , m_timer( (timer<0)?nTimer():timer )
   {
+    INFO( MEDIUM, "Referencing timer " << m_timer );
   }
 
   ~Timer_api( void ) = default;
@@ -73,9 +74,10 @@ private:
   // if true, return the next timer else return the number of timers
   static int nTimer( bool next = true )
   {
-    static int timer { 0 };
-    if( next ) return timer++;
-    else       return timer;
+    static int next_timer { 0 };
+    int timer = next_timer++;
+    if( next ) return timer;
+    else       return next_timer;
   }
 
   // Attributes
@@ -84,6 +86,7 @@ private:
   const int    m_timer;
   bool         m_setup{false};
 
+  const char * const MSGID{ "/Doulos/Example/Timer_api" };
 };
 
 #endif /*TIMER_API_HPP*/

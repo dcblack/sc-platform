@@ -130,7 +130,7 @@ void Timer_module::timer_thread( void )
 void
 Timer_module::b_transport
 ( tlm_payload_t& trans
-  , sc_time& delay
+, sc_time& delay
 )
 {
 
