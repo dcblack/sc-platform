@@ -30,6 +30,16 @@ do {                                             \
   mout.str( "" );                                \
 } while (0)
 
+// Use the following to (A) add more information in the event of failure, and
+// and (B) control sc_assert behavior (i.e. not unconditional abort on failure).
+#ifndef NDEBUG
+#define ASSERT(expr,stream) do {\
+  if(!(expr)) SC_REPORT_FATAL( "Assertion failed: ", # expr << " " << stream );\
+} while (0)
+#else
+#define ASSERT(expr)
+#endif
+
 #define SC_ALWAYS SC_NONE
 #define SC_NEVER  16*KB
 #define SC_HYPER  1024
