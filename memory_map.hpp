@@ -14,9 +14,10 @@
 
 #include "common.hpp"
 #include <string>
+#include <ostream>
 #include <map>
 #include <memory>
-#include <forward_list>
+#include <list>
 
 #ifdef TRIVIAL_MAP
 #define NA MAX_ADDR
@@ -57,6 +58,7 @@ struct Target_info {
   std::string name  { ""         }; // get from YAML
   std::string kind  { ""         }; // get from probe
 };
+std::ostream& operator<<( std::ostream& os, const Target_info& rhs );
 using Address_map = std::map< Addr_t, Target_info, std::greater<Addr_t> >;
 
 // Singleton class
@@ -78,10 +80,11 @@ struct Memory_map
   using Origin_map = std::map< std::string, Origin_info >; // origin => map
 
   // Public Methods
-  static Address_map get_address_map( const std::string& origin_name );
-  static Target_ptr target_path(std::forward_list<std::string> device_list);
+  static Address_map get_address_map( const std::string & origin_name );
+  static Target_info get_target_path_info( std::list<std::string>& device_list );
+  static Addr_t find_address ( std::string from_initiator, std::string to_target );
   static void read_yaml( void );
-  static void set_filename( const std::string& filename )
+  static void set_filename( const std::string & filename )
   {
     instance().m_yaml_filename = filename;
   }
@@ -96,8 +99,8 @@ private:
   Memory_map& operator=( Memory_map&& ) = delete;
 
   // Singleton access
-  static Memory_map& instance( void );
-  static Origin_map& origin_map( void );
+  static Memory_map & instance( void );
+  static Origin_map & origin_map( void );
 
   std::string  m_yaml_filename{ "memory_map.yaml" };
   Origin_map   m_origin_map;

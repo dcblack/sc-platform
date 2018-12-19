@@ -1,6 +1,13 @@
 %YAML 1.2
 ---
 # Memory mapping
+#
+# 0x0000'1000 => 2**12 =>   4'KB
+# 0x0001'0000 => 2**16 =>  64'KB
+# 0x0010'0000 => 2**20 =>   1'MB
+# 0x0100'0000 => 2**24 =>  16'MB
+# 0x1000'0000 => 2**28 => 256'MB
+#
 top.cpu:
   type: initiator
   target:
@@ -26,7 +33,7 @@ top.nth:
   target:
     top.rom:   { addr: 0x0000'0000, size:  96MB, irq:  0, kind: Memory_module   }
     top.ram:   { addr: 0x1000'0000, size: 128KB, irq:  0, kind: Memory_module   }
-    top.ddr:   { addr: 0x2000'0000, size: 256MB, irq:  0, kind: Memory_module   }
+    top.ddr:   { addr: 0x2000'0000, size: 128MB, irq:  0, kind: Memory_module   }
     top.sth:   { addr: 0x4000'0000, size:     0, irq:  0, kind: Bus_module      }
     top.dsk:   { addr: 0x4008'0000, size:   1KB, irq:  8, kind: Disk_module     }
     top.net:   { addr: 0x4008'1000, size:   32B, irq:  9, kind: Wifi_module     }
@@ -41,25 +48,25 @@ top.sth:
   addr: 0x4000'0000
   size: 0
   target:
-    top.tmr:   { addr: 0x0000'0000, size:   32B, irq:  2, kind: Timer           }
-    top.gio:   { addr: 0x0000'1000, size:   32B, irq:  3, kind: Gpio            }
-    top.crypt: { addr: 0x0000'2000, size:   2KB, irq:  4, kind: Crypto          }
-    top.pic:   { addr: 0x0000'3000, size:   1KB, irq:  5, kind: IrqCtrl         }
-    top.dma:   { addr: 0x0000'4000, size:   32B, irq:  1, kind: Dma             }
-    top.flash: { addr: 0x0000'5000, size:   4KB, irq: 13, kind: Flash           }
-    top.spi:   { addr: 0x0000'6000, size:   32B, irq:  6, kind: SBus            }
-    top.ser:   { addr: 0x0000'7000, size:   32B, irq:  7, kind: Usart           }
+    top.gio:   { addr: 0x0000'0000, size:   32B, irq:  2, kind: Stub_module     } # Gpio_module
+    top.tmr:   { addr: 0x0000'1000, size:     0, irq:  3, kind: Timer_module    }
+    top.crypt: { addr: 0x0000'2000, size:   2KB, irq:  4, kind: Crypto_module   }
+    top.pic:   { addr: 0x0000'3000, size:   1KB, irq:  5, kind: Stub_module     } # IrqCtrl_module
+    top.dma:   { addr: 0x0000'4000, size:   32B, irq:  1, kind: Dma_module      }
+    top.flash: { addr: 0x0000'5000, size:   4KB, irq: 13, kind: Flash_module    }
+    top.spi:   { addr: 0x0000'6000, size:   32B, irq:  6, kind: SBus_module     }
+    top.ser:   { addr: 0x0000'7000, size:   32B, irq:  7, kind: Usart_module    }
 top.spi:
   type: router
   addr: 0
-  size: 0
+  size: 32
   target:
     top.gps:   { addr: 0x0,        size:   32B, irq:  0, kind: Gps_module      }
     top.env:   { addr: 0x1,        size:   32B, irq:  0, kind: Environ_module  }
 top.usb:
   type: router
   addr: 0
-  size: 0
+  size: 32
   target:
     top.ptr:   { addr: 0,          size:   32B, irq:  0, kind: Mouse_module    }
     top.kbd:   { addr: 1,          size:   32B, irq:  0, kind: Keyboard_module }
