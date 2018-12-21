@@ -19,7 +19,6 @@ uint64_t reconstruct_address ( Addr_t address, Port_t port, bool bias_upwards );
 void     build_port_map      ( void );
 void     dump_port_map       ( int level );
 void     check_port_map_and_update_configuration( void );
-void     add_command         ( initializer_list<string> commands );
 
 string name( string name = "" )
 {
@@ -42,9 +41,60 @@ struct Command
   string       m_target;
   string       m_yaml;
   Addr_t       m_addr;
+  bool         m_processing{ true };
   list<string> m_cmds;
   Address_map m_addr_map;
-} cmd;
+  bool         processing( void ) const { return not m_processing; }
+  void         process( void );
+  void add( initializer_list<string> cmds ) {
+    m_cmds.splice( m_cmds.end(), cmds );
+  }
+  size_t size( void ) const { return m_cmds.size(); }
+} command;
+
+void Command::process( void )
+{
+  while( not m_cmds.empty() ) {
+    string cmd = m_cmds.front();
+    string arg;
+    if( cmd == "yaml" and m_cmds.size() > 1 ) {
+      m_cmds.pop_front();
+      arg = m_cmds.front();
+      m_cmds.pop_front();
+    } else if( cmd == "init" and m_cmds.size() > 1 ) {
+      m_cmds.pop_front();
+      arg = m_cmds.front();
+      m_cmds.pop_front();
+      NOT_YET_IMPLEMENTED();
+    } else if( cmd == "targ" and m_cmds.size() > 1 ) {
+      m_cmds.pop_front();
+      arg = m_cmds.front();
+      m_cmds.pop_front();
+      NOT_YET_IMPLEMENTED();
+    } else if( cmd == "bus" and m_cmds.size() > 1 ) {
+      m_cmds.pop_front();
+      arg = m_cmds.front();
+      m_cmds.pop_front();
+      NOT_YET_IMPLEMENTED();
+    } else if( cmd == "findaddr" and m_cmds.size() > 1 ) {
+      m_cmds.pop_front();
+      arg = m_cmds.front();
+      m_cmds.pop_front();
+      NOT_YET_IMPLEMENTED();
+    } else if( cmd == "decode" and m_cmds.size() > 1 ) {
+      m_cmds.pop_front();
+      arg = m_cmds.front();
+      m_cmds.pop_front();
+      NOT_YET_IMPLEMENTED();
+    } else if( cmd == "quit" ) {
+      m_cmds.pop_front();
+      m_processing = false;
+      break;
+    } else if( m_cmds.size() == 1 ) {
+      break;
+    }
+  }
+}
 
 //------------------------------------------------------------------------------
 int sc_main( int argc, char* argv[])
@@ -67,38 +117,49 @@ int sc_main( int argc, char* argv[])
     string arg( sc_argv()[i] );
     if( arg == "-yaml" and (i+1) < sc_argc() ) {
       arg = name(sc_argv()[++i]);
-      command.add( "yaml", arg );
+      command.add({"yaml", arg});
     } else if( arg == "-init" and (i+1) < sc_argc() ) {
       arg = name(sc_argv()[++i]);
-      command.add( "init", arg );
+      command.add({"init", arg});
     } else if( arg == "-bus" and (i+1) < sc_argc() ) {
       arg = name(sc_argv()[++i]);
-      command.add( "bus", arg );
+      command.add({"bus", arg});
     } else if( arg == "-targ" and (i+1) < sc_argc() ) {
       arg = name(sc_argv()[++i]);
-      command.add( "targ", arg );
+      command.add({"targ", arg});
     } else if( arg == "-kind" and (i+1) < sc_argc() ) {
       arg = kind(sc_argv()[++i]);
     }
   }
 
-  address = find_address( target );
-  m_addr_map = Memory_map::get_address_map( busname );
+  // address = find_address( target );
+  // m_addr_map = Memory_map::get_address_map( busname );
 
-  if( commands
-
-  do {
-    cin >> command;
-  } while( processing );
+  if( command.size() ) {
+    command.process();
+  }
+  while( command.processing() ) 
+  {
+    char line[256];
+    std::cin.getline(line,256);
+    istringstream is(line);
+    string word;
+    while( not is.eof() ) {
+      is >> word;
+      command.add({word});
+    }
+    command.process();
+  }
 
   return Summary::report();
 }//end sc_main()
 
 //------------------------------------------------------------------------------
-Addr_t find_address ( string path ) const
+Addr_t find_address ( string path )
 {
   INFO( DEBUG, "Searching for address from " << name() << " to " << path );
-  auto target_info = Memory_map::get_target_path_info({ name(), path });
+  list<string> device_path = { name(), path };
+  auto target_info = Memory_map::get_target_path_info( device_path );
   sc_assert( target_info.base != BAD_ADDR );
   MESSAGE( "Found address " << HEX << target_info.base );
   MESSAGE( " from " << name() << " to " << path );
