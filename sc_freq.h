@@ -57,7 +57,7 @@ struct sc_freq
     if( divisor == 0.0 ) {
       return sc_max_time();
     } else {
-      return sc_time( abs( 1.0 / divisor ), sc_core::SC_SEC );
+      return sc_time( std::abs( 1.0 / divisor ), sc_core::SC_SEC );
     }
   }
   std::string to_string( int w=0, unsigned int f=3, char c=' ' ) const {
@@ -112,21 +112,21 @@ private:
   sc_freq_units m_units;
 };
 
-inline sc_freq operator*( double lhs, const sc_freq& rhs );
-inline sc_time operator/( double lhs, const sc_freq& rhs );
-inline double operator/( const sc_freq& lhs, const sc_freq& rhs );
+sc_freq operator*( double lhs, const sc_freq& rhs );
+sc_time operator/( double lhs, const sc_freq& rhs );
+double operator/( const sc_freq& lhs, const sc_freq& rhs );
 std::ostream& operator<<( std::ostream& os, const sc_freq& rhs );
 
-inline sc_freq operator "" _Hz  ( long double        val ) { return sc_freq( val          , sc_core::SC_HZ  ); }
-inline sc_freq operator "" _Hz  ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_HZ  ); }
-inline sc_freq operator "" _KHz ( long double        val ) { return sc_freq( val          , sc_core::SC_KHZ ); }
-inline sc_freq operator "" _KHz ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_KHZ ); }
-inline sc_freq operator "" _MHz ( long double        val ) { return sc_freq( val          , sc_core::SC_MHZ ); }
-inline sc_freq operator "" _MHz ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_MHZ ); }
-inline sc_freq operator "" _GHz ( long double        val ) { return sc_freq( val          , sc_core::SC_GHZ ); }
-inline sc_freq operator "" _GHz ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_GHZ ); }
-inline sc_freq operator "" _THz ( long double        val ) { return sc_freq( val          , sc_core::SC_THZ ); }
-inline sc_freq operator "" _THz ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_THZ ); }
+static inline sc_freq operator "" _Hz  ( long double        val ) { return sc_freq( val          , sc_core::SC_HZ  ); }
+static inline sc_freq operator "" _Hz  ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_HZ  ); }
+static inline sc_freq operator "" _KHz ( long double        val ) { return sc_freq( val          , sc_core::SC_KHZ ); }
+static inline sc_freq operator "" _KHz ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_KHZ ); }
+static inline sc_freq operator "" _MHz ( long double        val ) { return sc_freq( val          , sc_core::SC_MHZ ); }
+static inline sc_freq operator "" _MHz ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_MHZ ); }
+static inline sc_freq operator "" _GHz ( long double        val ) { return sc_freq( val          , sc_core::SC_GHZ ); }
+static inline sc_freq operator "" _GHz ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_GHZ ); }
+static inline sc_freq operator "" _THz ( long double        val ) { return sc_freq( val          , sc_core::SC_THZ ); }
+static inline sc_freq operator "" _THz ( unsigned long long val ) { return sc_freq( double( val ), sc_core::SC_THZ ); }
 
 }
 #endif

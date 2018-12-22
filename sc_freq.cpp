@@ -18,23 +18,34 @@ std::string sc_freq::str( sc_freq_units units ) {
   return "?Hz";
 }
 
-inline sc_freq operator*( double lhs, const sc_freq& rhs ) {
+//------------------------------------------------------------------------------
+sc_freq operator*( double lhs, const sc_freq& rhs ) {
   return rhs.sc_freq::operator*(lhs);
 }
-inline sc_time operator/( double lhs, const sc_freq& rhs ) {
+
+//------------------------------------------------------------------------------
+sc_time operator/( double lhs, const sc_freq& rhs ) {
   double divisor { rhs.value(SC_HZ) };
   if( divisor == 0.0 ) {
     return sc_max_time();
   } else {
-    return sc_time( abs( lhs / divisor ), sc_core::SC_SEC );
+    return sc_time( std::abs( lhs / divisor ), sc_core::SC_SEC );
   }
 }
-inline double operator/( const sc_freq& lhs, const sc_freq& rhs ) {
+
+//------------------------------------------------------------------------------
+double operator/( const sc_freq& lhs, const sc_freq& rhs ) {
   return lhs.value( SC_HZ ) / rhs.value( SC_HZ );
 }
+
+//------------------------------------------------------------------------------
 std::ostream& operator<<( std::ostream& os, const sc_freq& rhs ) {
   os << rhs.to_string();
   return os;
 }
 
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Copyright 2018 by Doulos. All rights reserved.
+//END $Id$
