@@ -4,7 +4,7 @@
 #$Info: setup.profile - environment settings for SystemC/TLM platform examples. $
 
 # DOCUMENTATION
-function help() {
+function about() {
   cat <<EMBEDDED_MARKDOWN
 NAME
 ----
@@ -33,6 +33,7 @@ Assumes the following:
 - boost library
 - C++ compiler - Either clang/llvm v9.1 or g++ v5.2 or later
 - dirname
+- realpath
 - git 2.19 or later
 - header - perl script (located in bin/ directory)
 - module - bash alias for the modulecmd tcl script that sets up environment variables in BASH.
@@ -54,26 +55,22 @@ EMBEDDED_MARKDOWN
 firstreal() {
   perl -le '@_=split($;,join($;,@ARGV));for(@_){next unless -e $_;print $_;exit 0;}' "$@"
 }
-real_path() {
-  # USAGE: real_path DIR
-  perl -M'Cwd(abs_path)' -le '$d=$ARGV[0];print abs_path($d)if -d $d' "$1"
-}
 has_path() {
   # USAGE: has_path VAR PATH
-  arg=$(real_path "$2")
+  arg=$(realpath "$2")
   if [[ "$arg" == "" ]]; then return 1; fi
   perl -M'Cwd(abs_path)' -le '$v=$ARGV[0];$p=$ARGV[1];for$d(split(":",$ENV{$v})){next if !-d $d;exit 0 if$p eq abs_path($d);}exit 1' "$1" "$arg"
 }
 prepend_path() { # only if 2nd arg does not exist in first
   # USAGE: prepend_path VAR PATH
-  arg="$(real_path '$2')"
+  arg="$(realpath '$2')"
   has_path "$1" "$2" || \
     eval $(perl -le 'print qq{$ARGV[0]="$ARGV[1]:$ENV{$ARGV[0]}"; export $ARGV[0]}' "$1" "$arg")
 }
 append_path() { # only if 2nd arg does not exist in first
   # USAGE: append_path VAR PATH
   var="$1"
-  arg="$(real_path '$2')"; shift
+  arg="$(realpath '$2')"; shift
   has_path "$1" "$2" || \
     eval $(perl -le 'print qq{$ARGV[0]="$ENV{$ARGV[0]}:$ARGV[1]"; export $ARGV[0]}' "$var" "$arg")
 }
@@ -85,6 +82,14 @@ remove_path() {
   # USAGE: remove_path VAR PATH
   eval $(perl -M'Cwd(abs_path)' -e '$v=$ARGV[0];$p=abs_path($ARGV[1]);for(split(qr":",$ENV{$v})){$e=abs_path($_);if($p ne $e){$push(@e,$e);}};print "$v=",join(":",@e)' "$1" "$2")
 }
+
+if [ "$EDA" = "" ]; then
+  export EDA=/apps
+fi
+if [ "$MODULESHOME" = "" && -x $EDA/Modules/default/init/bash ]; then
+  echo "Setting up modules"
+  . /apps/Modules/default/init/bash
+fi
 
 export PROJ_ROOT=$(realpath $(dirname $(firstreal ./.git ../.git ../../.git ../../../.git ../../../../.git)))
 PROJ_BIN="$PROJ_ROOT/bin"
