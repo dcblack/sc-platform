@@ -73,7 +73,8 @@ void Timer::pause( sc_time delay )
 void Timer::resume( sc_time delay )
 {
   INFO( DEBUG, "Resuming timer " << name() << " at " << sc_time_stamp() );
-  sc_assert( m_paused and m_resume_delay != SC_ZERO_TIME );
+  sc_assert( m_paused );
+  sc_assert( m_resume_delay != SC_ZERO_TIME );
   m_paused = false;
   m_trigger_time = curr_time( delay ) + m_resume_delay;
   m_start_time = m_trigger_time - m_load_delay;
@@ -125,11 +126,11 @@ bool Timer::is_running( sc_core::sc_time delay )
 void Timer::trigger_thread( void )
 {
   for(;;) {
-    wait( m_trigger_event );
+    do {
+      wait( m_trigger_event );
+    } while( m_paused or m_trigger_time == SC_ZERO_TIME );
     INFO( DEBUG, "Triggered timer " << name() << " at " << sc_time_stamp() );
-    sc_assert ( m_trigger_time != SC_ZERO_TIME
-         and m_trigger_time == sc_time_stamp()
-         and not m_paused );
+    sc_assert( m_trigger_time == sc_time_stamp() );
 
     m_triggered = true;
     if( m_pulse_delay > SC_ZERO_TIME ) {
