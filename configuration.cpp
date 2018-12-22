@@ -265,6 +265,7 @@ std::ostream& operator<<( std::ostream& os, const Configuration& rhs )
     if( not is_special ) fields.push_back( v.first );
   }
   std::sort( fields.begin(), fields.end() );
+  max_width += 2; // account for ": "
 
   for( const string& field : special ) {
     if( rhs.m_data_map.count( field ) == 0 ) continue;
