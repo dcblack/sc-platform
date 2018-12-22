@@ -15,6 +15,7 @@
 #include "report.hpp"
 #include "summary.hpp"
 #include "common.hpp"
+#include "netlist.hpp"
 #include "cpu.hpp"
 #include "options.hpp"
 #include "bus.hpp"
@@ -137,7 +138,7 @@ void Top_module::end_of_elaboration( void )
 {
   MESSAGE( "End of elaboration\n" );
   MEND( ALWAYS );
-  // TODO: Netlist
+  Netlist dump;
 }
 
 void Top_module::start_of_simulation( void )

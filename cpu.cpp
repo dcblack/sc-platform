@@ -31,7 +31,7 @@ using namespace std;
 // Constructor
 Cpu_module::Cpu_module( sc_module_name instance_name )
 : m_mm                  { Memory_manager<>::instance()   }
-, m_init_peq            { this, &Cpu_module::init_peq_cb }
+, m_init_peq            { "init_peq", this, &Cpu_module::init_peq_cb }
 , m_request_in_progress { nullptr                        }
 , cpu_task_mgr          { "cpu", this }
 {

@@ -29,6 +29,7 @@ add_executable( platform
   no_clock.cpp
   task.cpp
   main.cpp
+  netlist.cpp
   top.cpp
   signal.cpp
   configuration.cpp

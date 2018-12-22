@@ -43,7 +43,7 @@ Stub_module::Stub_module // Constructor
 , m_addr_clocks             { addr_clocks     }
 , m_read_clocks             { read_clocks     }
 , m_write_clocks            { write_clocks    }
-, m_targ_peq                { this, &Stub_module::targ_peq_cb }
+, m_targ_peq                { "targ_peq", this, &Stub_module::targ_peq_cb }
 {
   SC_HAS_PROCESS( Stub_module );
   SC_METHOD( execute_transaction_process );

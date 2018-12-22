@@ -36,7 +36,7 @@ Timer_module::Timer_module // Constructor
   , m_read_clocks             { read_clocks     }
   , m_write_clocks            { write_clocks    }
   , m_timer_vec               { "timer"         }
-  , m_targ_peq                { this, &Timer_module::targ_peq_cb }
+  , m_targ_peq                { "target_peq", this, &Timer_module::targ_peq_cb }
 {
   SC_HAS_PROCESS( Timer_module );
   SC_THREAD( timer_thread );

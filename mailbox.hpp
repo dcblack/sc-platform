@@ -30,8 +30,8 @@ struct Memory_module: sc_core::sc_module
   using tlm_payload_t = tlm::tlm_generic_payload;
   using tlm_phase_t   = tlm::tlm_phase;
   using tlm_peq_t     = tlm_utils::peq_with_cb_and_phase<Memory_module>;
-  tlm_utils::simple_target_socket<Memory_module> targ1_socket{ "targ_socket" };
-  tlm_utils::simple_target_socket<Memory_module> targ2_socket{ "targ_socket" };
+  tlm_utils::simple_target_socket<Memory_module> targ1_socket{ "targ1_socket" };
+  tlm_utils::simple_target_socket<Memory_module> targ2_socket{ "targ2_socket" };
 
   Memory_module //< Constructor
   ( sc_core::sc_module_name instance_name

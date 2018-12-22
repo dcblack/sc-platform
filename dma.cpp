@@ -20,9 +20,8 @@ using namespace std;
 Dma_module::Dma_module
 ( sc_module_name instance_name
 )
-: init_socket( "init_socket" )
-: targ_socket( "targ_socket" )
-, m_peq( this, &Dma_module::init_peq_cb )
+: m_init_peq( "init_peq", this, &Dma_module::init_peq_cb )
+, m_targ_peq( "targ_peq", this, &Dma_module::targ_peq_cb )
 {
 //init_socket.register_nb_transport_bw           ( this, &Dma_module::nb_transport_bw );
 //init_socket.register_invalidate_direct_mem_ptr ( this, &Dma_module::invalidate_direct_mem_ptr );
@@ -77,6 +76,16 @@ Dma_module::dma_thread( void )
 //------------------------------------------------------------------------------
 void
 Dma_module::init_peq_cb
+( tlm::tlm_generic_payload& trans
+, const tlm::tlm_phase& phase
+)
+{
+  //{:To_be_supplied:}
+}
+
+//------------------------------------------------------------------------------
+void
+Dma_module::targ_peq_cb
 ( tlm::tlm_generic_payload& trans
 , const tlm::tlm_phase& phase
 )

@@ -22,8 +22,8 @@
 
 struct Dma_module: sc_core::sc_module
 {
-  tlm_utils::simple_initiator_socket<Dma_module> init_socket;
-  tlm_utils::simple_target_socket<Dma_module>    targ_socket;
+  tlm_utils::simple_initiator_socket<Dma_module> init_socket{ "init_socket" };
+  tlm_utils::simple_target_socket<Dma_module>    targ_socket{ "targ_socket" };
 
   Dma_module
   ( sc_core::sc_module_name instance
@@ -45,9 +45,8 @@ struct Dma_module: sc_core::sc_module
   #endif
 private:
   // Helpers
-  #if 0
   virtual void init_peq_cb( tlm::tlm_generic_payload& trans, const tlm::tlm_phase& phase );
-  #endif
+  virtual void targ_peq_cb( tlm::tlm_generic_payload& trans, const tlm::tlm_phase& phase );
   virtual void transport( tlm::tlm_command cmd, uint64_t address, unsigned char* data, int32_t length );
   // Convenience
   virtual void write32  ( uint64_t address, uint32_t data )
@@ -67,8 +66,9 @@ private:
   virtual void read     ( uint64_t address, unsigned char* data, int32_t length );
     { transport( tlm::TLM_READ_COMMAND, address, data, length ); }
   // Attributes
-  tlm_utils::tlm_quantumkeeper m_qk;
+  tlm_utils::tlm_quantumkeeper m_qk{ "quantum_keeper" };
   tlm_utils::peq_with_cb_and_phase<Dma_module> m_init_peq;
+  tlm_utils::peq_with_cb_and_phase<Dma_module> m_targ_peq;
   bool   m_use_at;
 };
 
