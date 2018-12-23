@@ -2,7 +2,7 @@
 #include "report.hpp"
 #include "task.hpp"
 #include "memory_map.hpp"
-#include "timer_reg.hpp"
+#include "timer_reg.h"
 #include "timer_api.hpp"
 
 namespace {

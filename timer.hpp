@@ -12,7 +12,7 @@
 #ifndef TIMER_MODULE_H
 #define TIMER_MODULE_H
 #include "timer_beh.hpp"
-#include "timer_reg.hpp"
+#include "timer_reg.h"
 #include "interrupt_if.hpp"
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
@@ -87,7 +87,7 @@ private:
 
   //----------------------------------------------------------------------------
   // Timer Helpers
-  Timer_reg& timer_reg_vec( int index );
+  Timer_reg_t& timer_reg_vec( int index );
   uint32_t scale( uint32_t status )
   {
     return (( status & TIMER_SCALE_MASK ) >> TIMER_SCALE_LSB) + 1;

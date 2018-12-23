@@ -1,7 +1,7 @@
-#ifndef TIMER_REG_HPP
-#define TIMER_REG_HPP
+#ifndef TIMER_REG_H
+#define TIMER_REG_H
 
-#include "common.hpp"
+#include <stdint.h>
 
 #define BIT(n) (1ul<<(n))      /* 0 <= n < 32 */
 #define MASK(w) ((1ul<<(w))-1) /* 0 <  w < 32 */
@@ -41,16 +41,16 @@ enum TimerField : uint32_t
 };
 
 // Equivalent structure
-typedef struct Timer_reg
+typedef struct
 {
-  volatile uint32_t status  { 0x0000'0001 }; // Read-status - write to clear any or all IRQ's
-  volatile uint32_t ctrlset { 0x0000'0000 }; // Read/Write (writes to QTY ignored)
-  volatile uint32_t ctrlclr { 0x0000'0000 }; // Read/Write (writes to QTY ignored)
-  volatile uint32_t load_lo {           0 }; // Writing clears hi
-  volatile uint32_t load_hi {           0 }; // 
-  volatile uint32_t curr_lo {           0 }; // Writing clears hi
-  volatile uint32_t curr_hi {           0 };
-  volatile uint32_t pulse   {           1 };
+  volatile uint32_t status;   // Read-status - write to clear any or all IRQ's
+  volatile uint32_t ctrlset;  // Read/Write (writes to QTY ignored)
+  volatile uint32_t ctrlclr;  // Read/Write (writes to QTY ignored)
+  volatile uint32_t load_lo;  // Writing clears hi
+  volatile uint32_t load_hi;  // 
+  volatile uint32_t curr_lo;  // Writing clears hi
+  volatile uint32_t curr_hi;
+  volatile uint32_t pulse;
 } Timer_reg_t;
 
 // Address offsets
@@ -67,4 +67,4 @@ enum TimerAddr : Addr_t
 , TIMER_GLOBAL_REG  = 32
 };
 
-#endif /*TIMER_REG_HPP*/
+#endif /*TIMER_REG_H*/

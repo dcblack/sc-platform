@@ -93,7 +93,7 @@ Files
   `timer.cpp`      | Implements `Timer_module`
   `timer.hpp`      | Header needed to instantiate `Timer_module`
   `timer_api.hpp`  | Provides programming conveniences for software
-  `timer_reg.hpp`  | Provides register definitions for software
+  `timer_reg.h`    | Provides register definitions for software
   `timer_beh.cpp`  | Implements simple `Timer` behavior
   `timer_beh.hpp`  | Header needed to instantiate `Timer`
 

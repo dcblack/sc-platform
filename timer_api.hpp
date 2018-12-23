@@ -3,7 +3,7 @@
 
 #include "cpu.hpp"
 #include "memory_map.hpp"
-#include "timer_reg.hpp"
+#include "timer_reg.h"
 
 struct Timer_api
 {
