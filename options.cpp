@@ -107,6 +107,7 @@ Options::Options( void )
     else if ( arg == "-debug" ) {
       sc_report_handler::set_verbosity_level( SC_DEBUG );
       m_interrupt.install();
+      m_flag_map["-debug"]=1;
     }
     else if ( arg == "-full" ) {
       sc_report_handler::set_verbosity_level( SC_FULL );
@@ -117,6 +118,8 @@ Options::Options( void )
     // Application verbosity
     else if ( arg == "-verbose" or arg == "-v" ) {
       sc_report_handler::set_verbosity_level( SC_DEBUG + 1 );
+      m_flag_map["-v"]=1;
+      m_flag_map["-verbose"]=1;
     }
     else if ( arg == "-medium" ) {
       sc_report_handler::set_verbosity_level( SC_MEDIUM );
