@@ -5,11 +5,19 @@
 require v5.6;
 use strict;
 use English;
+use FindBin qw($RealBin $RealScript);
 use FileHandle;
 use Cwd;
 STDOUT->autoflush(1);
 STDERR->autoflush(1);
 
+our %OPT;
+while( @ARGV and $ARGV[0] =~ m{^-} ) {
+  my $arg = shift @ARGV;
+  $OPT{$arg} = 1;
+}
+
+printf("Running %s\n", $RealScript) if exists $OPT{-v};
 my $root = '';
 $root = $ENV{'PROJ_ROOT'} if exists $ENV{'PROJ_ROOT'};
 my $prev="";
