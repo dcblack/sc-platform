@@ -13,6 +13,7 @@
 #include "report.hpp"
 #include "config_extn.hpp"
 #include "route_extn.hpp"
+#include "options.hpp"
 #include <memory>
 #include <tuple>
 #include <map>
@@ -434,11 +435,13 @@ Bus_module::build_port_map( void )
 void
 Bus_module::dump_port_map( int level )
 {
-  MESSAGE( "Port map for " << name() << ":\n" );
+  MESSAGE( "\nPort map for " << name() << ":\n" );
 
+  // Iterate backwards over map to get ascending addresses
   for( auto rit = m_addr_map.rbegin(); rit!=m_addr_map.rend(); ++rit ) {
     const Addr_t&      addr{ rit->first  };
     const Target_info& info{ rit->second };
+    if( info.port == BAD_PORT and not Options::has_flag("-v") ) continue;
     MESSAGE( HEX << "  - {"
              << " base: " << setw(10) << info.base
              << " last: " << setw(10) << info.last
