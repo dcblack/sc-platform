@@ -47,6 +47,7 @@ ruler '*'
 while [[ "$1" =~ -.* ]]; do
   if [[ "$1" == "-v" ]]; then
     MAKE_OPTS="${MAKE_OPTS} VERBOSE=1"
+    RUN_OPTS="${RUN_OPTS} -v"
     VERBOSE=1
     shift
   elif [[ "$1" == "-norun" ]]; then
