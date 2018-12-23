@@ -1,7 +1,9 @@
 #include "netlist.hpp"
 #include "report.hpp"
+#include "options.hpp"
 #include <vector>
 #include <string>
+#include <cctype>
 using namespace sc_core;
 namespace {
   const char* const MSGID{ "/Doulos/Example/Netlist" };
@@ -15,7 +17,22 @@ namespace {
     std::vector<sc_object*> children = obj->get_child_objects(); 
     for( const auto& child : children ) {
       if ( child != nullptr ) {
-        MESSAGE( indent << "+- " << child->basename() << ' ' << child->kind() << "\n" );
+        std::string inst{ child->basename() };
+        std::string kind{ child->kind() };
+        //{:TODO:} Filter types (unless verbose)
+        bool ok = true;
+        if( not Options::has_flag("-v") ) {
+          size_t l = inst.length();
+          ok &= !(l>2 and (inst[l-2] == '_') and std::isdigit(inst[l-1]));
+          ok &= kind != "sc_object";
+          ok &= kind != "sc_method_process";
+          ok &= kind != "sc_thread_process";
+        }
+        if( ok ) {
+          MESSAGE( indent << "+- " << inst << ' ' << kind );
+          //{:TODO:} Figure out and add where sc_port's are pointing
+          MESSAGE( "\n" );
+        }
         scan_hierarchy(child, indent + std::string("| ")); 
       }//endif
     }//endfor
@@ -26,7 +43,7 @@ Netlist::Netlist( void )
 {
   // Traverse the object hierarchy below each top-level object
   std::vector<sc_object*> top_vec = sc_get_top_level_objects();
-  MESSAGE( "Netlist {\n" );
+  MESSAGE( "Netlist\n{\n" );
 
   for ( const auto& top : top_vec ) {
     if ( top != nullptr ) {
