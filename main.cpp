@@ -6,7 +6,6 @@
 #include "wallclock.hpp"
 #include <memory>
 #include "report.hpp"
-#include "common.hpp"
 #include "summary.hpp"
 
 namespace {
