@@ -54,7 +54,7 @@ typedef struct
 } Timer_reg_t;
 
 // Address offsets
-enum TimerAddr : Addr_t
+enum TimerAddr : uint64_t
 { TIMER_STATUS_REG  =  0 //< Current status
 , TIMER_CTRLSET_REG =  4 //< Corresponding bits set
 , TIMER_CTRLCLR_REG =  8 //< Corresponding bits cleared
