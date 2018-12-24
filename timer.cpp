@@ -30,7 +30,7 @@ Timer_module::Timer_module // Constructor
   , uint32_t       read_clocks
   , uint32_t       write_clocks
 )
-  : m_target_size             { Depth_t( timer_quantity * TIMER_SIZE + sizeof( uint32_t ) ) }
+  : m_target_size             { Depth_t( timer_quantity * TIMER_REGS_SIZE + sizeof( uint32_t ) ) }
   , m_timer_quantity          { timer_quantity  }
   , m_addr_clocks             { addr_clocks     }
   , m_read_clocks             { read_clocks     }
@@ -40,23 +40,23 @@ Timer_module::Timer_module // Constructor
 {
   SC_HAS_PROCESS( Timer_module );
   SC_THREAD( timer_thread );
-  m_register_vec.resize( timer_quantity * TIMER_SIZE );
+  m_register_vec.resize( timer_quantity * TIMER_REGS_SIZE );
   m_timer_vec.init( timer_quantity );
   SC_HAS_PROCESS( Timer_module );
   SC_METHOD( execute_transaction_process );
   sensitive << m_target_done_event;
   dont_initialize();
-  targ_socket.register_b_transport( this, &Timer_module::b_transport );
-  targ_socket.register_nb_transport_fw( this, &Timer_module::nb_transport_fw );
-  targ_socket.register_transport_dbg( this, &Timer_module::transport_dbg );
-  m_configuration.set( "name",         string( name() ) );
-  m_configuration.set( "kind",         string( kind() ) );
+  targ_socket.register_b_transport     ( this, &Timer_module::b_transport );
+  targ_socket.register_nb_transport_fw ( this, &Timer_module::nb_transport_fw );
+  targ_socket.register_transport_dbg   ( this, &Timer_module::transport_dbg );
+  m_configuration.set( "name",         string( name() )  );
+  m_configuration.set( "kind",         string( kind() )  );
   m_configuration.set( "object_ptr",   uintptr_t( this ) );
-  m_configuration.set( "target_size",  m_target_size );
-  m_configuration.set( "addr_clocks",  addr_clocks );
-  m_configuration.set( "read_clocks",  read_clocks );
-  m_configuration.set( "write_clocks", write_clocks );
-  m_configuration.set( "coding_style", Style::AT );
+  m_configuration.set( "target_size",  m_target_size     );
+  m_configuration.set( "addr_clocks",  addr_clocks       );
+  m_configuration.set( "read_clocks",  read_clocks       );
+  m_configuration.set( "write_clocks", write_clocks      );
+  m_configuration.set( "coding_style", Style::AT         );
   INFO( ALWAYS, "Constructed " << name() << " with configuration:\n" << m_configuration );
 }
 
@@ -130,7 +130,7 @@ void Timer_module::timer_thread( void )
 void
 Timer_module::b_transport
 ( tlm_payload_t& trans
-, sc_time& delay
+, sc_time&       delay
 )
 {
 
@@ -201,8 +201,8 @@ bool Timer_module::configure( tlm_payload_t& trans )
       m_configuration.update( extn->configuration );
       // Update local copies
       extn->configuration.get( "target_size",  m_target_size   );
-      extn->configuration.get( "addr_clocks" , m_addr_clocks   );
-      extn->configuration.get( "read_clocks" , m_read_clocks   );
+      extn->configuration.get( "addr_clocks",  m_addr_clocks   );
+      extn->configuration.get( "read_clocks",  m_read_clocks   );
       extn->configuration.get( "write_clocks", m_write_clocks  );
       INFO( DEBUG, "Updated configuration " << m_configuration );
     }
@@ -229,8 +229,8 @@ void Timer_module::execute_transaction( tlm_payload_t& trans )
 tlm_sync_enum
 Timer_module::nb_transport_fw
 ( tlm_payload_t& trans
-  , tlm_phase& phase
-  , sc_time& delay
+, tlm_phase&     phase
+, sc_time&       delay
 )
 {
 
@@ -245,8 +245,8 @@ Timer_module::nb_transport_fw
 //------------------------------------------------------------------------------
 void
 Timer_module::targ_peq_cb
-( tlm_payload_t& trans
-  , const tlm_phase_t& phase
+( tlm_payload_t&     trans
+, const tlm_phase_t& phase
 )
 {
   sc_time delay;
@@ -260,14 +260,13 @@ Timer_module::targ_peq_cb
         if ( m_transaction_in_progress != nullptr ) {
           send_end_req( trans );
         }
-        else
+        else {
           // Put back-pressure on initiator by deferring END_REQ until pipeline is clear
-        {
           m_end_req_pending = &trans;
         }
 
         break;
-      }
+    }
 
     case END_RESP: {
         // On receiving END_RESP, the target can release the transaction
@@ -310,7 +309,7 @@ void
 Timer_module::send_end_req( tlm_payload_t& trans )
 {
   tlm_phase_t bw_phase;
-  sc_time delay;
+  sc_time     delay;
 
   // Queue the acceptance and the response with the appropriate latency
   bw_phase = END_REQ;
@@ -332,8 +331,8 @@ void
 Timer_module::send_response( tlm_payload_t& trans )
 {
   tlm_sync_enum status;
-  tlm_phase_t bw_phase;
-  sc_time delay;
+  tlm_phase_t   bw_phase;
+  sc_time       delay;
 
   m_response_in_progress = true;
   bw_phase = BEGIN_RESP;
@@ -377,7 +376,8 @@ Timer_module::execute_transaction_process( void )
 }
 
 //------------------------------------------------------------------------------
-bool Timer_module::payload_is_ok( tlm_payload_t& trans, Depth_t len, Style coding_style )
+bool Timer_module::payload_is_ok
+( tlm_payload_t& trans, Depth_t len, Style coding_style )
 {
   tlm_command cmd = trans.get_command();
   Addr_t      adr = trans.get_address();
@@ -387,7 +387,7 @@ bool Timer_module::payload_is_ok( tlm_payload_t& trans, Depth_t len, Style codin
 
   if ( ( adr + len ) >= m_target_size or ( adr & 3 ) != 0 ) {
     if ( g_error_at_target ) {
-      REPORT( ERROR, "Out of range on device " << name() << " with address " << adr );
+      REPORT( ERROR, "Out of range on device or misaligned " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
     }
     else {
@@ -438,8 +438,8 @@ bool Timer_module::payload_is_ok( tlm_payload_t& trans, Depth_t len, Style codin
 Depth_t
 Timer_module::transport
 ( tlm_payload_t& trans
-  , sc_time& delay
-  , Depth_t  len
+, sc_time&       delay
+, Depth_t        len
 )
 {
   Addr_t     adr = trans.get_address();
@@ -476,7 +476,7 @@ Timer_module::transport
 Timer_reg_t& Timer_module::timer_reg_vec( int index )
 {
   sc_assert( 0 <= index and index < m_timer_quantity );
-  uint8_t* base_ptr      { m_register_vec.data() + index * TIMER_SIZE };
+  uint8_t* base_ptr      { m_register_vec.data() + index * TIMER_REGS_SIZE };
   Timer_reg_t* timer_reg { reinterpret_cast<Timer_reg_t*>( base_ptr ) };
   return *timer_reg;
 }
@@ -554,15 +554,16 @@ void Timer_module::set_timer_status
 }
 
 //------------------------------------------------------------------------------
-void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
+void Timer_module::write_actions
+( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
 {
-  unsigned int index     { static_cast<unsigned int>( address >> bits(TIMER_SIZE) ) };
-  Addr_t base_address    { index << bits(TIMER_SIZE) };
+  unsigned int index     { static_cast<unsigned int>( address >> bits(TIMER_REGS_SIZE) ) };
+  Addr_t base_address    { index << bits(TIMER_REGS_SIZE) };
   Addr_t reg_address     { address - base_address };
   Timer_reg_t& timer_reg { timer_reg_vec(index) };
   Timer&     timer       { m_timer_vec[index] };
 
-  if ( address == m_timer_quantity*TIMER_SIZE ) {
+  if ( address == m_timer_quantity*TIMER_REGS_SIZE ) {
   }
   else {
     // Check the size of the transfer
@@ -656,13 +657,13 @@ void Timer_module::write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len
 //------------------------------------------------------------------------------
 void Timer_module::read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay )
 {
-  unsigned int index     { static_cast<unsigned int>( address >> bits(TIMER_SIZE) ) };
-  Addr_t base_address    { index << bits(TIMER_SIZE) };
+  unsigned int index     { static_cast<unsigned int>( address >> bits(TIMER_REGS_SIZE) ) };
+  Addr_t base_address    { index << bits(TIMER_REGS_SIZE) };
   Addr_t reg_address     { address - base_address };
   Timer_reg_t& timer_reg { timer_reg_vec(index) };
   Timer&     timer       { m_timer_vec[index] };
 
-  if ( address == m_timer_quantity*TIMER_SIZE ) {
+  if ( address == m_timer_quantity*TIMER_REGS_SIZE ) {
   }
   else {
     sc_time load_delay = timer.get_trigger_time();

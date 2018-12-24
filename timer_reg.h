@@ -62,7 +62,7 @@ enum TimerAddr : uint64_t
 , TIMER_CURR_LO_REG = 20
 , TIMER_CURR_HI_REG = 24
 , TIMER_PULSE_REG   = 28
-, TIMER_SIZE        = sizeof(Timer_reg_t)
+, TIMER_REGS_SIZE   = sizeof(Timer_reg_t)
 , TIMER_GLOBAL_REG  = 32
 };
 

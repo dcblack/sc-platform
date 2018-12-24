@@ -21,7 +21,7 @@ struct Timer_api
   int timer( void ) const { return m_timer; }
   void setup( uint32_t timer_count=0, uint32_t scale=1 )
   {
-    Addr_t timer_addr = m_base + m_timer*TIMER_SIZE;
+    Addr_t timer_addr = m_base + m_timer*TIMER_REGS_SIZE;
     m_cpu.write32( timer_addr + TIMER_LOAD_LO_REG, timer_count );
     m_cpu.write32( timer_addr + TIMER_CTRLCLR_REG, TIMER_FLAGS_MASK | TIMER_SCALE_MASK );
     m_cpu.write32( timer_addr + TIMER_CTRLSET_REG, TIMER_RELOAD | TIMER_CONTINUOUS | TIMER_IRQ_ENABLE
@@ -32,13 +32,13 @@ struct Timer_api
   void start( void )
   {
     assert( m_setup );
-    Addr_t timer_addr = m_base + m_timer*TIMER_SIZE;
+    Addr_t timer_addr = m_base + m_timer*TIMER_REGS_SIZE;
     m_cpu.write32( timer_addr + TIMER_CTRLSET_REG, TIMER_START );
   }
 
   bool is_running( void ) const
   {
-    Addr_t timer_addr = m_base + m_timer*TIMER_SIZE;
+    Addr_t timer_addr = m_base + m_timer*TIMER_REGS_SIZE;
     uint32_t timer_value { 0 };
     m_cpu.read32( timer_addr + TIMER_STATUS_REG, timer_value ); //< burst read of two registers
     uint32_t running_mask = TIMER_START | TIMER_NORMAL;
@@ -47,13 +47,13 @@ struct Timer_api
 
   void stop( void )
   {
-    Addr_t timer_addr = m_base + m_timer*TIMER_SIZE;
+    Addr_t timer_addr = m_base + m_timer*TIMER_REGS_SIZE;
     m_cpu.write32( timer_addr + TIMER_CTRLCLR_REG, TIMER_START );
   }
 
   uint64_t status( void ) const
   {
-    Addr_t timer_addr = m_base + m_timer*TIMER_SIZE;
+    Addr_t timer_addr = m_base + m_timer*TIMER_REGS_SIZE;
     uint32_t timer_status { 0 };
     m_cpu.read32( timer_addr + TIMER_STATUS_REG, timer_status );
     return timer_status;
@@ -61,7 +61,7 @@ struct Timer_api
 
   uint64_t value( void ) const
   {
-    Addr_t timer_addr = m_base + m_timer*TIMER_SIZE;
+    Addr_t timer_addr = m_base + m_timer*TIMER_REGS_SIZE;
     uint64_t timer_value { 0 };
     m_cpu.read64( timer_addr + TIMER_CURR_LO_REG, timer_value ); //< burst read of two registers
     return timer_value;

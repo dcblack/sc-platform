@@ -66,7 +66,7 @@ private:
 
   //----------------------------------------------------------------------------
   // Forward interface
-  void b_transport( tlm_payload_t& trans, sc_core::sc_time& delay );
+  void b_transport( tlm_payload_t& trans, sc_time& delay );
   Depth_t transport_dbg( tlm_payload_t& trans );
   tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );
 private:
@@ -115,12 +115,12 @@ private:
   std::vector<uint8_t>      m_register_vec;  // register storage
   sc_core::sc_vector<Timer> m_timer_vec;
   tlm_peq_t                 m_targ_peq;
-  Depth_t                   m_max_burst{ 8 };
+  Depth_t                   m_max_burst               { 8 };
+  bool                      m_response_in_progress    { false };
+  tlm_payload_t*            m_transaction_in_progress { nullptr };
+  tlm_payload_t*            m_next_response_pending   { nullptr };
+  tlm_payload_t*            m_end_req_pending         { nullptr };
   sc_event                  m_target_done_event;
-  bool                      m_response_in_progress{ false };
-  tlm_payload_t*            m_transaction_in_progress{ nullptr };
-  tlm_payload_t*            m_next_response_pending{ nullptr };
-  tlm_payload_t*            m_end_req_pending{ nullptr };
   std::vector<sc_event>     m_timeout_event;
 
 };
