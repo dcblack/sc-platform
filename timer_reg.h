@@ -2,22 +2,21 @@
 #define TIMER_REG_H
 
 #include <stdint.h>
+#include "macros.h"
 
-#define BIT(n) (1ul<<(n))      /* 0 <= n < 32 */
-#define MASK(w) ((1ul<<(w))-1) /* 0 <  w < 32 */
 #define TIMER_IRQ(n) BIT(16+(n))
 
 // Bit masks
 enum TimerField : uint32_t
 { TIMER_QTY_LSB        =  0
   , TIMER_QTY_BITS     =  4
-  , TIMER_QTY_MASK     = MASK(TIMER_QTY_BITS)<<TIMER_QTY_LSB
+  , TIMER_QTY_MASK     = MASK(TIMER_QTY)
 , TIMER_SCALE_LSB      =  4
   , TIMER_SCALE_BITS   =  4
-  , TIMER_SCALE_MASK   = MASK(TIMER_SCALE_BITS)<<TIMER_SCALE_LSB
+  , TIMER_SCALE_MASK   = MASK(TIMER_SCALE)
 , TIMER_IRQ_LSB        = 16
   , TIMER_IRQ_BITS     = 16
-  , TIMER_IRQ_MASK     = MASK(TIMER_IRQ_BITS)<<TIMER_IRQ_LSB
+  , TIMER_IRQ_MASK     = MASK(TIMER_IRQ)
 , TIMER_RELOAD_MASK    = (1u<<15)
   , TIMER_HALT         = 0u
   , TIMER_RELOAD       = (1u<<15)
