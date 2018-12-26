@@ -4,7 +4,7 @@ using namespace sc_core;
 using namespace std;
 
 namespace {
-  const char* MSGID = "/Doulos/power";
+  char const * const MSGID{ "/Doulos/power" };
 }
 
 PowerDomain::PowerDomain( const std::string& domain ) // Constructor

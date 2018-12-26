@@ -2,7 +2,7 @@
 #include "dmi_extn.hpp"
 #include "report.hpp"
 namespace {
-  const char* MSGID{"/Doulos/Example/Dmi_extn"};
+  char const * const MSGID{"/Doulos/Example/Dmi_extn"};
 }
 using namespace sc_core;
 using namespace tlm;

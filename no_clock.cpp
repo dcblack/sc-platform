@@ -26,7 +26,6 @@
 using namespace sc_core;
 using namespace std;
 
-const char* no_clock::MSGID = "/Doulos/no_clock";
 no_clock::clock_map_t no_clock::s_global;
 
 no_clock& no_clock::global // Global clock accessor

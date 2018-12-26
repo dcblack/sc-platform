@@ -7,7 +7,7 @@
 using namespace std;
 using namespace sc_core;
 namespace {
-  const char * const MSGID { "/Doulos/Example/summary" };
+  const char * const MSGID{ "/Doulos/Example/summary" };
 }
 
 //------------------------------------------------------------------------------

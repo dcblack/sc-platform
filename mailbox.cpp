@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <random>
 namespace {
-  const char* MSGID{"/Doulos/Example/TLM-Memory"};
+  char const * const MSGID{ "/Doulos/Example/TLM-Memory" };
 }
 using namespace sc_core;
 using namespace sc_dt;

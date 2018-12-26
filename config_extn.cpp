@@ -2,7 +2,7 @@
 #include "config_extn.hpp"
 #include "report.hpp"
 namespace {
-  const char* MSGID{"/Doulos/Example/Config_extn"};
+  char const * const MSGID{ "/Doulos/Example/Config_extn" };
 }
 using namespace sc_core;
 using namespace tlm;

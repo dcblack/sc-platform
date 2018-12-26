@@ -2,7 +2,7 @@
 #include "secure_extn.hpp"
 #include "report.hpp"
 namespace {
-  const char* MSGID{"/Doulos/Example/Secure_extn"};
+  char const * const MSGID{ "/Doulos/Example/Secure_extn" };
 }
 using namespace sc_core;
 using namespace tlm;

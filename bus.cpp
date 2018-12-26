@@ -19,7 +19,7 @@
 #include <map>
 
 namespace {
-  const char* MSGID{ "/Doulos/Example/TLM-bus" };
+  char const * const MSGID{ "/Doulos/Example/TLM-bus" };
 }
 using namespace sc_core;
 using namespace sc_dt;

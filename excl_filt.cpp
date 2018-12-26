@@ -12,7 +12,7 @@
 #include "Excl_filt.hpp"
 #include "report.hpp"
 namespace {
-  const char* MSGID{ "/Doulos/Example/Excl_filt" };
+  char const * const MSGID{ "/Doulos/Example/Excl_filt" };
 }
 using namespace sc_core;
 using namespace sc_dt;

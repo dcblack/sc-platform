@@ -316,7 +316,7 @@ string is( bool flag )
 //------------------------------------------------------------------------------
 SC_MODULE( Top_module )
 {
-  const char* MSGID{ "/Doulos/Example/Config_example" };
+  char const * const MSGID{ "/Doulos/Example/Config_example" };
 
   //----------------------------------------------------------------------------
   SC_CTOR( Top_module ) {

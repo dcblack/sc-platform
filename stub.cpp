@@ -13,7 +13,7 @@
 #include "report.hpp"
 #include "config_extn.hpp"
 namespace {
-  const char* MSGID{"/Doulos/Example/TLM-Stub"};
+  char const * const MSGID{ "/Doulos/Example/TLM-Stub" };
 }
 using namespace sc_core;
 using namespace sc_dt;

@@ -14,7 +14,7 @@
 #include "mmu_extn.hpp"
 #include <memory>
 namespace {
-  const char* MSGID{ "/Doulos/Example/TLM-mmu" };
+  char const * const MSGID{ "/Doulos/Example/TLM-mmu" };
 }
 using namespace sc_core;
 using namespace sc_dt;

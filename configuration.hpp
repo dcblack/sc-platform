@@ -18,7 +18,6 @@ using std::string;
 
 struct Configuration
 {
-  const char* MSGID{ "/Doulos/Example/Configuration" };
 
   Configuration( bool use_defaults = true ); //< Constructor
 
@@ -109,6 +108,7 @@ private:
   std::unordered_map<string, boost::any>  m_dflt_map;
   std::unordered_set<string>              m_reqd_key_set;
 
+  static constexpr char const * const MSGID{ "/Doulos/Example/Configuration" };
 };
 
 //------------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 using namespace std;
 using namespace sc_core;
 namespace {
-  const char * const MSGID = "/Doulos/Example/map_test";
+  const char * const MSGID{ "/Doulos/Example/map_test" };
 }
 
 // Declarations

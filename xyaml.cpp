@@ -7,7 +7,7 @@
 using namespace std;
 using namespace sc_core;
 namespace {
-  const char * const MSGID = "/Doulos/Example/yaml";
+  const char * const MSGID{ "/Doulos/Example/yaml" };
 }
 
 string nodeType( const YAML::Node& node )

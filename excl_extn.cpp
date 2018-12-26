@@ -2,7 +2,7 @@
 #include "rmx_extn.hpp"
 #include "report.hpp"
 namespace {
-  const char* MSGID{"/Doulos/Example/Excl_extn"};
+  const char* MSGID{ "/Doulos/Example/Excl_extn" };
 }
 using namespace sc_core;
 using namespace tlm;

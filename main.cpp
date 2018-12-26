@@ -9,7 +9,7 @@
 #include "summary.hpp"
 
 namespace {
-  const char* MSGID = "/Doulos Inc/Example/main";
+  char const * const MSGID{ "/Doulos Inc/Example/main" };
 }
 
 using namespace sc_core;

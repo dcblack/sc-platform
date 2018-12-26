@@ -69,7 +69,7 @@ sc_core::sc_time sc_core_time_diff
 )
 {
   if (lhs >= rhs) return (lhs - rhs);
-  static const char* MSGID="/Doulos/time_diff";
+  static char const * const MSGID{ "/Doulos/time_diff" };
 #ifdef INVERT_NEGATIVE
   sc_core::sc_report_handler::report
     ( sc_core::SC_WARNING
@@ -228,7 +228,7 @@ private:
   sc_core::sc_time    m_tSHIFT{sc_core::SC_ZERO_TIME};  // temporal shift
   using clock_map_t = std::map<std::string,no_clock*>;
   static clock_map_t  s_global;
-  static const char*  MSGID;
+  static constexpr char const * const MSGID{ "/Doulos/no_clock" };
 };
 
 ////////////////////////////////////////////////////////////////////////////////

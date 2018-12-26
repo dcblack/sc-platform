@@ -12,7 +12,7 @@ namespace hexfile {
 // Utilities
 namespace {
 
-  const char* MSGID{ "/Doulos/Example/HexFile" };
+  char const * const MSGID{ "/Doulos/Example/HexFile" };
   const char* whitespace{ " \t\n\r" };
   const char* hexdigits { "0123456789ABCDEFabcdef" };
   const int aw = 8;
