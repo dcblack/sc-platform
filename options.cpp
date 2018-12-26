@@ -47,7 +47,7 @@ Options::Options( void )
 {
   m_interrupt.remove();
   // Establish defaults
-  m_configuration = Interconnect::NORTH_SOUTH;
+  m_configuration = Interconnect::PIC;
 
   // Display command-line
   MESSAGE( "Invocation:\n%" );
@@ -186,6 +186,9 @@ Options::Options( void )
       }
       else if ( arg == "ns" ) {
         m_configuration = Interconnect::NORTH_SOUTH;
+      }
+      else if ( arg == "pic" ) {
+        m_configuration = Interconnect::PIC;
       }
     }
     else if ( arg[0] == '-' ) {

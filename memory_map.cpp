@@ -63,7 +63,7 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
 {
   INFO( DEBUG, "Searching for address from " << from_initiator << " to " << to_target );
   list<string> device_path = { from_initiator, to_target };
-  auto target_info = get_target_path_info( device_path );
+  auto target_info = find_target_info( device_path );
   sc_assert( target_info.base != BAD_ADDR );
   MESSAGE( "Found address " << HEX << target_info.base );
   MESSAGE( " from " << from_initiator << " to " << to_target );
@@ -72,7 +72,27 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
 }
 
 //------------------------------------------------------------------------------
-/*static*/ Target_info Memory_map::get_target_path_info( list<string>& device_path )
+/*static*/ int Memory_map::max_irq( void )
+{
+  if( origin_map().empty() ) {
+    instance().read_yaml();
+  }
+  return instance().m_max_irq;
+}
+
+//------------------------------------------------------------------------------
+/*static*/ int Memory_map::find_irq( std::string target )
+{
+  if ( instance().m_target_ptr_map.count( target ) != 0 ) {
+    return instance().m_target_ptr_map[ target ]->irq;
+  }
+  else {
+    return UNASSIGNED;
+  }
+}
+
+//------------------------------------------------------------------------------
+/*static*/ Target_info Memory_map::find_target_info( list<string>& device_path )
 {
   sc_assert( not device_path.empty() );
   dump_path( __LINE__, device_path );
@@ -122,7 +142,7 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
         device_path.push_front( target.first );
         dump_path( __LINE__, device_path );
         Addr_t offset = instance().m_origin_map[ target.first ].base;
-        result = get_target_path_info( device_path );
+        result = find_target_info( device_path );
         INFO( DEBUG, "\nresult = " << result );
 
         if ( result.base != BAD_ADDR ) {
@@ -142,7 +162,7 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
   }
 
   return result;
-}//end Memory_map::get_target_path_info()
+}//end Memory_map::find_target_info()
 
 //------------------------------------------------------------------------------
 /*static*/ Address_map Memory_map::get_address_map( const string& origin_name )
@@ -229,6 +249,14 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
       // Add target entry to origin
       string target_name = yaml_target.first.as<string>();
       origin_info.target_map[ target_name ] = Target_info();
+      // Add to target reference
+      if ( instance().m_target_ptr_map.count( target_name ) == 0 ) {
+        instance().m_target_ptr_map[ target_name ] = &(origin_info.target_map[ target_name ]);
+      }
+      else {
+        REPORT( WARNING, "Target '" << target_name << "' duplicate ignored from "
+                      << "origin '" << origin_name << "'." );
+      }
       Target_info& target_info{ origin_info.target_map[ target_name ] };
       target_info.name = target_name;
       INFO( DEBUG, "Processing target: " << target_name );
@@ -251,6 +279,7 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
       if ( yaml_target.second["irq"] ) {
         INFO( DEBUG+1, "Reading target irq" );
         to_int( target_info.irq, yaml_target.second["irq"].as<string>() );
+        if( instance().m_max_irq < target_info.irq) instance().m_max_irq = target_info.irq;
       }
       //else optional
 

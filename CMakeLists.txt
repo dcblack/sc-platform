@@ -20,6 +20,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 ################################################################################
 add_executable( platform
+# Support ----------------------------------------------------------------------
   common.cpp
   sc_freq.cpp
   log2.cpp
@@ -28,28 +29,27 @@ add_executable( platform
   summary.cpp
   no_clock.cpp
   task.cpp
-  main.cpp
   netlist.cpp
-  top.cpp
+  options.cpp
   signal.cpp
   configuration.cpp
   config_extn.cpp
   config_proxy.cpp
-  hexfile.cpp
+  cpuid_extn.cpp
   memory_map.cpp
-  options.cpp
+  timer_beh.cpp
+  hexfile.cpp
+# Major modules ----------------------------------------------------------------
+  main.cpp
+  top.cpp
   cpu.cpp
-# program.cpp
+  bus.cpp
   stub.cpp
   memory.cpp
-  memory_test.cpp
-  bus.cpp
-  timer_beh.cpp
   timer.cpp
-  timer_test.cpp
-# pic.cpp
-# gpio.cpp
+  pic.cpp
 # dma.cpp
+# gpio.cpp
 # mmu.cpp
 # cache.cpp
 # crypto.cpp
@@ -64,6 +64,10 @@ add_executable( platform
 # sbus.cpp
 # environ.cpp
 # gps.cpp
+# Testing ----------------------------------------------------------------------
+# program.cpp
+  memory_test.cpp
+  timer_test.cpp
 )
 target_link_libraries( platform yaml-cpp Boost::filesystem)
 

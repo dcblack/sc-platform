@@ -22,6 +22,7 @@
 #include "memory.hpp"
 #include "memory_map.hpp"
 #include "timer.hpp"
+#include "pic.hpp"
 #include "stub.hpp"
 #include <set>
 using namespace sc_core;
@@ -62,7 +63,7 @@ struct Top_module::Impl
   std::unique_ptr< Memory_module > ddr;
   std::unique_ptr< Stub_module   > gio;
   std::unique_ptr< Timer_module  > tmr;
-  std::unique_ptr< Stub_module   > pic;
+  std::unique_ptr< Pic_module    > pic;
 
   // Constructor
   Impl( void )
@@ -76,7 +77,7 @@ struct Top_module::Impl
       case Interconnect::TIMER:
         tmr = std::make_unique<Timer_module> ( "tmr" , 2, 1, 2, 2 );
         gio = std::make_unique<Stub_module>  ( "gio" );
-        pic = std::make_unique<Stub_module>  ( "pic" );
+        pic = std::make_unique<Pic_module>   ( "pic" );
         // fall thru
       case Interconnect::MEMORY:
         rom = std::make_unique<Memory_module>( "rom" , 1*KB, Access::RO, 16, 32, DMI::enabled );
@@ -108,6 +109,7 @@ struct Top_module::Impl
         nth->init_socket.bind( gio->targ_socket );
         nth->init_socket.bind( tmr->targ_socket );
         nth->init_socket.bind( pic->targ_socket );
+        // Interrupts
         tmr->intrq_port.bind ( cpu->intrq_xport );
         break;
 
@@ -120,7 +122,22 @@ struct Top_module::Impl
         sth->init_socket.bind( gio->targ_socket );
         sth->init_socket.bind( tmr->targ_socket );
         sth->init_socket.bind( pic->targ_socket );
+        // Interrupts
         tmr->intrq_port.bind ( cpu->intrq_xport );
+        break;
+
+      case Interconnect::PIC:
+        cpu->init_socket.bind( nth->targ_socket );
+        nth->init_socket.bind( rom->targ_socket );
+        nth->init_socket.bind( ram->targ_socket );
+        nth->init_socket.bind( ddr->targ_socket );
+        nth->init_socket.bind( sth->targ_socket );
+        sth->init_socket.bind( gio->targ_socket );
+        sth->init_socket.bind( tmr->targ_socket );
+        sth->init_socket.bind( pic->targ_socket );
+        // Interrupts
+        tmr->intrq_port.bind    ( pic->irq_recv_xport );
+        pic->irq_send_port.bind ( cpu->intrq_xport    );
         break;
 
       default:

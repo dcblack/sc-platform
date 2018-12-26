@@ -31,10 +31,10 @@ top.nth:
   addr: 0
   size: 0
   target:
-    top.rom:   { addr: 0x0000'0000, size:  96MB, irq:  0, kind: Memory_module   }
-    top.ram:   { addr: 0x1000'0000, size: 128KB, irq:  0, kind: Memory_module   }
-    top.ddr:   { addr: 0x2000'0000, size: 128MB, irq:  0, kind: Memory_module   }
-    top.sth:   { addr: 0x4000'0000, size:     0, irq:  0, kind: Bus_module      }
+    top.rom:   { addr: 0x0000'0000, size:  96MB, irq: -1, kind: Memory_module   }
+    top.ram:   { addr: 0x1000'0000, size: 128KB, irq: -1, kind: Memory_module   }
+    top.ddr:   { addr: 0x2000'0000, size: 128MB, irq: -1, kind: Memory_module   }
+    top.sth:   { addr: 0x4000'0000, size:     0, irq: -1, kind: Bus_module      }
     top.dsk:   { addr: 0x4008'0000, size:   1KB, irq:  8, kind: Disk_module     }
     top.net:   { addr: 0x4008'1000, size:   32B, irq:  9, kind: Wifi_module     }
     top.mmu:   { addr: 0x4008'2000, size:   32B, irq: 10, kind: Mmu_module      }
@@ -61,14 +61,14 @@ top.spi:
   addr: 0
   size: 32
   target:
-    top.gps:   { addr: 0x0,        size:   32B, irq:  0, kind: Gps_module      }
-    top.env:   { addr: 0x1,        size:   32B, irq:  0, kind: Environ_module  }
+    top.gps:   { addr: 0x0,        size:   32B, irq: -1, kind: Gps_module      }
+    top.env:   { addr: 0x1,        size:   32B, irq: -1, kind: Environ_module  }
 top.usb:
   type: router
   addr: 0
   size: 32
   target:
-    top.ptr:   { addr: 0,          size:   32B, irq:  0, kind: Mouse_module    }
-    top.kbd:   { addr: 1,          size:   32B, irq:  0, kind: Keyboard_module }
-    top.thb:   { addr: 2,          size:  32GB, irq:  0, kind: Ssd_module      }
+    top.ptr:   { addr: 0,          size:   32B, irq: -1, kind: Mouse_module    }
+    top.kbd:   { addr: 1,          size:   32B, irq: -1, kind: Keyboard_module }
+    top.thb:   { addr: 2,          size:  32GB, irq: -1, kind: Ssd_module      }
 ...
