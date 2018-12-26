@@ -12,13 +12,8 @@ auto log2(T v)
   return log2_32( v );
 }
 
-template<>
-auto log2(uint64_t v)
-{
-  return log2_64( v );
-}
-
 // Returns the number of bits
+namespace {
 constexpr int bits( uint64_t v )
 {
   int32_t n = 0;
@@ -27,4 +22,5 @@ constexpr int bits( uint64_t v )
     ++n;
   }
   return n-1;
+}
 }
