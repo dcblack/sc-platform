@@ -116,7 +116,8 @@ if [[ "$TARGET" == "" ]]; then
 fi
 if [[ -x $TARGET ]]; then rm $TARGET; fi
 echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $ROOT_DIR/make.log"
-make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $ROOT_DIR/make.log
+make $TARGET ${MAKE_OPTS} 2>&1 | c++filt |tee -a $ROOT_DIR/make.log
+filter-mlog $ROOT_DIR/make.log
 
 # Run
 if [[ $RUN == 1 ]]; then
