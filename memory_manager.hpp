@@ -1,5 +1,5 @@
-#ifndef MEMORY_MANAGER_H
-#define MEMORY_MANAGER_H
+#ifndef MEMORY_MANAGER_HPP
+#define MEMORY_MANAGER_HPP
 
 // *******************************************************************
 // User-defined memory manager, which maintains a pool of transactions
@@ -83,9 +83,9 @@ private:
   int     m_count_allocated; //< debug aid
   int     m_count_created;   //< debug aid
   std::forward_list<T*> free_list;
+  static constexpr char const * const MSGID{ "/Doulos/Example/Memory_manager" };
 };
 
-#define MSGID "/Doulos/Example/Memory_manager"
 #include <string>
 #include <typeinfo>
 
@@ -204,4 +204,4 @@ void Memory_manager<T>::free(T* trans)
 }
 #undef MSGID
 
-#endif /*MEMORY_MANAGER_H*/
+#endif /*MEMORY_MANAGER_HPP*/
