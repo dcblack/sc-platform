@@ -70,6 +70,8 @@ struct Top_module::Impl
   : options( Options::instance() )
   {
     switch ( options->get_configuration() ) { // Fall-thru intentional
+      case Interconnect::PIC:
+        // fall thru
       case Interconnect::NORTH_SOUTH:
         sth = std::make_unique<Bus_module>   ( "sth" );
         ddr = std::make_unique<Memory_module>( "ddr" , 1*KB, Access::RW, 16,  8, DMI::enabled );
@@ -86,8 +88,9 @@ struct Top_module::Impl
       case Interconnect::TRIVIAL:
         ram = std::make_unique<Memory_module>( "ram" , 1*KB, Access::RW, 16,  8, DMI::enabled );
         cpu = std::make_unique<Cpu_module>   ( "cpu" );
-      default:
         break;
+      default:
+        REPORT( FATAL, "Failed to create any modules!?" );
     }
 
     // Connectivity
