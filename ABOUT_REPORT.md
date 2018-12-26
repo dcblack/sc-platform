@@ -30,12 +30,22 @@ Assumes you define in every implementation file (i.e. .cpp):
 
 ```cpp
 #include "report.hpp"
-namespace { static const char* const MSGID{ "/Company/Group/Project/Module" }; }
+namespace {
+  char const * const MSGID{ "/Company/Group/Project/Module" };
+}
 ```
 
 For header files leave off the name space and put in the function
-or define a class member (non-static). Must not allow to escape
-the header. So a #define is inappropriate.
+or define a `static constexpr char const * const` class member. Must not allow to escape
+the header. So a #define is inappropriate. Here is an example:
+
+```cpp
+class Xyz {
+ ...
+private:
+ static char const * const MSGID { "/Company/Group/Project/Module" };
+};
+```
 
 Usage Example
 -------------
@@ -43,7 +53,7 @@ Usage Example
 ```cpp
 #include "report.hpp"
 ASSERT( n > -2, "Value of n may only be positive or -1. Currently " << n );
-namespace { static const char* MSGID{ "/Doulos/Example/Report" }; }
+namespace { char const * const MSGID{ "/Doulos/Example/Report" }; }
 REPORT(ERROR,"Data " << data << " doesn't match expected " << expected);
 INFO(DEBUG,"Packet contains " << packet);
 TODO("Fix report handler to remove blank line after REPORT_INFO");
@@ -55,9 +65,6 @@ for( const auto& v : my_map ) {
 MEND( HIGH ); // or REPORT( WARNING, "" );
 ```
 
-Implementation Details
-----------------------
-
-{:EXPLANATION OF STRUCTURES AND APPROACH TO BE SUPPLIED:}
-
-### end
+### The end
+<!-- vim:tw=78
+-->

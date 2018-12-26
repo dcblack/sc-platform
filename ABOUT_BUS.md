@@ -1,5 +1,17 @@
-About the bus
-=============
+About `Bus_module`
+==================
+
+Basic TLM 2.0 model of a memory mapped bus interconnect.
+
+Features
+--------
+- TLM 2.0 base protocol compliant
+- Supports `Config_extn`
+- YAML memory map description
+- No timing (currently)
+
+Functional Description
+----------------------
 
 `Bus_module` is an implementation of a generic TLM bus interconnect component.
 A memory map is constructed from a combbination of `Config_extn` probes in the
@@ -11,6 +23,7 @@ validate the map including checks for:
 - No loops
 
 The memory map is constructed as follows:
+
 1. Optionally, before `start_of_simulation()`, an implementation may modify
    configuration settings used in probing or alter the `memory_map.yaml` file.
 2. At `start_of_simulation()`, `build_port_map()` is called.
@@ -88,6 +101,7 @@ See also
 --------
 
 `Config_proxy` may be used to establish start address and depth of targets.
+`Memory_map` reads YAML and provides address decode functionality.
 
 Implementation Details
 ----------------------
@@ -95,3 +109,5 @@ Implementation Details
 {:TO BE SUPPLIED:}
 
 ### The end
+<!-- vim:tw=78
+-->

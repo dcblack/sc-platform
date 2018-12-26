@@ -1,6 +1,20 @@
 About `Timer_module`
 ====================
 
+Basic TLM 2.0 model of a timer peripheral.
+
+Features
+--------
+- TLM 2.0 base protocol compliant
+- Supports `Config_extn`
+- Up to 16 timers with one output
+- Pulse outputs (PWM)
+
+Requirements
+------------
+- SystemC 2.3.2 or better
+- C++14 or better
+
 Functional Description
 ----------------------
 
@@ -102,3 +116,5 @@ Implementation Details
 
 
 ### The end
+<!-- vim:tw=78
+-->

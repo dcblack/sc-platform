@@ -1,15 +1,11 @@
-About `Memory_module`
-=====================
-
-Basic TLM 2.0 memory model.
+About `News_module`
+==========================
 
 Features
 --------
 - TLM 2.0 base protocol compliant
 - Supports `Config_extn`
-- Configurable depth
-- Optionally read-only
-- Supports DMI
+- {:FEATURE:}
 
 Requirements
 ------------
@@ -19,9 +15,7 @@ Requirements
 Functional Description
 ----------------------
 
-The memory module implements a model suitable for things such as SRAM, DRAM,
-ROM, or EPROM. It would need serious modifications to accommodate FLASH memory
-modeling, which should probably be a separate implementation.
+The news module {:TBS:}
 
 Block diagram
 -------------
@@ -32,12 +26,26 @@ Block diagram
 Usage Example
 -------------
 
-See `memory_test.cpp`
+```cpp
+{:CODE SNIPPETS:}
+```
+
+Files
+-----
+
+  Filename                 | Purpose                  
+  ------------------------ | -------------------------
+  `ABOUT_NEWS.md`   | Documentation in markdown
+  news.hpp          | {:COMMENT1:}             
+  news.cpp          | {:COMMENT1:}             
 
 Implementation Details
 ----------------------
 
 {:EXPLANATION OF STRUCTURES AND APPROACH:}
+
+See Also
+--------
 
 ### The end
 <!-- vim:tw=78

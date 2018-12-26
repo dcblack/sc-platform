@@ -71,8 +71,8 @@ Configuration indicates the number of sources and targets.
 
 ```cpp
 struct Pic_Config_t {
-  uint32_t source_count : 16 ;
   uint32_t target_count : 16 ;
+  uint32_t source_count : 16 ;
 };
 ```
 
@@ -83,7 +83,7 @@ struct Pic_regs_t
 {
   uint32_t        next; //< read for next interrupt
   uint32_t        done; //< write when done servicing
-  Piq_Target_t    target;
+  Pic_Target_t    target;
   // 21 reserved;
   //  1 enabled;    //< interface is active
   //  1 clearall;   //< clear queue for this interface
@@ -140,7 +140,7 @@ Block diagram
 ```
 
 - N = # of interrupt generating sources
-- M = # of interrupt receiving targets
+- M = # of interrupt receiving target CPU masters
 
 Usage Example
 -------------
@@ -161,6 +161,31 @@ Files
   `pic_reg.h`      | Provides register definitions for software    
   `cpuid_extn.hpp` | Declarations for Cpuid extension
   `cpuid_extn.hpp` | Implementation definitions for Cpuid extension
+
+Notes
+-----
+
+- Reading the NEXT register has two possible returns:
+
+  1. `PIC_INVALID_IRQ` indicates an error, which includes the spurious
+     situation. When more than one target CPU is interrupted for a single
+     interrupt, only the first one to read that particular interrupt from the
+     NEXT register will get it. Other responders may get the `PIC_INVALID_IRQ`
+     if there is nothing else outstanding of the appropriate priority level.
+     In general this should not be treated as an error.
+
+  2. A number representing a real interrupt configured in the memory map.
+
+- Writing the DONE register will set the corresponding interrupt inactive even
+  if the write originates from a CPU that has not made the interrupt active.
+
+- Reading the NEXT and DONE registers works regardless of the interface's
+  enable status Writing an unassigned interrupt to pending effectively creates
+  a software generated interrupt.
+
+- Setting the CLEARALL bit will cause the pending and active status of all
+  interrupt sources to be cleared. Reading the target register will return the
+  bit set for the next read and clear it for subsequent reads.
 
 Implementation Details
 ----------------------

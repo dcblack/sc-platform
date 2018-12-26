@@ -190,7 +190,7 @@ Each module will its status noted here. The following states are allowed:
 | `Timer_module`      | Target timer                                 |   Y   | Basic   |
 | `no_clock`          | Substitute clock                             |   Y   | Basic   |
 | `Mailbox_module`    | Hardware communication between processors    |   Y   | Concept |
-| `Excl_proxy`        | Implements non-locking bus mutual exclusion. |   Y   | Started |
+| `Excl_filter`       | Implements non-locking bus mutual exclusion. |   Y   | Started |
 | `Excl_extn`         | Request mutual exclusion.                    |   Y   | Started |
 | `Dma_module`        | Target/Initiator                             |   Y   | Concept |
 | `Pic_module`        | Priority Interrupt Controller                |   Y   | Started |
@@ -211,10 +211,11 @@ Each module will its status noted here. The following states are allowed:
 | `Timer_api`         | API used `Timer_test`                        |   Y   | Basic   |
 | `hexfile` utils     | Save/load/dump hex data                      |   Y   | Basic   |
 | `Signal` class      | Specify how to handle CTRL-C                 |   Y   | Basic   |
-| `Interrupt` channel | Carry interrupts between modules             |   Y   | Concept |
+| `Interrupt_channel` | Carry interrupts between modules             |   Y   | Basic   |
 | `Summary` class     | Summarize execution                          |  TBS  | Concept |
+| `Netlist` class     | Dump netlist into output                     |  TBS  | Basic   |
 | `sc_main`           | Beyond basics.                               |  TBS  | Concept |
-| `Top_module`        | Module connectivity                          |  TBS  | Concept |
+| `Top_module`        | Module connectivity                          |  TBS  | Basic   |
 | `Proc_module`       | Hierarchical TLM                             |  TBS  | Thought |
 | `Disk_module`       | Disk simulation using file system            |  TBS  | Thought |
 | `SBus_module`       | Serial interconnect (SPI or I2C)             |  TBS  | Thought |
@@ -232,32 +233,31 @@ Each module will its status noted here. The following states are allowed:
 | `Mcu_module`        | Simple hierarchical wrapper                  |  TBS  | Thought |
 | `Mailbox_module`    | Mailbox for heterogenous interconnect        |  TBS  | Thought |
 | `SystemMgr_module`  | System manager for clocks/power/resets       |  TBS  | Thought |
+| `News`              | report handler extensions                    |  TBS  | Started |
 
 ## <a name="ToDo"></a>To Do List
 
 In order of priority:
 
-1. Add `Timer_module` and South Bus instantiation. Will include `no_clock`.
-   1. Create base timer - DONE
-   2. Add base `no_clock` - DONE
-   3. Add South Bus
-2. Add `Pic_module`
+1. Add `Pic_module`
 3. Add `Dma_module`
 4. Add power-down capability (?use CCI?) with reset
 5. Add timing to AT mode of `Bus_module` with analysis port support
-6. Add yaml or jason support for configuration
-7. Implement proxy interconnect
+6. Add YAML or JASON support for configuration
+7. Implement filter interconnect
 8. Implement a CPU emulation (e.g. armv6m)
 
 Optional:
 
 1. Add fancy report handler with XML option and expectations for error injection
-2. Implement one module as RTL and provide an example adaptor
+2. Implement one module as RTL and provide an example adaptor (? AXI streaming ?)
 3. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
 4. Consider refactor `Memory_module` to use PIMPL
 5. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
 6. Add a `Stack_module` (LIFO).
 7. Add `Global` class to replace `g_` variables
+8. `Apb2tlm_adapter` and `Tlm2apb_adapter`
+9. `Axi2tlm_adapter` and `Tlm2axi_adapter`
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
@@ -286,29 +286,30 @@ Optional:
 - Leading or trailing underscores `\_` will NEVER be used together (i.e. `a_`
   and `_a` are legal, but `_a_` is not).
 
-| Pre/Suf   | Use                             |
-| --------- | ------------------------------- |
-| `_api`    | initiator methods/constants     |
-| `_beh`    | behavioral implementation       |
-| `_delay`  | relative simulation `sc_time`   |
-| `_extn`   | `tlm_extension`                 |
-| `_if`     | interface class for channels    |
-| `_method` | `SC_METHOD`                     |
-| `_module` | `sc_module`                     |
-| `_port`   | `sc_port`                       |
-| `_rtl`    | RTL implementation              |
-| `_socket` | TLM socket                      |
-| `_t`      | `typedef`                       |
-| `_thread` | `SC_THREAD`                     |
-| `_time`   | absolute simulation `sc_time`   |
-| `_xport`  | `sc_export`
-| `g_`      | global variables                |
-| `get_`    | const accessor method           |
-| `is_`     | returns bool status             |
-| `m_`      | class member attributes         |
-| `_ptr`    | pointer to object               |
-| `s_`      | class static attributes         |
-| `set_`    | modifying accessor method       |
+| Pre/Suf    | Use                             |
+| ---------- | ------------------------------- |
+| `_api`     | initiator methods/constants     |
+| `_beh`     | behavioral implementation       |
+| `_delay`   | relative simulation `sc_time`   |
+| `_channel` | channel (usually primitive)     |
+| `_extn`    | `tlm_extension`                 |
+| `_if`      | interface class for channels    |
+| `_method`  | `SC_METHOD`                     |
+| `_module`  | `sc_module`                     |
+| `_port`    | `sc_port`                       |
+| `_rtl`     | RTL implementation              |
+| `_socket`  | TLM socket                      |
+| `_t`       | `typedef`                       |
+| `_thread`  | `SC_THREAD`                     |
+| `_time`    | absolute simulation `sc_time`   |
+| `_xport`   | `sc_export`                     |
+| `g_`       | global variables                |
+| `get_`     | const accessor method           |
+| `is_`      | returns bool status             |
+| `m_`       | class member attributes         |
+| `_ptr`     | pointer to object               |
+| `s_`       | class static attributes         |
+| `set_`     | modifying accessor method       |
 
 ## Extras
 
