@@ -1,7 +1,12 @@
 #!make -f
 
 default:
-	@echo "Either use 'build' script or 'cd build && make'" 1>&2
+	@echo "+---------------------------------------------------------------------+" 1>&2 ;\
+	 echo "|                                                                     |" 1>&2 ;\
+	 echo "|  You may need to source setup.profile or perform equivalent steps.  |" 1>&2 ;\
+	 echo "|  Either use 'bin/build' script or 'cd build && make'                |" 1>&2 ;\
+	 echo "|                                                                     |" 1>&2 ;\
+	 echo "+---------------------------------------------------------------------+" 1>&2 ;\
 
 cleanup:
 	-rm -f cmake_install.cmake CMakeCache.txt CMakeFiles Makefile
