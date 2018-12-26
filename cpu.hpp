@@ -40,8 +40,8 @@ struct Cpu_module: sc_core::sc_module
   sc_core::sc_export<Interrupt_send_if>           intrq_xport { "intrq_xport" };
   no_clock&                                       clk         { no_clock::global( "system_clock" ) };
 
-  // Local signals
-  Interrupt           intrq_chan    { "intrq_signal"  };
+  // Local channels
+  Interrupt_channel   intrq_chan    { "intrq_signal"  };
   sc_signal<bool>     intrq_enabled { "intrq_enabled" };
 
   // Fundamentals

@@ -9,7 +9,7 @@
 
 using namespace sc_core;
 namespace {
-  const char* const MSGID { "/Doulos/Example/timer_beh" };
+  const char* const MSGID{ "/Doulos/Example/timer_beh" };
 }
 
 //------------------------------------------------------------------------------
@@ -218,7 +218,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 SC_MODULE( Top_module )
 {
-  const char* MSGID{ "/Doulos/Example/Timer_example" };
+  char const * const MSGID{ "/Doulos/Example/Timer_example" };
   no_clock clk   { "clk", 10_ns };
 
   //----------------------------------------------------------------------------

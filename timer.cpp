@@ -15,7 +15,7 @@
 #include "config_extn.hpp"
 #include <algorithm>
 namespace {
-  const char* MSGID{"/Doulos/Example/TLM-Timer"};
+  char const * const MSGID{ "/Doulos/Example/TLM-Timer" };
 }
 using namespace sc_core;
 using namespace sc_dt;
@@ -101,7 +101,7 @@ void Timer_module::timer_thread( void )
       for( int iIrq=0; iIrq!=intrq_port.size(); ++iIrq ) {
         if( m_timer_vec[iIrq].get_triggered() and irq_enabled(iIrq) ) {
           timer_reg_vec(iIrq).status |= TIMER_IRQ(iIrq);
-          intrq_port->notify();
+          intrq_port->notify(name());
           break;
         }
       }

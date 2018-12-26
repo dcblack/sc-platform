@@ -14,7 +14,6 @@
 #include "common.hpp"
 #include "hexfile.hpp"
 #include "memory_map.hpp"
-#include "interrupt.hpp"
 #include "timer_api.hpp"
 
 #include <string>
@@ -40,7 +39,7 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
   SC_THREAD( irq_thread );
   init_socket.register_nb_transport_bw           ( this, &Cpu_module::nb_transport_bw );
   init_socket.register_invalidate_direct_mem_ptr ( this, &Cpu_module::invalidate_direct_mem_ptr );
-  intrq_xport.bind( intrq_chan );
+  intrq_xport.bind( intrq_chan.send_if );
   m_qk.reset();
   INFO( ALWAYS, "Constructed " << name() );
 }
@@ -131,13 +130,8 @@ Cpu_module::irq_thread( void )
   Timer_api t0{ *this, TMR_BASE, 0 };
   for(;;) {
     if( not intrq_enabled.read() ) wait( intrq_enabled.posedge_event() );
-    intrq_chan.wait();
-    INFO( MEDIUM, "Received interrupt at " << sc_time_stamp() );
-    MESSAGE( "Testing timer " << t0.timer() << "\n" );
-    MESSAGE( "  " << (t0.is_running()?"Running.":"Halted.")<<"\n" );
-    MESSAGE( "  Current status is " << HEX << t0.status() << "\n" );
-    MESSAGE( "  Current count  is " << DEC << t0.value() << HEX << " (" << t0.value() << ")\n" );
-    MEND( MEDIUM );
+    intrq_chan.recv_if->wait();
+    INFO( MEDIUM, name() << " received interrupt from " << intrq_chan.recv_if->get_next() << " at " << sc_time_stamp() );
   }//endforever
 }
 
