@@ -253,10 +253,10 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
       if ( instance().m_target_ptr_map.count( target_name ) == 0 ) {
         instance().m_target_ptr_map[ target_name ] = &(origin_info.target_map[ target_name ]);
       }
-      else {
-        REPORT( WARNING, "Target '" << target_name << "' duplicate ignored from "
-                      << "origin '" << origin_name << "'." );
-      }
+//    else {
+//      REPORT( WARNING, "Target '" << target_name << "' duplicate ignored from "
+//                    << "origin '" << origin_name << "'." );
+//    }
       Target_info& target_info{ origin_info.target_map[ target_name ] };
       target_info.name = target_name;
       INFO( DEBUG, "Processing target: " << target_name );
