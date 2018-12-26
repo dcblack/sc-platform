@@ -19,6 +19,15 @@ namespace {
       if ( child != nullptr ) {
         std::string inst{ child->basename() };
         std::string kind{ child->kind() };
+        std::string chan{ "" };
+        sc_port<sc_interface>* pPort { dynamic_cast< sc_port<sc_interface>* >( child ) };
+        if( pPort != nullptr ) {
+          sc_interface* pIntf = pPort->get_interface();
+          sc_module* pModl { dynamic_cast< sc_module* >( pIntf ) };
+          if( pModl != nullptr ) {
+            chan = pModl->name();
+          }
+        }
         //{:TODO:} Filter types (unless verbose)
         bool ok = true;
         if( not Options::has_flag("-v") ) {
@@ -31,6 +40,7 @@ namespace {
         if( ok ) {
           MESSAGE( indent << "+- " << inst << ' ' << kind );
           //{:TODO:} Figure out and add where sc_port's are pointing
+          if( chan.length() > 0 ) MESSAGE( " -> " << chan );
           MESSAGE( "\n" );
         }
         scan_hierarchy(child, indent + std::string("| ")); 
