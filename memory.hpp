@@ -47,7 +47,7 @@ struct Memory_module: sc_core::sc_module
   Memory_module( Memory_module&& ) = default;
   Memory_module& operator=( Memory_module&& ) = default;
   ~Memory_module( void ); //< Destructor
-  virtual const char* kind( void ) const { return "Memory_module"; }
+  const char* kind( void ) const override { return "Memory_module"; }
   // Forward interface
   void b_transport( tlm_payload_t& trans, sc_time& delay );
   Depth_t transport_dbg( tlm_payload_t& trans );

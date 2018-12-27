@@ -45,7 +45,7 @@ struct Stub_module: sc_core::sc_module
   Stub_module( Stub_module&& ) = default;
   Stub_module& operator=( Stub_module&& ) = default;
   ~Stub_module( void ); //< Destructor
-  virtual const char* kind( void ) const { return "Stub_module"; }
+  const char* kind( void ) const override { return "Stub_module"; }
   // Forward interface
   void b_transport( tlm_payload_t& trans, sc_time& delay );
   Depth_t transport_dbg( tlm_payload_t& trans );

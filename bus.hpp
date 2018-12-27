@@ -38,8 +38,8 @@ struct Bus_module: sc_core::sc_module
   // Basics
   SC_CTOR( Bus_module );
   virtual ~Bus_module( void );
-  virtual const char* kind( void ) const { return "Bus_module"; }
-  void start_of_simulation( void );
+  const char* kind( void ) const override { return "Bus_module"; }
+  void start_of_simulation( void ) override;
 
   // Forward interface
   void b_transport( int id, tlm_payload_t& trans, sc_core::sc_time& delay );

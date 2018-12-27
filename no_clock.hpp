@@ -103,7 +103,7 @@ sc_core::sc_time sc_core_time_diff
 #include "no_clock_if.hpp"
 using get_time_t = sc_core::sc_time(*)(void);
 struct no_clock
-: sc_core::sc_object
+: sc_core::sc_prim_channel
 , no_clock_if
 {
   no_clock //< Constructor (enhanced)
@@ -139,64 +139,64 @@ struct no_clock
   virtual ~no_clock(void); //< Destructor
 
   // Accessors
-  void set_frequency          ( double           frequency );
-  void set_period_time        ( sc_core::sc_time tPERIOD   );
-  void set_offset_time        ( sc_core::sc_time tOFFSET   );
-  void set_duty_cycle         ( double           duty      );
-  void set_sample_time        ( sc_core::sc_time tSAMPLE   );
-  void set_setedge_time       ( sc_core::sc_time tSETEDGE   );
+  void set_frequency          ( double           frequency ) override;
+  void set_period_time        ( sc_core::sc_time tPERIOD   ) override;
+  void set_offset_time        ( sc_core::sc_time tOFFSET   ) override;
+  void set_duty_cycle         ( double           duty      ) override;
+  void set_sample_time        ( sc_core::sc_time tSAMPLE   ) override;
+  void set_setedge_time       ( sc_core::sc_time tSETEDGE   ) override;
   void set_time_shift         ( sc_core::sc_time tSHIFT    );
-  const char*      clock_name ( void ) const;
-  sc_core::sc_time period     ( Clock_count_t cycles = 1 ) const;
-  double           duty       ( void ) const;
-  double           frequency  ( void ) const;
+  const char*      clock_name ( void ) const override;
+  sc_core::sc_time period     ( Clock_count_t cycles = 1 ) const override;
+  double           duty       ( void ) const override;
+  double           frequency  ( void ) const override;
   sc_core::sc_time time_shift ( void ) const { return m_tSHIFT; }
   // Special conveniences
-  Clock_count_t    cycles ( void ) const; // Number of clock cycles since start
-  Clock_count_t    cycles ( sc_core::sc_time t ) const;
+  Clock_count_t    cycles ( void ) const override; // Number of clock cycles since start
+  Clock_count_t    cycles ( sc_core::sc_time t ) const override;
   void             reset  ( void ); // Clears count & frequency change base (not yet implemented -- specification issues remain)
-  Clock_count_t    frequency_changes ( void ) const { return m_freq_count; } // Number of times frequency was changed
+  Clock_count_t    frequency_changes ( void ) const override { return m_freq_count; } // Number of times frequency was changed
   // Calculate the delay till... (use for temporal offset)...may return SC_ZERO_TIME if already on the edge
-  sc_core::sc_time  until_posedge ( Clock_count_t cycles = 0U ) const;
-  sc_core::sc_time  until_negedge ( Clock_count_t cycles = 0U ) const;
-  sc_core::sc_time  until_anyedge ( Clock_count_t cycles = 0U ) const;
-  sc_core::sc_time  until_sample  ( Clock_count_t cycles = 0U ) const;
-  sc_core::sc_time  until_setedge ( Clock_count_t cycles = 0U ) const;
+  sc_core::sc_time  until_posedge ( Clock_count_t cycles = 0U ) const override;
+  sc_core::sc_time  until_negedge ( Clock_count_t cycles = 0U ) const override;
+  sc_core::sc_time  until_anyedge ( Clock_count_t cycles = 0U ) const override;
+  sc_core::sc_time  until_sample  ( Clock_count_t cycles = 0U ) const override;
+  sc_core::sc_time  until_setedge ( Clock_count_t cycles = 0U ) const override;
   // Calculate the delay till... (use for temporal offset)...never returns SC_ZERO_TIME
-  sc_core::sc_time  next_posedge  ( Clock_count_t cycles = 0U ) const;
-  sc_core::sc_time  next_negedge  ( Clock_count_t cycles = 0U ) const;
-  sc_core::sc_time  next_anyedge  ( Clock_count_t cycles = 0U ) const;
-  sc_core::sc_time  next_sample   ( Clock_count_t cycles = 0U ) const;
-  sc_core::sc_time  next_setedge  ( Clock_count_t cycles = 0U ) const;
+  sc_core::sc_time  next_posedge  ( Clock_count_t cycles = 0U ) const override;
+  sc_core::sc_time  next_negedge  ( Clock_count_t cycles = 0U ) const override;
+  sc_core::sc_time  next_anyedge  ( Clock_count_t cycles = 0U ) const override;
+  sc_core::sc_time  next_sample   ( Clock_count_t cycles = 0U ) const override;
+  sc_core::sc_time  next_setedge  ( Clock_count_t cycles = 0U ) const override;
   // Wait only if really necessary (for use in SC_THREAD)
-  void wait         ( Clock_count_t cycles = 0U );
-  void wait_posedge ( Clock_count_t cycles = 0U );
-  void wait_negedge ( Clock_count_t cycles = 0U );
-  void wait_anyedge ( Clock_count_t cycles = 0U );
-  void wait_sample  ( Clock_count_t cycles = 0U );
-  void wait_setedge ( Clock_count_t cycles = 0U );
+  void wait         ( Clock_count_t cycles = 0U ) override;
+  void wait_posedge ( Clock_count_t cycles = 0U ) override;
+  void wait_negedge ( Clock_count_t cycles = 0U ) override;
+  void wait_anyedge ( Clock_count_t cycles = 0U ) override;
+  void wait_sample  ( Clock_count_t cycles = 0U ) override;
+  void wait_setedge ( Clock_count_t cycles = 0U ) override;
   // Are we there? (use in SC_METHOD)
-  bool at_posedge_time ( void ) const;
-  bool posedge         ( void ) const { return at_posedge_time(); }
-  bool at_negedge_time ( void ) const;
-  bool negedge         ( void ) const { return at_negedge_time(); }
-  bool at_anyedge_time ( void ) const;
-  bool event           ( void ) const { return at_anyedge_time(); }
-  bool at_sample_time  ( void ) const;
-  bool at_setedge_time ( void ) const;
+  bool at_posedge_time ( void ) const override;
+  bool posedge         ( void ) const override { return at_posedge_time(); }
+  bool at_negedge_time ( void ) const override;
+  bool negedge         ( void ) const override { return at_negedge_time(); }
+  bool at_anyedge_time ( void ) const override;
+  bool event           ( void ) const override { return at_anyedge_time(); }
+  bool at_sample_time  ( void ) const override;
+  bool at_setedge_time ( void ) const override;
   // For compatibility if you really have/want to (with an extra feature)
   // - specify N > 0 to delay further out
-  sc_core::sc_event& default_event       ( size_t events = 0 );
-  sc_core::sc_event& posedge_event       ( size_t events = 0 );
-  sc_core::sc_event& negedge_event       ( size_t events = 0 );
-  sc_core::sc_event& sample_event        ( size_t events = 0 );
-  sc_core::sc_event& setedge_event       ( size_t events = 0 );
-  sc_core::sc_event& value_changed_event ( size_t events = 0 );
-  bool      read                ( void ) const;
+  sc_core::sc_event& default_event       ( size_t events = 0 ) override;
+  sc_core::sc_event& posedge_event       ( size_t events = 0 ) override;
+  sc_core::sc_event& negedge_event       ( size_t events = 0 ) override;
+  sc_core::sc_event& sample_event        ( size_t events = 0 ) override;
+  sc_core::sc_event& setedge_event       ( size_t events = 0 ) override;
+  sc_core::sc_event& value_changed_event ( size_t events = 0 ) override;
+  bool      read                ( void ) const override;
 
   virtual void write( const bool& ) { SC_REPORT_ERROR(MSGID,"write() not allowed on clock"); }
-  virtual sc_core::sc_time delay( sc_core::sc_time tPERIOD, sc_core::sc_time tOFFSET, sc_core::sc_time tSHIFT) const;
-  virtual Clock_count_t clocks( sc_core::sc_time tPERIOD, sc_core::sc_time tZERO, sc_core::sc_time tSHIFT) const;
+  virtual sc_core::sc_time delay( sc_core::sc_time tPERIOD, sc_core::sc_time tOFFSET, sc_core::sc_time tSHIFT) const override;
+  virtual Clock_count_t clocks( sc_core::sc_time tPERIOD, sc_core::sc_time tZERO, sc_core::sc_time tSHIFT) const override;
 
 private:
   // Don't allow copying
@@ -204,9 +204,7 @@ private:
   no_clock(no_clock&& ) = delete; // Move constructor
   no_clock& operator= (const no_clock& ) = delete; // Copy assignment
   no_clock& operator= (no_clock&& ) = delete; // Move assignment
-  // Report global clock statistics
-  void end_of_simulation( void );
-  // Internal data
+  // Attributes - internal data
   get_time_t          m_get_time;// callback that returns current time
   const char *        m_clock_name;// clock name
   sc_core::sc_time    m_tPERIOD; // clock period

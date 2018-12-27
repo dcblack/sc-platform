@@ -38,18 +38,18 @@ struct Config_proxy
   , uint32_t                write_clocks = 3
   );
   virtual ~Config_proxy( void );
-  virtual const char* kind( void ) const { return "Config_proxy"; }
+  const char* kind( void ) const override { return "Config_proxy"; }
 
 private:
   // Forward interface
-  void b_transport( tlm_payload_t& trans, sc_core::sc_time& delay );
-  tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm::tlm_phase& phase, sc_core::sc_time& delay );
-  bool get_direct_mem_ptr( tlm_payload_t& trans, tlm::tlm_dmi& dmi_data);
-  unsigned int transport_dbg( tlm_payload_t& trans );
+  void b_transport( tlm_payload_t& trans, sc_core::sc_time& delay ) override;
+  tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm::tlm_phase& phase, sc_core::sc_time& delay ) override;
+  bool get_direct_mem_ptr( tlm_payload_t& trans, tlm::tlm_dmi& dmi_data) override;
+  unsigned int transport_dbg( tlm_payload_t& trans ) override;
 
   // Backward interface
-  tlm::tlm_sync_enum nb_transport_bw( tlm_payload_t& trans, tlm::tlm_phase& phase, sc_core::sc_time& delay );
-  void invalidate_direct_mem_ptr( sc_dt::uint64 start_range, sc_dt::uint64 end_range );
+  tlm::tlm_sync_enum nb_transport_bw( tlm_payload_t& trans, tlm::tlm_phase& phase, sc_core::sc_time& delay ) override;
+  void invalidate_direct_mem_ptr( sc_dt::uint64 start_range, sc_dt::uint64 end_range ) override;
 
   // Helpers
   bool configure( tlm_payload_t& trans );
