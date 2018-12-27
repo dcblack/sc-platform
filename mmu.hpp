@@ -32,7 +32,7 @@ struct Mmu_module: sc_core::sc_module
 
   SC_CTOR( Mmu_module );
   virtual ~Mmu_module( void );
-  virtual const char* kind( void ) const { return "Mmu_module"; }
+  const char* kind( void ) const override { return "Mmu_module"; }
 
   // Forward interface
   void b_transport( int id, tlm_payload_t& trans, sc_core::sc_time& delay );

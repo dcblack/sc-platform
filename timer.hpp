@@ -56,13 +56,13 @@ struct Timer_module: sc_core::sc_module
   Timer_module( Timer_module&& ) = default;
   Timer_module& operator=( Timer_module&& ) = default;
   ~Timer_module( void ); //< Destructor
-  virtual const char* kind( void ) const { return "Timer_module"; }
+  const char* kind( void ) const override { return "Timer_module"; }
 
 private:
   //----------------------------------------------------------------------------
   // Processes
   void timer_thread( void );
-  void end_of_elaboration( void );
+  void end_of_elaboration( void ) override;
 
   //----------------------------------------------------------------------------
   // Forward interface

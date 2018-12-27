@@ -53,13 +53,13 @@ struct Pic_module: sc_core::sc_module
   Pic_module( Pic_module&& ) = default;
   Pic_module& operator=( Pic_module&& ) = default;
   ~Pic_module( void ); //< Destructor
-  virtual const char* kind( void ) const { return "Pic_module"; }
+  const char* kind( void ) const override { return "Pic_module"; }
 
 private:
   //----------------------------------------------------------------------------
   // Processes
   void pic_thread( void );
-  void end_of_elaboration( void );
+  void end_of_elaboration( void ) override;
 
   //----------------------------------------------------------------------------
   // Forward interface

@@ -34,7 +34,7 @@ struct Excl_filt
   , Excl_filt*              global =  nullptr;
   );
   virtual ~Excl_filt( void );
-  virtual const char* kind( void ) const { return "Excl_filt"; }
+  const char* kind( void ) const override { return "Excl_filt"; }
 
 private:
   // Forward interface
