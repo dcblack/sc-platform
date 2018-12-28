@@ -1,4 +1,15 @@
 #include "gpio.hpp"
+////////////////////////////////////////////////////////////////////////////////
+//
+//   ####  #####  ###  ####                                                      
+//  #    # #    #  #  #    #                                                     
+//  #      #    #  #  #    #                                                     
+//  #  ### #####   #  #    #                                                     
+//  #    # #       #  #    #                                                     
+//  #    # #       #  #    #                                                     
+//   ####  #      ###  ####                                                      
+//
+////////////////////////////////////////////////////////////////////////////////
 #include "report.hpp"
 #include "config_extn.hpp"
 #include <algorithm>
@@ -23,6 +34,7 @@ Gpio_module::Gpio_module // Constructor
 , m_write_clocks            { write_clocks    }
 , m_targ_peq                { this, &Gpio_module::targ_peq_cb }
 {
+  gpio_xport.bind( gpio_sig );
   SC_HAS_PROCESS( Gpio_module );
   SC_THREAD( gpio_thread );
   SC_METHOD( execute_transaction_process );
@@ -51,18 +63,15 @@ Gpio_module::~Gpio_module( void )
 //------------------------------------------------------------------------------
 void Gpio_module::end_of_elaboration( void )
 {
-  sc_assert( irq_send_port.size() <= M );
-  m_source_irq.resize( Memory_map::max_irq()+1 );
-  m_source_targets.resize( Memory_map::max_irq()+1 );
 }
 
 //------------------------------------------------------------------------------
 void Gpio_module::start_of_simulation( void )
 {
    for( int pin=0; pin<PINS; ++pin ) {
-     gpio_sig[ pin ]->write( SC_LOGIC_Z );
-     m_inp = SC_LOGIC_X;
-     m_out = SC_LOGIC_Z;
+     gpio_sig[ pin ].write( SC_LOGIC_Z );
+     m_inp[ pin ] = SC_LOGIC_X;
+     m_out[ pin ] = SC_LOGIC_Z;
    }
 }
 
@@ -412,10 +421,10 @@ void Gpio_module::gpio_thread( void )
 {
   sc_event_or_list port_changed;
   for( auto& sig : gpio_sig ) {
-    port_changed |= sig.event();
+    port_changed |= sig.default_event();
   }
   for(;;) {
-    wait( port_change );
+    wait( port_changed );
     // Move to the next rising edge of the clock (better emulates actual behavior)
     clk.wait_posedge();
     sc_lv<PINS> datain;
@@ -427,32 +436,32 @@ void Gpio_module::gpio_thread( void )
       // Read the value
       sc_logic pindata = gpio_sig[ pin ].read();
       // Is pull-logic in effect? If so, adjust value accordingly.
-      if( (pindata == SC_LOGIC_Z) && (m_reg.pin_pull & bit) ) {
+      if( (pindata == SC_LOGIC_Z) and (m_reg.pinpull & bit) ) {
         pindata = (m_reg.pulldir & bit) ? SC_LOGIC_1 : SC_LOGIC_0;
       }
       // Was it unknown? If so, set it to the opposite of current value
-      else if( pindata = SC_LOGIC_X ) {
-        pindata = !m_inp[pin];
+      else if( pindata == SC_LOGIC_X ) {
+        pindata = ~ m_inp[ pin ];
       }
       // Did it change? If not, move on
       if( pindata == m_inp[pin] ) continue;
       bool changed = false; // assume not observed
       // It changed, so was it rising or falling?
-      if( (pindata == SC_LOGIC_1) && (m_reg[pin].pinrise & bit) ) {
+      if( (pindata == SC_LOGIC_1) and (m_reg.pinrise & bit) ) {
         changed = true;
-        m_reg[pin].datachg |= 1;
+        m_reg.datachg |= bit;
       }
-      else if( (pindata == SC_LOGIC_0) && (m_reg[pin].pinfall & bit) ) {
+      else if( (pindata == SC_LOGIC_0) and (m_reg.pinfall & bit) ) {
         changed = true;
-        m_reg[pin].datachg |= 1;
+        m_reg.datachg |= bit;
       }
       // If it changed, was it enabled to interrupt?
-      if( changed && (m_reg.intr & bit) ) {
+      if( changed and (m_reg.pinintr & bit) ) {
         interrupt = true;
       }
     }//endfor
     // Interrupt if needed and port is connected
-    if( interrupt && (intrq_port.size() == 1) ) {
+    if( interrupt and (intrq_port.size() == 1) ) {
       intrq_port->notify( name() );
     }
   }
@@ -475,10 +484,10 @@ void Gpio_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
       // - Inputs take care of themselves
       uint64_t bit = 1ull;
       for( int pin=0; pin<PINS; ++pin ) {
-        if( ( m_reg.pindir & bit ) && !( reg.pindir & bit ) ) {
+        if( ( m_reg.pindirn & bit ) and !( reg.pindirn & bit ) ) {
           new_output[ pin ] = true;
         }
-        else if( !( m_reg.pindir & bit ) && ( reg.pindir & bit ) ) {
+        else if( !( m_reg.pindirn & bit ) and ( reg.pindirn & bit ) ) {
           new_input[ pin ] = true;
         }
       }
@@ -555,7 +564,7 @@ void Gpio_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
       break;
     }
   }//endswitch
-  if( new_output.any() or mout != m_reg.dataout ) {
+  if( new_output.any() or (m_out != m_reg.dataout) ) {
     m_out =  m_reg.dataout;
     // Only update pins configured as outputs
     uint64_t bit = 1ull;
@@ -569,6 +578,7 @@ void Gpio_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
     }//endfor
   }
   if( new_input.any() ) {
+    uint64_t bit = 1ull;
     for( int pin=0; pin<PINS; ++pin, bit<<=1 ) {
       if( new_input[ pin ] ) gpio_sig[ pin ] = SC_LOGIC_Z;
     }//endfor
@@ -606,7 +616,7 @@ void Gpio_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
     }
     case GPIO_DATAINP_REG: // x4 =
     {
-      uint64_t bit = (1ull << PINS-1);
+      uint64_t bit = ( 1ull << (PINS-1) );
       m_reg.datainp = 0;
       for( int pin=PINS; bit!=0; bit >>= 1 ) {
         --pin;
