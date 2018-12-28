@@ -1,3 +1,5 @@
+#ifndef MEMORY_MODULE_HPP
+#define MEMORY_MODULE_HPP
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  #     # ##### #     #  ####  #####  #     #        #     # ####   #           
@@ -9,8 +11,6 @@
 //  #     # ##### #     #  ####  #    #    #    ###### #     # ####   #####       
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef MEMORY_MODULE_HPP
-#define MEMORY_MODULE_HPP
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 #endif

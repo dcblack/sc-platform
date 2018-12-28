@@ -1,3 +1,5 @@
+#ifndef DMA_HPP
+#define DMA_HPP
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  ####   #     #    #                                                          
@@ -9,8 +11,6 @@
 //  ####   #     # #     #                                                       
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef DMA_HPP
-#define DMA_HPP
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 #endif

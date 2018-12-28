@@ -1,4 +1,5 @@
 #ifndef GPIO_MODULE_HPP
+#define GPIO_MODULE_HPP
 ////////////////////////////////////////////////////////////////////////////////
 //
 //   ####  #####  ###  ####                                                      
@@ -10,7 +11,6 @@
 //   ####  #      ###  ####                                                      
 //
 ////////////////////////////////////////////////////////////////////////////////
-#define GPIO_MODULE_HPP
 #include "gpio_reg.h"
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES

@@ -1,17 +1,23 @@
-//BEGIN top.cpp (systemc)
-// -*- C++ -*- vim600:syntax=cpp:sw=2:tw=78:fmr=<<<,>>>
-// COMMENT BLOCK <<<///////////////////////////////////////////////////////////
-// Copyright 2018 by Doulos. All rights reserved.
-// 
+#include "top.hpp"
+// -*- C++ -*- vim600:syntax=cpp:sw=2:tw=78
+////////////////////////////////////////////////////////////////////////////////
+//
+//  #######  ####  #####                                                          
+//     #    #    # #    #                                                         
+//     #    #    # #    #                                                         
+//     #    #    # #####                                                          
+//     #    #    # #                                                              
+//     #    #    # #                                                              
+//     #     ####  #                                                              
+//
+////////////////////////////////////////////////////////////////////////////////
 // DESCRIPTION
 //! \brief Top level connectivity for platform.
 //
 // This is the top-level connectivity implementation. See
 // header for high-level description.
-//
-////////////////////////////////////////////////////////////////////////////>>>
+
 #include "no_clock.hpp"
-#include "top.hpp"
 #include "report.hpp"
 #include "summary.hpp"
 #include "common.hpp"
