@@ -5,6 +5,7 @@
 #include <string>
 #include <cctype>
 using namespace sc_core;
+using std::string;
 namespace {
   const char* const MSGID{ "/Doulos/Example/Netlist" };
 }
@@ -12,20 +13,21 @@ namespace {
 namespace {
   // Traverse the entire object subhierarchy 
   // below a given object 
-  void scan_hierarchy(sc_object* obj,std::string indent)
+  void scan_hierarchy(sc_object* obj, string indent)
   { 
     std::vector<sc_object*> children = obj->get_child_objects(); 
     for( const auto& child : children ) {
       if ( child != nullptr ) {
-        std::string inst{ child->basename() };
-        std::string kind{ child->kind() };
-        std::string chan{ "" };
-        sc_port<sc_interface>* pPort { dynamic_cast< sc_port<sc_interface>* >( child ) };
+        string inst{ child->basename() };
+        string kind{ child->kind() };
+        // Is this a port? If so, let's find out what it is connected to...
+        string chan{ "" };
+        auto pPort = dynamic_cast< const sc_port_base* >( child );
         if( pPort != nullptr ) {
-          sc_interface* pIntf = pPort->get_interface();
-          sc_module* pModl { dynamic_cast< sc_module* >( pIntf ) };
-          if( pModl != nullptr ) {
-            chan = pModl->name();
+          const sc_interface* pIntf = pPort->get_interface();
+          auto pObj = dynamic_cast< const sc_object* >( pIntf );
+          if( pObj != nullptr ) {
+            chan = pObj->name();
           }
         }
         //{:TODO:} Filter types (unless verbose)
@@ -43,7 +45,7 @@ namespace {
           if( chan.length() > 0 ) MESSAGE( " -> " << chan );
           MESSAGE( "\n" );
         }
-        scan_hierarchy(child, indent + std::string("| ")); 
+        scan_hierarchy(child, indent + string("| ")); 
       }//endif
     }//endfor
   }//end scan_hierarchy()
