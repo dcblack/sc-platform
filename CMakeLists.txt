@@ -48,8 +48,8 @@ add_executable( platform
   memory.cpp
   timer.cpp
   pic.cpp
+  gpio.cpp
 # dma.cpp
-# gpio.cpp
 # mmu.cpp
 # cache.cpp
 # crypto.cpp
