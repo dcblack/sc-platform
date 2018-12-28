@@ -27,6 +27,7 @@ add_executable( platform
   report.cpp
   wallclock.cpp
   summary.cpp
+  news.cpp
   no_clock.cpp
   task.cpp
   netlist.cpp

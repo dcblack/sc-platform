@@ -1,10 +1,14 @@
-#include "news.cpp"
+#include "news.hpp"
 #include "report.hpp"
 #include <iostream>
 using namespace std;
 using namespace sc_core;
 
-bool News::initialized = true;
+namespace {
+  constexpr char const * const MSGID { "/Doulos/Example/News" };
+};
+
+bool News::initialized = false;
 
 News::News( void )
 {
@@ -19,18 +23,19 @@ void News::report_handler( const sc_report& the_report, const sc_actions& the_ac
 
   if ( the_actions & SC_DISPLAY ) {
     cout << compose_report( the_report ) << endl;
+    new_actions &= ~SC_DISPLAY;
   }
 
+#if TO_BE_SUPPLIED
   if ( ( the_actions & SC_LOG ) && get_log_file_name() ) {
     log_stream.update_file_name( get_log_file_name() );
     *log_stream << the_report.get_time() << ": "
                 << compose_report( the_report ) << endl;
+    new_actions &= ~SC_LOG;
   }
+#endif
 
-  // Remove display and logging now that we've handled them
-  new_actions &= ~( SC_DISPLAY | SC_LOG );
-
-  default_report_handler( the_report, new_actions );
+  sc_report_handler::default_handler( the_report, new_actions );
 
 }//end News::report_handler
 
@@ -100,7 +105,7 @@ const string News::compose_report( const sc_report& the_report )
       const char* proc_name = the_report.get_process_name();
 
       if ( proc_name ) {
-        result += "\nIn process: " + proc_name;
+        result += string("\nIn process: ") + proc_name;
         result += string(" @ ") + the_report.get_time().to_string();
       }
     }

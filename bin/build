@@ -129,9 +129,11 @@ if [[ $RUN == 1 ]]; then
   | tee $BUILD_DIR/run.log;
 
   if [[ "$ROOT_DIR" != "$BUILD_DIR" ]]; then
-    filter-sclog $BUILD_DIR/run.log | c++filt >run.log;
+    #filter-sclog $BUILD_DIR/run.log | c++filt >run.log;
+    c++filt < $BUILD_DIR/run.log >run.log;
   else
-    filter-sclog $BUILD_DIR/run.log | c++filt >$BUILD_DIR/run2.log;
+    # filter-sclog $BUILD_DIR/run.log | c++filt >$BUILD_DIR/run2.log;
+    c++filt < $BUILD_DIR/run.log >$BUILD_DIR/run2.log;
     rm $BUILD_DIR/run.log
     mv $BUILD_DIR/run2.log run.log
   fi
