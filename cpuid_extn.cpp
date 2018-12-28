@@ -30,6 +30,7 @@ void Cpuid_extn::copy_from( tlm_extension_base const& extn )
 void Cpuid_extn::free(void)
 {
   m_cpu_ptr = nullptr;
+  delete this;
 }
 
 //------------------------------------------------------------------------------
