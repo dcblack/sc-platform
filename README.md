@@ -49,41 +49,35 @@ make it easy to understand. Comment blocks are highly encouraged.
 ```
 Top
 +------------------------------------------------------------------+
-|               SystemMgr           Mcu                            |
-|                +-----+            +-----+                        |
-|                | sys |            |mcu2 |                        |
-|                +-----+            +--v--+                        |
-| Mcu                                  |                           |
-| +------------------------------------v-------------------------+ |
-| |mcu1                                |                       r0| |
-| | .--------------.                   |                         | |
-| | |              |      +-----+   +--v--+             +-----+  | |
-| | | Proc         |      | TBD |   | mbx |Mailbox      | TBD |  | |
-| |.|..........    |      +-----+   +--^--+             +-----+  | |
-| |:| prc   r1:    |                   |                         | |
-| |:|         :    |                   x---------.               | |
-| |:|         :....|.....                        |               | |
-| |:| Cpu     : Dma|  r2: Pic       Gpio         |      Crypto   | |
-| |:| +-----+ : +--^--+ : +-----+   +-----+      |      +-----+  | |
-| |:| ! cpu ! : | dma ! : ! pic !   | gio !      x------>crypt!  | |
-| |:| +--v-v+ : +--^--+ : +--^--+   +--^--+      |      +-----+  | |
-| |:|    | |  :....|....:    |         |         |               | |
-| |:|    | |  :    |         |         |         |               | |
-| |:'--->| |  :    '---------x---------x---------x      SBus     | |
-| |:     | '--:---.          |         |         |      +-----+  | |
-| |:  Mmu|    :   |          |         |         x------> spi !  | |
-| |:  +--v--+ :+--v--+    +--v--+   +--v--+      |      +--v--+  | |
-| |:  ! mmu ! :| tcm |    | ssd |   |flash|      |         |     | |
-| |:  +v---v+ :+-----+    +-----+   +-----+      |    .----'     | |
-| |:  P|  S|  :Memory     Ssd       Flash        |    | Environ  | |
-| |:   |   |  :                                  |    | +-----+  | |
-| |:.--'   |  ...............................    |    x-> env |  | |
-| |:| Cache|  : Ssd   r4: Mouse r5: Keybd r6:    |    | +-----+  | |
-| |:| +----v+ : +-----+ : +-----+ : +-----+ :    |    |          | |
-| |:| | l2c | : | thb | : | ptr | : | kbd | :    |    | +-----+  | |
-| |:| +--v--+ : +--^--+ : +--^--+ : +--^--+ :    |    '-> gps |  | |
-| |:|    |    :....|....:....|....:....|....:    |      +-----+  | |
-| |:'--->|    :    '---------x---------'         |      Gps      | |
+|                                                                  |
+|    SystemMgr            Mcu                                      |
+|     +-----+             +-----+   +-----+                        |
+|     | sys |             |mcu2 >---> mbx >------.                 |
+|     +-----+             +-----+   +-----+      |                 |
+| Mcu                                            |                 |
+| +----------------------------------------------^---------------+ |
+| |......................                        |             r0| |
+| |:  Cpu   r1: Dma   r2: Pic       Gpio         |     Crypto    | |
+| |:  +-----+ : +-----+ : +-----+   +-----+      |     +-----+   | |
+| |:  ! cpu ! : | dma ! : ! pic !   | gio !      x----->crypt!   | |
+| |:  +--v-v+ : +v-^-v+ : +--^--+   +--^--+      |     +-----+   | |
+| |:     | |  :..|.|.|..:    |         |         |               | |
+| |:     | |  :  | | |       |         |         |               | |
+| |:     |<|-----' '-x-------x---------x---------x     SBus      | |
+| |:     | |  :              |         |         |     +-----+   | |
+| |:  Mmu| '------.          |         |         x-----> spi !   | |
+| |:  +--v--+ :+--v--+    +--v--+   +--v--+      |     +--v--+   | |
+| |:  ! mmu ! :| tcm |    | ssd |   |flash|      |        |      | |
+| |:  +v---v+ :+-----+    +-----+   +-----+     S|   .----'      | |
+| |:  P|  S|  :Memory     Ssd       Flash       o|   | Environ   | |
+| |:   |   |  :                                 u|   | +-----+   | |
+| |:.--'   |  ...............................   t|   x-> env |   | |
+| |:| Cache|  : Ssd   r4: Mouse r5: Keybd r6:   h|   | +-----+   | |
+| |:| +----v+ : +-----+ : +-----+ : +-----+ :    |   |           | |
+| |:| | l2c | : | thb | : | ptr | : | kbd | :   B|   | +-----+   | |
+| |:| +--v--+ : +--^--+ : +--^--+ : +--^--+ :   u|   '-> gps |   | |
+| |:|    |    :....|....:....|....:....|....:   s|     +-----+   | |
+| |:'--->|    :    '---------x---------'         |     Gps       | |
 | |:.....|....:              |                   |               | |
 | |   Bus|      Disk      Usb|      Bus          |     Memory    | |
 | |   +--V--+   +-----+   +--^--+   +-----+      |     +-----+   | |
@@ -154,7 +148,7 @@ Top
 - STH is 16 bits  50MHz
 - rom is a type flash (fast write)
 - flash is paged slower flash with separate controls
-- Gpio has 4 LEDs, 8 toggles, 2 momentary
+- Gpio has 64 pins and can additionally be stimulated or record from/to files
 - Terminal communicates via TCP sockets
 - Video reads/writes files
 - Wifi sends/receives from web
@@ -220,7 +214,8 @@ Each module will its status noted here. The following states are allowed:
 | `Disk_module`       | Disk simulation using file system            |  TBS  | Thought |
 | `SBus_module`       | Serial interconnect (SPI or I2C)             |  TBS  | Thought |
 | `Crypto_module`     | Cryptography unit                            |  TBS  | Thought |
-| `Gpio_module`       | General purpose I/O                          |  TBS  | Thought |
+| `Gpio_module`       | General purpose I/O                          |   Y   | Basic   |
+| `Gpio_extn`         | GPIO extension to read/write from/to files   |   Y   | Started |
 | `Ssd_module`        | Solid state memory (possibly sophisticated)  |  TBS  | Thought |
 | `Flash_module`      | Flash memory unit (various types modeled)    |  TBS  | Thought |
 | `Environ_module`    | Environment sensors (temp, magnetic, ...)    |  TBS  | Thought |
@@ -239,25 +234,23 @@ Each module will its status noted here. The following states are allowed:
 
 In order of priority:
 
-1. Add `Pic_module`
-3. Add `Dma_module`
-4. Add power-down capability (?use CCI?) with reset
-5. Add timing to AT mode of `Bus_module` with analysis port support
-6. Add YAML or JASON support for configuration
-7. Implement filter interconnect
-8. Implement a CPU emulation (e.g. armv6m)
+1. Add `Dma_module`
+2. Add power-down capability (?use CCI?) with reset
+3. Add timing to AT mode of `Bus_module` with analysis port support
+4. Add YAML or JASON support for configuration of top itself
+5. Implement filter interconnect
+6. Implement a CPU emulation (e.g. armv6m or Mini32)
 
 Optional:
 
 1. Add fancy report handler with XML option and expectations for error injection
-2. Implement one module as RTL and provide an example adaptor (? AXI streaming ?)
-3. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
-4. Consider refactor `Memory_module` to use PIMPL
-5. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
-6. Add a `Stack_module` (LIFO).
-7. Add `Global` class to replace `g_` variables
-8. `Apb2tlm_adapter` and `Tlm2apb_adapter`
-9. `Axi2tlm_adapter` and `Tlm2axi_adapter`
+2. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
+3. Consider refactor `Memory_module` to use PIMPL
+4. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
+5. Add a `Stack_module` (LIFO).
+6. Add `Global` class to replace `g_` variables
+7. `Apb2tlm_adapter` and `Tlm2apb_adapter`
+8. `Axi2tlm_adapter` and `Tlm2axi_adapter`
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
@@ -359,7 +352,7 @@ Windows
 
 This document was created as a MarkDown text file.
 
-- Best viewed with a Markdown rendering tool.
+- Best viewed with a Markdown rendering tool (e.g. MacDown, ReText or Atom).
 - Or generate HTML, PDF or DOC using pandoc <http://pandoc.org/installing.html>
 - Do not edit derived files
 - For apps that view/edit markdown see <https://github.com/karthik/markdown_science/wiki/Tools-to-support-your-markdown-authoring>.
