@@ -1,10 +1,12 @@
 #include "netlist.hpp"
+#include <tlm>
 #include "report.hpp"
 #include "options.hpp"
 #include <vector>
 #include <string>
 #include <cctype>
 using namespace sc_core;
+using namespace tlm;
 using std::string;
 namespace {
   const char* const MSGID{ "/Doulos/Example/Netlist" };
@@ -21,13 +23,23 @@ namespace {
         string inst{ child->basename() };
         string kind{ child->kind() };
         // Is this a port? If so, let's find out what it is connected to...
-        string chan{ "" };
-        auto pPort = dynamic_cast< const sc_port_base* >( child );
-        if( pPort != nullptr ) {
-          const sc_interface* pIntf = pPort->get_interface();
-          auto pObj = dynamic_cast< const sc_object* >( pIntf );
-          if( pObj != nullptr ) {
-            chan = pObj->name();
+        string channel_name{ "" };
+        const sc_interface* interface_ptr = nullptr;
+        // sc_export?
+        auto export_ptr = dynamic_cast< const sc_export_base* >( child );
+        if( export_ptr != nullptr ) {
+          interface_ptr = export_ptr->get_interface();
+        }
+        // sc_port?
+        auto port_ptr = dynamic_cast< const sc_port_base* >( child );
+        if( port_ptr != nullptr ) {
+          interface_ptr = port_ptr->get_interface();
+        }
+        if( interface_ptr != nullptr ) {
+          INFO( DEBUG, "Inteface points to " << HEX << interface_ptr ); 
+          auto object_ptr = dynamic_cast< const sc_object* >( interface_ptr );
+          if( object_ptr != nullptr ) {
+            channel_name = object_ptr->name();
           }
         }
         //{:TODO:} Filter types (unless verbose)
@@ -42,7 +54,7 @@ namespace {
         if( ok ) {
           MESSAGE( indent << "+- " << inst << ' ' << kind );
           //{:TODO:} Figure out and add where sc_port's are pointing
-          if( chan.length() > 0 ) MESSAGE( " -> " << chan );
+          if( channel_name.length() > 0 ) MESSAGE( " -> " << channel_name );
           MESSAGE( "\n" );
         }
         scan_hierarchy(child, indent + string("| ")); 
