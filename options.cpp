@@ -47,7 +47,7 @@ Options::Options( void )
 {
   m_interrupt.remove();
   // Establish defaults
-  m_configuration = Interconnect::PIC;
+  m_configuration = Interconnect::GPIO;
 
   // Display command-line
   MESSAGE( "Invocation:\n%" );
@@ -189,6 +189,9 @@ Options::Options( void )
       }
       else if ( arg == "pic" ) {
         m_configuration = Interconnect::PIC;
+      }
+      else if ( arg == "gpio" ) {
+        m_configuration = Interconnect::GPIO;
       }
     }
     else if ( arg[0] == '-' ) {

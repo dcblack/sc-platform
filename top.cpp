@@ -23,6 +23,7 @@
 #include "memory_map.hpp"
 #include "timer.hpp"
 #include "pic.hpp"
+#include "gpio.hpp"
 #include "stub.hpp"
 #include <set>
 using namespace sc_core;
@@ -61,15 +62,20 @@ struct Top_module::Impl
   std::unique_ptr< Memory_module > rom;
   std::unique_ptr< Memory_module > ram;
   std::unique_ptr< Memory_module > ddr;
-  std::unique_ptr< Stub_module   > gio;
+  std::unique_ptr< Gpio_module   > gio;
   std::unique_ptr< Timer_module  > tmr;
   std::unique_ptr< Pic_module    > pic;
+  std::unique_ptr< Stub_module   > dma;
 
   // Constructor
   Impl( void )
   : options( Options::instance() )
   {
+    // Instantiation
     switch ( options->get_configuration() ) { // Fall-thru intentional
+      case Interconnect::DMA:
+        dma = std::make_unique<Stub_module>  ( "dma" );
+      case Interconnect::GPIO:
       case Interconnect::PIC:
         // fall thru
       case Interconnect::NORTH_SOUTH:
@@ -78,7 +84,7 @@ struct Top_module::Impl
         // fall thru
       case Interconnect::TIMER:
         tmr = std::make_unique<Timer_module> ( "tmr" , 2, 1, 2, 2 );
-        gio = std::make_unique<Stub_module>  ( "gio" );
+        gio = std::make_unique<Gpio_module>  ( "gio" );
         pic = std::make_unique<Pic_module>   ( "pic" );
         // fall thru
       case Interconnect::MEMORY:
@@ -140,6 +146,40 @@ struct Top_module::Impl
         sth->init_socket.bind( pic->targ_socket );
         // Interrupts
         tmr->intrq_port.bind    ( pic->irq_recv_xport );
+        pic->irq_send_port.bind ( cpu->intrq_xport    );
+        break;
+
+      case Interconnect::GPIO:
+        cpu->init_socket.bind( nth->targ_socket );
+        nth->init_socket.bind( rom->targ_socket );
+        nth->init_socket.bind( ram->targ_socket );
+        nth->init_socket.bind( ddr->targ_socket );
+        nth->init_socket.bind( sth->targ_socket );
+        sth->init_socket.bind( gio->targ_socket );
+        sth->init_socket.bind( tmr->targ_socket );
+        sth->init_socket.bind( pic->targ_socket );
+        // Interrupts
+        tmr->intrq_port.bind    ( pic->irq_recv_xport );
+        gio->intrq_port.bind    ( pic->irq_recv_xport );
+        pic->irq_send_port.bind ( cpu->intrq_xport    );
+        break;
+
+      case Interconnect::DMA:
+        cpu->init_socket.bind( nth->targ_socket );
+        nth->init_socket.bind( rom->targ_socket );
+        nth->init_socket.bind( ram->targ_socket );
+        nth->init_socket.bind( ddr->targ_socket );
+        nth->init_socket.bind( sth->targ_socket );
+        sth->init_socket.bind( gio->targ_socket );
+        sth->init_socket.bind( tmr->targ_socket );
+        sth->init_socket.bind( pic->targ_socket );
+        sth->init_socket.bind( dma->targ_socket );
+        // Interrupts
+        #if 0
+        dma->intrq_port.bind    ( pic->irq_recv_xport );
+        #endif
+        tmr->intrq_port.bind    ( pic->irq_recv_xport );
+        gio->intrq_port.bind    ( pic->irq_recv_xport );
         pic->irq_send_port.bind ( cpu->intrq_xport    );
         break;
 

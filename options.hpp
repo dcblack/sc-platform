@@ -22,6 +22,10 @@ enum class Interconnect
 , TIMER
 , NORTH_SOUTH
 , PIC
+, GPIO
+, DMA
+, POWER
+, ANALYSIS
 , TRIVIAL
 };
 
