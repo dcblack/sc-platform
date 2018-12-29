@@ -1,6 +1,6 @@
-All files found accompanying this file that contain the phrase "See
-LICENSE-APACHE.txt for licensing information." are governed by the following
-license:
+All files found accompanying this document that contain the phrase
+"See LICENSE-APACHE.txt for licensing information." are governed
+by the following license.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
