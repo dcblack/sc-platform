@@ -17,6 +17,7 @@ struct Timer_api
   }
 
   ~Timer_api( void ) = default;
+
   // Convenience
   int timer( void ) const { return m_timer; }
   void setup( uint32_t timer_count=0, uint32_t scale=1 )
@@ -67,9 +68,12 @@ struct Timer_api
     return timer_value;
   }
 private:
+  // No copying
   Timer_api( const Timer_api& ) = delete;
+  Timer_api( Timer_api&& ) = delete;
+  Timer_api& operator=( const Timer_api& ) = delete;
+  Timer_api& operator=( Timer_api&& ) = delete;
 
-  // Helpers
   //------------------------------------------------------------------------------
   // if true, return the next timer else return the number of timers
   static int nTimer( bool next = true )
