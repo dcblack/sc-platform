@@ -91,7 +91,7 @@ Top
 | |   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+  +--v--+   | |
 | |   | ram |   | rom | : | net !   | vid ! : | tmr !  | ser !   | |
 | |   +-----+   +-----+ : +-----+   +-----+ : +-----+  +-----+   | |
-| |   Memory    Memory  : Wifi      Video   : Timer    Usart     | |
+| |   Memory    Memory  : Wifi      Video   : Timer    Uart      | |
 | |                     :...................:                    | |
 | |                                                              | |
 | +--------------------------------------------------------------+ |
@@ -115,7 +115,7 @@ Top
 | dma   | 0x4000'4000  | sth |   32 |  1  | Dma        |
 | flash | 0x4000'5000  | sth |   4K | 13  | Flash      |
 | spi   | 0x4000'6000  | sth |   32 |  6  | SBus       |
-| ser   | 0x4000'7000  | sth |   32 |  7  | Usart      |
+| ser   | 0x4000'7000  | sth |   32 |  7  | Uart       |
 | mbx   | 0x4000'7000  | sth |   32 | 14  | Mailbox    |
 | dsk   | 0x4008'0000  | NTH |   1K |  8  | DiskC      |
 | net   | 0x4008'1000  | NTH |   32 |  9  | Wifi       |
@@ -155,9 +155,9 @@ Top
 - Timer is expandable (1-16)
 - Memory has read-only option & supports DMI
 - Mmu has zero latency
-- DiskCtrl reads/writes real files
-- Dma has configurable # channels (1-16)
-- Pic accepts 256 sources, simple priority
+- `DiskCtrl` reads/writes real files
+- `Dma` has configurable # channels (1-16)
+- `Pic` accepts N sources, simple priority interrupt controller
 - Serial I/O configurable baud
 - Eventually Video or Wifi may become a hierarchical sub-system
 - Eventually one of the buses will become customized
@@ -221,7 +221,7 @@ Each module will its status noted here. The following states are allowed:
 | `Environ_module`    | Environment sensors (temp, magnetic, ...)    |  TBS  | Thought |
 | `Usb_module`        | USB interconnect                             |  TBS  | Thought |
 | `Video_module`      | Video display (possibly GPU too)             |  TBS  | Thought |
-| `Usart_module`      | Serial port                                  |  TBS  | Thought |
+| `Uart_module`       | Serial port                                  |  TBS  | Started |
 | `Gps_module`        | GPS location                                 |  TBS  | Thought |
 | `Wifi_module`       | WiFi using network to simulate               |  TBS  | Thought |
 | `Proc_module`       | Simple hierarchical wrapper                  |  TBS  | Thought |
@@ -229,6 +229,9 @@ Each module will its status noted here. The following states are allowed:
 | `Mailbox_module`    | Mailbox for heterogenous interconnect        |  TBS  | Thought |
 | `SystemMgr_module`  | System manager for clocks/power/resets       |  TBS  | Thought |
 | `News`              | report handler extensions                    |  TBS  | Started |
+| `RgbLED_module`     | Simulate a single RGB LED. Not TLM-2         |   N   | Basic   |
+| `Portex`            | Expands port from `sc_bv[N]` to `sc_bit[N]`  |  TBS  | Basic   |
+| {:TBS:}             | {:TBS:}                                      |  TBS  | {:TBS:} |
 
 ## <a name="ToDo"></a>To Do List
 
