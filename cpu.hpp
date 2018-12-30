@@ -25,6 +25,7 @@
 #include "task.hpp"
 #include "memory_manager.hpp"
 #include "memory_map.hpp"
+#include "cpuid_extn.hpp"
 #include <map>
 using sc_core::sc_time;
 using sc_core::sc_event;
@@ -132,11 +133,12 @@ private:
   tlm_payload_t*               m_request_in_progress;
   sc_event                     m_end_request_event;
   sc_event                     m_transport_done_event;
+  Cpuid_extn                   m_cpuid;
   Style                        m_prev_style;
   std::map<std::string,Addr_t> m_stat; // Statistics
   sc_core::sc_mutex            m_transport_mutex;
   Task_manager                 cpu_task_mgr; // allow multiple thread access
-  static const char * const    MSGID;
+  static constexpr const char * const MSGID{ "/Doulos/Example/TLM-cpu" };
 };
 
 //------------------------------------------------------------------------------
