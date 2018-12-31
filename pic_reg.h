@@ -25,6 +25,9 @@ enum PicField : uint32_t
 , PIC_TARGETS_LSB     =  16
   , PIC_TARGETS_BITS  =  16
   , PIC_TARGETS_MASK  = MASK(PIC_TARGETS)
+, PIC_TARGETID_LSB    =  16
+  , PIC_TARGETID_BITS =  16
+  , PIC_TARGETID_MASK = MASK(PIC_TARGETID)
 };
 
 static constexpr uint32_t PIC_INVALID_IRQ = uint32_t(~0ul - 1);
@@ -56,24 +59,24 @@ typedef struct
 
 typedef struct 
 {
-  uint32_t         next; //< Read for next interrupt
-  uint32_t         done; //< Write when done servicing
-  uint32_t         target; //< aka Pic_target_t
-  // 8 reserved1;
-  // 6 reserved2;
-  // 1 if_enabled; //< Interface is active
-  // 1 clearall;   //< Clear this interface
-  // 8 mask;       //< Prevent lower-priorities
-  uint32_t         ident;  //< Read-only
-  uint32_t         config; //< Read-only
-  uint32_t         select; //< Choose source to interrogate or setup
-  uint32_t         source; //< aka Pic_Source_t
-  // 21 reserved;
-  // 1  pending;
-  // 1  active; //< Read-only
-  // 1  enabled;
-  // 8  priority;
-  uint32_t         targets;
+  uint32_t next;   // Read for next interrupt
+  uint32_t done;   // Write when done servicing
+  uint32_t target; // aka Pic_target_t
+  //               //   8 reserved1;
+  //               //   6 reserved2;
+  //               //   1 if_enabled; //< Interface is active
+  //               //   1 clearall;   //< Clear this interface
+  //               //   8 mask;       //< Prevent lower-priorities
+  uint32_t ident;  // Read-only
+  uint32_t config; // Read-only
+  uint32_t select; // Choose source to interrogate or setup
+  uint32_t source; // aka Pic_Source_t
+  //               //   21 reserved;
+  //               //   1  pending;
+  //               //   1  active; //< Read-only
+  //               //   1  enabled;
+  //               //   8  priority;
+  uint32_t targets;
 } Pic_regs_t;
 
 // Address offsets
