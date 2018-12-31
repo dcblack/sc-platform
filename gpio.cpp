@@ -478,7 +478,7 @@ void Gpio_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
   std::bitset<PINS> new_output { 0 };
   std::bitset<PINS> new_input  { 0 };
   switch ( reg_address ) {
-    case GPIO_PINDIRN_REG: // x0 0=out, 1=in (tri)
+    case /*write*/ GPIO_PINDIRN_REG: // x0 0=out, 1=in (tri)
     {
       // Figure out what pins changed to outputs
       // - Inputs take care of themselves
@@ -494,67 +494,67 @@ void Gpio_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
       m_reg.pindirn = reg.pindirn;
       break;
     }
-    case GPIO_PININTR_REG: // x1 1=enabled to interrupt
+    case /*write*/ GPIO_PININTR_REG: // x1 1=enabled to interrupt
     {
       m_reg.pinintr = reg.pinintr;
       break;
     }
-    case GPIO_PINPULL_REG: // x2 1=pull
+    case /*write*/ GPIO_PINPULL_REG: // x2 1=pull
     {
       m_reg.pinpull = reg.pinpull;
       break;
     }
-    case GPIO_PULLDIR_REG: // x3 0=down/1=up
+    case /*write*/ GPIO_PULLDIR_REG: // x3 0=down/1=up
     {
       m_reg.pulldir = reg.pulldir;
       break;
     }
-    case GPIO_DATAINP_REG: // x4 =
+    case /*write*/ GPIO_DATAINP_REG: // x4 =
     {
       // No effect
       break;
     }
-    case GPIO_DATAOUT_REG: // x5 =
+    case /*write*/ GPIO_DATAOUT_REG: // x5 =
     {
       m_reg.dataout = reg.dataout;
       break;
     }
-    case GPIO_DATASET_REG: // x6 |=
+    case /*write*/ GPIO_DATASET_REG: // x6 |=
     {
       m_reg.dataset = reg.dataset;
       m_reg.dataout |= reg.dataset;
       break;
     }
-    case GPIO_DATACLR_REG: // x7 &= ~
+    case /*write*/ GPIO_DATACLR_REG: // x7 &= ~
     {
       m_reg.dataclr = reg.dataclr;
       m_reg.dataout &= ~reg.dataclr;
       break;
     }
-    case GPIO_DATAINV_REG: // x8 ^=
+    case /*write*/ GPIO_DATAINV_REG: // x8 ^=
     {
       m_reg.datainv = reg.datainv;
       m_reg.dataout ^= reg.datainv;
       break;
     }
-    case GPIO_DATACHG_REG: // x9 input change detected
+    case /*write*/ GPIO_DATACHG_REG: // x9 input change detected
     {
       // Only allowed to clear
       m_reg.datachg &= reg.datachg;
       break;
     }
-    case GPIO_DATAENA_REG: // xA write 1's to clear changed bits
+    case /*write*/ GPIO_DATAENA_REG: // xA write 1's to clear changed bits
     {
       m_reg.dataena = reg.dataena;
       m_reg.datachg &= ~reg.dataena;
       break;
     }
-    case GPIO_PINRISE_REG: // xB 1's indicate rising detection
+    case /*write*/ GPIO_PINRISE_REG: // xB 1's indicate rising detection
     {
       m_reg.pinrise = reg.pinrise;
       break;
     }
-    case GPIO_PINFALL_REG: // xC 1's indicate falling detection
+    case /*write*/ GPIO_PINFALL_REG: // xC 1's indicate falling detection
     {
       m_reg.pinfall = reg.pinfall;
       break;
@@ -594,27 +594,27 @@ void Gpio_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
   Addr_t reg_address = address & ~7ull; // Clear lower 3-bits
 
   switch ( reg_address ) {
-    case GPIO_PINDIRN_REG: // x0 0=out, 1=in (tri)
+    case /*read*/ GPIO_PINDIRN_REG: // x0 0=out, 1=in (tri)
     {
       reg.pindirn = m_reg.pindirn;
       break;
     }
-    case GPIO_PININTR_REG: // x1 1=enabled to interrupt
+    case /*read*/ GPIO_PININTR_REG: // x1 1=enabled to interrupt
     {
       reg.pinintr = m_reg.pinintr;
       break;
     }
-    case GPIO_PINPULL_REG: // x2 1=pull
+    case /*read*/ GPIO_PINPULL_REG: // x2 1=pull
     {
       reg.pinpull = m_reg.pinpull;
       break;
     }
-    case GPIO_PULLDIR_REG: // x3 0=down/1=up
+    case /*read*/ GPIO_PULLDIR_REG: // x3 0=down/1=up
     {
       reg.pulldir = m_reg.pulldir;
       break;
     }
-    case GPIO_DATAINP_REG: // x4 =
+    case /*read*/ GPIO_DATAINP_REG: // x4 =
     {
       uint64_t bit = ( 1ull << (PINS-1) );
       m_reg.datainp = 0;
@@ -630,42 +630,42 @@ void Gpio_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
       reg.datainp = m_reg.datainp;
       break;
     }
-    case GPIO_DATAOUT_REG: // x5 =
+    case /*read*/ GPIO_DATAOUT_REG: // x5 =
     {
       reg.dataout = m_reg.dataout;
       break;
     }
-    case GPIO_DATASET_REG: // x6 |=
+    case /*read*/ GPIO_DATASET_REG: // x6 |=
     {
       reg.dataset = m_reg.dataset;
       break;
     }
-    case GPIO_DATACLR_REG: // x7 &= ~
+    case /*read*/ GPIO_DATACLR_REG: // x7 &= ~
     {
       reg.dataclr = m_reg.dataclr;
       break;
     }
-    case GPIO_DATAINV_REG: // x8 ^=
+    case /*read*/ GPIO_DATAINV_REG: // x8 ^=
     {
       reg.datainv = reg.datainv;
       break;
     }
-    case GPIO_DATACHG_REG: // x9 input change detected / write 1 to clear
+    case /*read*/ GPIO_DATACHG_REG: // x9 input change detected / write 1 to clear
     {
       reg.datachg = m_reg.datachg;
       break;
     }
-    case GPIO_DATAENA_REG: // xA write 1's to clear changed bits
+    case /*read*/ GPIO_DATAENA_REG: // xA write 1's to clear changed bits
     {
       reg.dataena = m_reg.dataena;
       break;
     }
-    case GPIO_PINRISE_REG: // xB 1's indicate rising detection
+    case /*read*/ GPIO_PINRISE_REG: // xB 1's indicate rising detection
     {
       reg.pinrise = m_reg.pinrise;
       break;
     }
-    case GPIO_PINFALL_REG: // xC 1's indicate falling detection
+    case /*read*/ GPIO_PINFALL_REG: // xC 1's indicate falling detection
     {
       reg.pinfall = m_reg.pinfall;
       break;

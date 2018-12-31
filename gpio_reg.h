@@ -9,23 +9,23 @@
 // - NONE
 
 // Convenience
-typedef struct {    // rA FUNC
-  uint64_t pindirn; // x0 0=out, 1=in (tri)
-  uint64_t pinintr; // x1 1=enabled to interrupt
-  uint64_t pinpull; // x2 1=pull
-  uint64_t pulldir; // x3 0=down/1=up
-  uint64_t datainp; // x4 =
-  uint64_t dataout; // x5 =
-  uint64_t dataset; // x6 |=
-  uint64_t dataclr; // x7 &= ~
-  uint64_t datainv; // x8 ^=
-  uint64_t datachg; // x9 input change detected / write 1 to clear
-  uint64_t dataena; // xA write 1's to clear changed bits
-  uint64_t pinrise; // xB 1's indicate rise detection
-  uint64_t pinfall; // xC 1's indicate fall detection
-  uint64_t reservD; // xD
-  uint64_t reservE; // xE
-  uint64_t reservF; // xF
+typedef struct {    // Bits Description
+  bool pindirn; //   1  0=out, 1=in (tri)
+  bool pinintr; //   1  1=enabled to interrupt
+  bool pinpull; //   1  1=pull
+  bool pulldir; //   1  0=down/1=up
+  bool datainp; //   1  =
+  bool dataout; //   1  =
+  bool dataset; //   1  |=
+  bool dataclr; //   1  &= ~
+  bool datainv; //   1  ^=
+  bool datachg; //   1  input change detected / write 1 to clear
+  bool dataena; //   1  write 1's to clear changed bits
+  bool pinrise; //   1  1's indicate rise detection
+  bool pinfall; //   1  1's indicate fall detection
+  bool reservD; //   1 
+  bool reservE; //   1 
+  bool reservF; //   1 
 } Gpio_regs_t;
 
 // Address offsets
