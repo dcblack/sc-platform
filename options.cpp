@@ -74,20 +74,22 @@ Options::Options( void )
                << "\n"
                << "Options:\n"
                << "\n"
-               << "  -help        \n"
-               << "  -map FILEPATH\n"
-               << "  -hyper       \n"
-               << "  -debug+1     \n"
-               << "  -debug       \n"
-               << "  -full        \n"
-               << "  -high        \n"
-               << "  -medium      \n"
-               << "  -low         \n"
-               << "  -none        \n"
-               << "  -AT          \n"
-               << "  -LT          \n"
-               << "  -error-at-target\n"
-               << "  -v(erbose)   \n"
+               << "  -help             \n"
+               << "  -cfg PLATFORM     \n"
+               << "  -map FILEPATH     \n"
+               << "  -test TESTNAME    \n"
+               << "  -hyper            \n"
+               << "  -debug+1          \n"
+               << "  -debug            \n"
+               << "  -full             \n"
+               << "  -high             \n"
+               << "  -medium           \n"
+               << "  -low              \n"
+               << "  -none             \n"
+               << "  -AT               \n"
+               << "  -LT               \n"
+               << "  -error-at-target  \n"
+               << "  -v(erbose)        \n"
                << "\n"
              );
       RULER( '-' );
@@ -170,30 +172,44 @@ Options::Options( void )
 
     //--------------------------------------------------------------------------
     // Configuration of top
-    else if ( arg == "-cfg" ) {
+    else if ( arg == "-cfg" or arg == "-C" ) {
       if( iArg+1 >= sc_argc() ) {
         REPORT( ERROR, "Missing required argument for " << arg << " option." );
       }
       arg = sc_argv()[++iArg];
-      if ( arg == "trivial" ) {
-        m_configuration = Interconnect::TRIVIAL;
+      if ( is_Platform( arg ) ) {
+        m_configuration = to_Platform( arg );
       }
-      else if ( arg == "memory" ) {
-        m_configuration = Interconnect::MEMORY;
-      }
-      else if ( arg == "timer" ) {
-        m_configuration = Interconnect::TIMER;
-      }
-      else if ( arg == "ns" ) {
-        m_configuration = Interconnect::NORTH_SOUTH;
-      }
-      else if ( arg == "pic" ) {
-        m_configuration = Interconnect::PIC;
-      }
-      else if ( arg == "gpio" ) {
-        m_configuration = Interconnect::GPIO;
+      else {
+        MESSAGE( "Unknown platform configuration: " << arg << "\n" );
+        MESSAGE( "Choices are:\n" );
+        for( const auto& p : Platform() ) {
+          MESSAGE( "  " << p );
+        }
+        REPORT( ERROR, "" );
       }
     }
+    //--------------------------------------------------------------------------
+    // Test selection
+    else if ( arg == "-test" or arg == "-T" ) {
+      if( iArg+1 >= sc_argc() ) {
+        REPORT( ERROR, "Missing required argument for " << arg << " option." );
+      }
+      arg = sc_argv()[++iArg];
+      if ( is_Test( arg ) ) {
+        m_configuration = to_Test( arg );
+      }
+      else {
+        MESSAGE( "Unknown test: " << arg << "\n" );
+        MESSAGE( "Choices are:\n" );
+        for( const auto& t : Test() ) {
+          MESSAGE( "  " << t );
+        }
+        REPORT( ERROR, "" );
+      }
+    }
+    //--------------------------------------------------------------------------
+    // Other options (flags) handled here. For example: -flag or -greeting=hello
     else if ( arg[0] == '-' ) {
       size_t pos = arg.find_first_of('=');
       if( pos == std::string::npos ) {

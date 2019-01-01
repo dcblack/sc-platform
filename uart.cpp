@@ -1,10 +1,22 @@
-#include "usart.hpp"
+#include "uart.hpp"
+////////////////////////////////////////////////////////////////////////////////
+//
+//  #    #    #    #####  #######                                                 
+//  #    #   # #   #    #    #                                                    
+//  #    #  #   #  #    #    #                                                    
+//  #    # #     # #####     #                                                    
+//  #    # ####### #  #      #                                                    
+//  #    # #     # #   #     #                                                    
+//   ####  #     # #    #    #                                                    
+//
+////////////////////////////////////////////////////////////////////////////////
 #include "report.hpp"
 #include "config_extn.hpp"
+#include "parity.hpp"
 #include <algorithm>
 #include <random>
 namespace {
-  const char* const MSGID{"/Doulos/{:PROJECT:}/Usart"};
+  const char* const MSGID{"/Doulos/Example/Uart"};
 }
 using namespace sc_core;
 using namespace sc_dt;
@@ -12,7 +24,7 @@ using namespace tlm;
 using namespace std;
 
 //------------------------------------------------------------------------------
-Usart_module::Usart_module // Constructor
+Uart_module::Uart_module // Constructor
 ( sc_module_name instance_name
 , uint32_t       addr_clocks
 , uint32_t       read_clocks
@@ -21,16 +33,17 @@ Usart_module::Usart_module // Constructor
 : m_addr_clocks             { addr_clocks     }
 , m_read_clocks             { read_clocks     }
 , m_write_clocks            { write_clocks    }
-, m_targ_peq                { this, &Usart_module::targ_peq_cb }
+, m_targ_peq                { this, &Uart_module::targ_peq_cb }
 {
-  SC_HAS_PROCESS( Usart_module );
-  SC_THREAD( usart_thread );
+  SC_HAS_PROCESS( Uart_module );
+  SC_THREAD( tx_thread );
+  SC_THREAD( rx_thread );
   SC_METHOD( execute_transaction_process );
     sensitive << m_target_done_event;
     dont_initialize();
-  targ_socket.register_b_transport        ( this, &Usart_module::b_transport );
-  targ_socket.register_nb_transport_fw    ( this, &Usart_module::nb_transport_fw );
-  targ_socket.register_transport_dbg      ( this, &Usart_module::transport_dbg );
+  targ_socket.register_b_transport        ( this, &Uart_module::b_transport );
+  targ_socket.register_nb_transport_fw    ( this, &Uart_module::nb_transport_fw );
+  targ_socket.register_transport_dbg      ( this, &Uart_module::transport_dbg );
   m_configuration.set( "name",         string(name())  );
   m_configuration.set( "kind",         string(kind())  );
   m_configuration.set( "object_ptr",   uintptr_t(this) );
@@ -43,15 +56,60 @@ Usart_module::Usart_module // Constructor
 
 //------------------------------------------------------------------------------
 // Destructor
-Usart_module::~Usart_module( void )
+Uart_module::~Uart_module( void )
 {
   INFO( ALWAYS, "Destroyed " << name() );
 }
 
 //------------------------------------------------------------------------------
-void Usart_module::end_of_elaboration( void )
+void Uart_module::end_of_elaboration( void )
 {
-  //{:TO BE SUPPLIED -OR- DELETE ENTIRELY:}
+  // Validate connectivity
+  if ( intrq_port.size() == 0 ) {
+    REPORT( WARNING, "Interrupt not connected." );
+  }
+  if ( txslow_port.size() > 1 ) {
+    REPORT( ERROR, "Connectivity - txslow_port may only be bound once" );
+  }
+  if ( txfast_port.size() > 1 ) {
+    REPORT( ERROR, "Connectivity - txslow_port may only be bound once" );
+  }
+  if ( txslow_port.size() > 0 and txfast_port.size() > 0 ) {
+    REPORT( ERROR, "Connectivity - choose only one of txfast_port or txslow_port" );
+  }
+  if ( txslow_port.size() == 0 and txfast_port.size() == 0 ) {
+    INFO( ALWAYS, "Using virtual port for transmitter on " << name() );
+    m_txspeed = Speed::VIRTUAL;
+  }
+  else if( txfast_port.size() == 1 ) {
+    INFO( ALWAYS, "Using fast port for transmitter on " << name() );
+    m_txspeed = Speed::FAST;
+  }
+  else {
+    INFO( ALWAYS, "Using slow port for transmitter on " << name() );
+    m_txspeed = Speed::SLOW;
+  }
+  if ( rxslow_port.size() > 1 ) {
+    REPORT( ERROR, "Connectivity - rxslow_port may only be bound once" );
+  }
+  if ( rxfast_port.size() > 1 ) {
+    REPORT( ERROR, "Connectivity - rxslow_port may only be bound once" );
+  }
+  if ( rxslow_port.size() > 0 and rxfast_port.size() > 0 ) {
+    REPORT( ERROR, "Connectivity - choose only one of rxfast_port or rxslow_port" );
+  }
+  if ( rxslow_port.size() == 0 and rxfast_port.size() == 0 ) {
+    INFO( ALWAYS, "Using virtual port for receiver on " << name() );
+    m_rxspeed = Speed::VIRTUAL;
+  }
+  else if( rxfast_port.size() == 1 ) {
+    INFO( ALWAYS, "Using fast port for receiver on " << name() );
+    m_rxspeed = Speed::FAST;
+  }
+  else {
+    INFO( ALWAYS, "Using slow port for receiver on " << name() );
+    m_rxspeed = Speed::SLOW;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +117,7 @@ void Usart_module::end_of_elaboration( void )
 
 //------------------------------------------------------------------------------
 void
-Usart_module::b_transport
+Uart_module::b_transport
 ( tlm_payload_t& trans
 , sc_time& delay
 )
@@ -75,7 +133,7 @@ Usart_module::b_transport
 
 //------------------------------------------------------------------------------
 Depth_t
-Usart_module::transport_dbg
+Uart_module::transport_dbg
 ( tlm_payload_t& trans
 )
 {
@@ -116,7 +174,7 @@ Usart_module::transport_dbg
 
 //------------------------------------------------------------------------------
 // Return true if configuration is all that is needed
-bool Usart_module::configure( tlm_payload_t& trans )
+bool Uart_module::configure( tlm_payload_t& trans )
 {
   Config_extn* extn{trans.get_extension<Config_extn>()};
 
@@ -143,7 +201,7 @@ bool Usart_module::configure( tlm_payload_t& trans )
 }
 
 //------------------------------------------------------------------------------
-void Usart_module::execute_transaction( tlm_payload_t& trans )
+void Uart_module::execute_transaction( tlm_payload_t& trans )
 {
   Depth_t len = trans.get_data_length();
   if ( not payload_is_ok( trans, len, Style::AT ) ) {
@@ -155,7 +213,7 @@ void Usart_module::execute_transaction( tlm_payload_t& trans )
 
 //------------------------------------------------------------------------------
 tlm_sync_enum
-Usart_module::nb_transport_fw
+Uart_module::nb_transport_fw
 ( tlm_payload_t& trans
 , tlm_phase& phase
 , sc_time& delay
@@ -172,7 +230,7 @@ Usart_module::nb_transport_fw
 
 //------------------------------------------------------------------------------
 void
-Usart_module::targ_peq_cb
+Uart_module::targ_peq_cb
 ( tlm_payload_t& trans
 , const tlm_phase_t& phase
 )
@@ -234,7 +292,7 @@ Usart_module::targ_peq_cb
 
 //------------------------------------------------------------------------------
 void
-Usart_module::send_end_req( tlm_payload_t& trans )
+Uart_module::send_end_req( tlm_payload_t& trans )
 {
   tlm_phase_t bw_phase;
   sc_time delay;
@@ -256,7 +314,7 @@ Usart_module::send_end_req( tlm_payload_t& trans )
 
 //------------------------------------------------------------------------------
 void
-Usart_module::send_response( tlm_payload_t& trans )
+Uart_module::send_response( tlm_payload_t& trans )
 {
   tlm_sync_enum status;
   tlm_phase_t   bw_phase;
@@ -283,7 +341,7 @@ Usart_module::send_response( tlm_payload_t& trans )
 //------------------------------------------------------------------------------
 // Method process that runs on target_done_event
 void
-Usart_module::execute_transaction_process( void )
+Uart_module::execute_transaction_process( void )
 {
   // Execute the read or write commands
   execute_transaction( *m_transaction_in_progress );
@@ -304,7 +362,7 @@ Usart_module::execute_transaction_process( void )
 }
 
 //------------------------------------------------------------------------------
-bool Usart_module::payload_is_ok
+bool Uart_module::payload_is_ok
 ( tlm_payload_t& trans, Depth_t len, Style coding_style )
 {
   tlm_command cmd = trans.get_command();
@@ -364,7 +422,7 @@ bool Usart_module::payload_is_ok
 
 //------------------------------------------------------------------------------
 Depth_t
-Usart_module::transport ( tlm_payload_t& trans, sc_time& delay)
+Uart_module::transport ( tlm_payload_t& trans, sc_time& delay)
 {
   Addr_t     adr = trans.get_address();
   uint8_t*   ptr = trans.get_data_ptr();
@@ -394,45 +452,422 @@ Usart_module::transport ( tlm_payload_t& trans, sc_time& delay)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Usart main actions
+// Uart main actions
 //------------------------------------------------------------------------------
-void Usart_module::usart_thread( void )
+void Uart_module::send( void )
 {
-  for(;;) {
-    {:REPLACE WITH FUNCTIONALITY AS NEEDED -OR- DELETE ENTIRELY:}
+  if ( m_txfifo.empty() ) return;
+  switch( m_txspeed ) {
+    //--------------------------------------------------------------------------
+    case Speed::VIRTUAL:
+    {
+      m_txcount += m_txfifo.size();
+      do {
+        INFO( DEBUG, name() << " tx: " << int( m_txfifo.front() ) );
+        m_txfifo.pop_front();
+      } while( m_txfifo.empty() );
+      break;
+    }
+    //--------------------------------------------------------------------------
+    case Speed::FAST:
+    case Speed::SLOW:
+    {
+      // Handled by tx_thread
+      break;
+    }
+    //--------------------------------------------------------------------------
+    default:
+    {
+      REPORT( FATAL, "Illegal txspeed setting" );
+      break;
+    }
   }
-}//end Usart_module::usart_thread()
+}//end Uart_module::send()
 
 //------------------------------------------------------------------------------
-void Usart_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
+////////////////////////////////////////////////////////////////////////////////
+//
+//  ####### #     #        ####### #    # #####  #####    #    ####               
+//     #     #   #            #    #    # #    # #       # #   #   #              
+//     #      # #             #    #    # #    # #      #   #  #    #             
+//     #       #              #    ###### #####  ##### #     # #    #             
+//     #      # #             #    #    # #  #   #     ####### #    #             
+//     #     #   #            #    #    # #   #  #     #     # #   #              
+//     #    #     # ######    #    #    # #    # ##### #     # ####               
+//
+////////////////////////////////////////////////////////////////////////////////
+void Uart_module::tx_thread( void )
+{
+  switch( m_txspeed ) {
+    //--------------------------------------------------------------------------
+    case Speed::VIRTUAL:
+      for(;;) {
+        NOT_YET_IMPLEMENTED();
+      }
+      break;
+    //--------------------------------------------------------------------------
+    case Speed::FAST:
+    {
+      for(;;) {
+        NOT_YET_IMPLEMENTED();
+      }
+    }
+    //--------------------------------------------------------------------------
+    case Speed::SLOW:
+    {
+      for(;;) {
+        NOT_YET_IMPLEMENTED();
+      }
+    }
+    //--------------------------------------------------------------------------
+    default:
+    {
+      REPORT( FATAL, "Illegal txspeed setting" );
+      break;
+    }
+  }
+  REPORT( FATAL, "Exited tx_thread" );
+}//end Uart_module::tx_thread()
+
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+//
+//  #####  #     #        ####### #    # #####  #####    #    ####               
+//  #    #  #   #            #    #    # #    # #       # #   #   #              
+//  #    #   # #             #    #    # #    # #      #   #  #    #             
+//  #####     #              #    ###### #####  ##### #     # #    #             
+//  #  #     # #             #    #    # #  #   #     ####### #    #             
+//  #   #   #   #            #    #    # #   #  #     #     # #   #              
+//  #    # #     # ######    #    #    # #    # ##### #     # ####               
+//
+////////////////////////////////////////////////////////////////////////////////
+void Uart_module::rx_thread( void )
+{
+  switch( m_rxspeed ) {
+    //--------------------------------------------------------------------------
+    case Speed::VIRTUAL:
+      for(;;) {
+        NOT_YET_IMPLEMENTED();
+      }
+      break;
+    //--------------------------------------------------------------------------
+    case Speed::FAST:
+    {
+      for(;;) {
+        NOT_YET_IMPLEMENTED();
+      }
+    }
+    //--------------------------------------------------------------------------
+    case Speed::SLOW:
+    {
+      for(;;) {
+        NOT_YET_IMPLEMENTED();
+      }
+    }
+    //--------------------------------------------------------------------------
+    default:
+    {
+      REPORT( FATAL, "Illegal rxspeed setting" );
+      break;
+    }
+  }
+  REPORT( FATAL, "Exited rx_thread" );
+}//end Uart_module::rx_thread()
+
+//------------------------------------------------------------------------------
+//////////////////////////////////////////////////////////////////////////////////
+//
+//  #     #                              #                                        
+//  #  #  #            #                # #           #                           
+//  #  #  #        #   #               #   #          #    #                ####  
+//  #  #  # # ###     ###   ###       #     #  ####  ###       ####  ####  #      
+//  #  #  # ##    ##   #   #####      ####### #       #   ##  #    # #   #  ####  
+//  #  #  # #      #   # # #          #     # #       # #  #  #    # #   #      # 
+//   ## ##  #     ###   #   ###       #     #  ####    #  ###  ####  #   #  ####  
+//
+//////////////////////////////////////////////////////////////////////////////////
+void Uart_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
 {
   // Make it easier to access data
-  Usart_regs_t& reg{ *reinterpret_cast<Usart_regs_t*>( m_register_vec.data() ) };
+  Uart_regs_t& reg{ *reinterpret_cast<Uart_regs_t*>( m_register_vec.data() ) };
   Addr_t address = trans.get_address();
   Addr_t reg_address = address & ~3ull; // Clear lower 4-bits (assumes word access)
 
-  // Word transfer
   switch ( reg_address ) {
-    case /*write*/ {:ADDRESS:}:
+    case /*write*/ UART_TXCTRL_REG:
     {
-      {:ACTION:};
+      m_txctrl.configok = true;
+      //txctrl.configok - read-only
+      m_txctrl.fifoerr  = IS_NONZERO( UART_FIFOERR,   reg.txctrl );
+      m_txctrl.dataerr  = IS_NONZERO( UART_DATAERR,   reg.txctrl );
+      m_txctrl.running  = IS_NONZERO( UART_RUNNING,   reg.txctrl );
+      m_txctrl.enadma   = IS_NONZERO( UART_ENADMA,    reg.txctrl );
+      m_txctrl.enaintr  = IS_NONZERO( UART_ENAINTR,   reg.txctrl );
+      m_txctrl.databits = IS_NONZERO( UART_DATABITS,  reg.txctrl );
+      m_txctrl.stopbits = IS_NONZERO( UART_STOPBITS,  reg.txctrl );
+      m_txctrl.parity   = IS_NONZERO( UART_PARITY,    reg.txctrl );
+      m_txctrl.odd      = IS_NONZERO( UART_ODD,       reg.txctrl );
+      //txctrl.fifoused - Read-only
+      //txctrl.fifoused - Read-only
+      m_txctrl.baudrate = GET_FIELD(UART_BAUDRATE, reg.txctrl);
+      m_txbits = 8 - (m_txctrl.databits?8:7) + (m_txctrl.parity?0:1) + (m_txctrl.stopbits?1:2);
+      if ( m_txctrl.baudrate < sizeof( m_baud ) ) {
+        m_uart.txclocks = sc_freq( m_baud[ m_txctrl.baudrate ], SC_HZ ) * clk.period() * m_txbits;
+      }
+      else if ( m_txctrl.running ) {
+        m_txctrl.configok = false;
+        if ( intrq_port.size() == 1 ) {
+          intrq_port->notify( name() );
+        }
+      }
+      if ( m_txctrl.configok ) {
+        if ( m_txctrl.running and not IS_NONZERO( UART_RUNNING, m_uart.txctrl ) ) {
+          // Start
+          if ( not m_txfifo.empty() ) {
+            send();
+          }
+        } else if ( IS_NONZERO( UART_RUNNING, m_uart.txctrl ) and not m_txctrl.running ) {
+          // Stop
+          m_txevent.notify();
+        }
+      }
+      m_uart.txctrl = reg.txctrl;
+      break;
+    }
+    case /*write*/ UART_TXDMAP_REG:
+    {
+      m_uart.txdmap = reg.txdmap;
+      break;
+    }
+    case /*write*/ UART_TXDMAC_REG:
+    {
+      m_uart.txdmac = reg.txdmac;
+      break;
+    }
+    case /*write*/ UART_TXDATA_REG:
+    {
+      m_uart.txdata = m_register_vec[UART_TXDATA_REG];
+      if( m_txfifo.size() == m_txfifo_capacity ) {
+        ++m_txdropped;
+      } else {
+        m_uart.txdata &= ~( m_txctrl.databits ? 0x7F : 0xFF );
+        m_txfifo.push_back( m_uart.txdata );
+        send();
+      }
+      break;
+    }
+    case /*write*/ UART_RXCTRL_REG:
+    {
+      m_rxctrl.configok = true;
+      //rxctrl.configok - read-only
+      m_rxctrl.fifoerr  = IS_NONZERO( UART_FIFOERR,   reg.rxctrl );
+      m_rxctrl.dataerr  = IS_NONZERO( UART_DATAERR,   reg.rxctrl );
+      m_rxctrl.running  = IS_NONZERO( UART_RUNNING,   reg.rxctrl );
+      m_rxctrl.enadma   = IS_NONZERO( UART_ENADMA,    reg.rxctrl );
+      m_rxctrl.enaintr  = IS_NONZERO( UART_ENAINTR,   reg.rxctrl );
+      m_rxctrl.databits = IS_NONZERO( UART_DATABITS,  reg.rxctrl );
+      m_rxctrl.stopbits = IS_NONZERO( UART_STOPBITS,  reg.rxctrl );
+      m_rxctrl.parity   = IS_NONZERO( UART_PARITY,    reg.rxctrl );
+      m_rxctrl.odd      = IS_NONZERO( UART_ODD,       reg.rxctrl );
+      //rxctrl.fifoused - Read-only
+      //rxctrl.fifoused - Read-only
+      m_rxctrl.baudrate = GET_FIELD(UART_BAUDRATE, reg.rxctrl);
+      m_rxbits = 8 - (m_rxctrl.databits?8:7) + (m_rxctrl.parity?0:1) + (m_rxctrl.stopbits?1:2);
+      if ( m_rxctrl.baudrate < sizeof( m_baud ) ) {
+        m_uart.rxclocks = sc_freq( m_baud[ m_rxctrl.baudrate ], SC_HZ ) * clk.period() * m_rxbits;
+      }
+      else if ( m_rxctrl.running ) {
+        m_rxctrl.configok = false;
+        if ( intrq_port.size() == 1 ) {
+          intrq_port->notify( name() );
+        }
+      }
+      if ( m_rxctrl.configok ) {
+        if ( m_rxctrl.running and not IS_NONZERO( UART_RUNNING, m_uart.rxctrl ) ) {
+          // Start
+          m_rxevent.notify();
+        } else if ( IS_NONZERO( UART_RUNNING, m_uart.rxctrl ) and not m_rxctrl.running ) {
+          // Stop
+          m_rxevent.notify();
+        }
+      }
+      m_uart.rxctrl = reg.rxctrl;
+      break;
+    }
+    case /*write*/ UART_RXDMAP_REG:
+    {
+      m_uart.rxdmap = reg.rxdmap;
+      break;
+    }
+    case /*write*/ UART_RXDMAC_REG:
+    {
+      m_uart.rxdmac = reg.rxdmac;
+      break;
+    }
+    case /*write*/ UART_RXDATA_REG:
+    {
+      REPORT( WARNING, "Attempt to write read-data ignored\n" );
+      break;
+    }
+    case /*write*/ UART_TXCLOCKS_REG: // Read-only
+    {
+      REPORT( WARNING, "Attempt to write read-only txclocks chicken bits ignored\n" );
+      break;
+    }
+    case /*write*/ UART_RXCLOCKS_REG: // Read-only
+    {
+      REPORT( WARNING, "Attempt to write read-only rxclocks chicken bits ignored\n" );
+      break;
+    }
+    case /*write*/ UART_MISC_REG:
+    {
+      SET_FIELD( LE_BYTE0,   m_uart.misc, reg.misc  );
+      break;
+    }
+    case /*write*/ UART_FIFOSTATS_REG: // Read-only
+    {
+      REPORT( WARNING, "Attempt to write read-only fifostats chicken bits ignored\n" );
+      break;
+    }
+    default:
+    {
+      REPORT( ERROR, "Attempt to write illegal address" );
       break;
     }
   }
 }
 
 //------------------------------------------------------------------------------
-void Usart_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
+////////////////////////////////////////////////////////////////////////////////
+//
+//  #####                             #                                          
+//  #    #                  #        # #           #                             
+//  #    #                  #       #   #          #    #                ####    
+//  #####   ###    ###      #      #     #  ####  ###       ####  ####  #        
+//  #  #   #####  #   #  ####      ####### #       #   ##  #    # #   #  ####    
+//  #   #  #      #  ## #   #      #     # #       # #  #  #    # #   #      #   
+//  #    #  ###    ## #  ####      #     #  ####    #  ###  ####  #   #  ####    
+//
+////////////////////////////////////////////////////////////////////////////////
+void Uart_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
 {
   // Make it easier to access data
-  Usart_regs_t& reg{ *reinterpret_cast<Usart_regs_t*>( m_register_vec.data() ) };
+  Uart_regs_t& reg{ *reinterpret_cast<Uart_regs_t*>( m_register_vec.data() ) };
   Addr_t address = trans.get_address();
   Addr_t reg_address = address & ~3ull; // Clear lower 4-bits (assumes word access)
 
   switch ( reg_address ) {
-    case /*write*/ {:ADDRESS:}:
+    case /*read*/ UART_TXCTRL_REG:
     {
-      {:ACTION:};
+      m_txctrl.depthend = m_txfifo.size() == m_txfifo_capacity;
+      SET_FIELD( UART_CONFIGOK,   reg.txctrl, m_txctrl.configok );
+      SET_FIELD( UART_FIFOERR,    reg.txctrl, m_txctrl.fifoerr  );
+      SET_FIELD( UART_DATAERR,    reg.txctrl, m_txctrl.dataerr  );
+      SET_FIELD( UART_RUNNING,    reg.txctrl, m_txctrl.running  );
+      SET_FIELD( UART_ENADMA,     reg.txctrl, m_txctrl.enadma   );
+      SET_FIELD( UART_ENAINTR,    reg.txctrl, m_txctrl.enaintr  );
+      SET_FIELD( UART_DATABITS,   reg.txctrl, m_txctrl.databits );
+      SET_FIELD( UART_STOPBITS,   reg.txctrl, m_txctrl.stopbits );
+      SET_FIELD( UART_PARITY,     reg.txctrl, m_txctrl.parity   );
+      SET_FIELD( UART_ODD,        reg.txctrl, m_txctrl.odd      );
+      SET_FIELD( UART_DEPTHEND,   reg.txctrl, m_txctrl.depthend );
+      SET_FIELD( UART_FIFOUSED,   reg.txctrl, m_txctrl.fifoused );
+      SET_FIELD( UART_BAUDRATE,   reg.txctrl, m_txctrl.baudrate );
+      break;
+    }
+    case /*read*/ UART_TXDMAP_REG:
+    {
+      reg.txdmap = m_uart.txdmap;
+      break;
+    }
+    case /*read*/ UART_TXDMAC_REG:
+    {
+      reg.txdmac = m_uart.txdmac;
+      break;
+    }
+    case /*read*/ UART_TXDATA_REG:
+    {
+      REPORT( WARNING, "Attempt to read write-data ignored\n" );
+      reg.txdata = 0;
+      m_register_vec[UART_TXDATA_REG] = uint8_t('\0xFF');
+      break;
+    }
+    case /*read*/ UART_RXCTRL_REG:
+    {
+      m_rxctrl.depthend = m_rxfifo.size() == 0;
+      SET_FIELD( UART_CONFIGOK,   reg.rxctrl, m_rxctrl.configok );
+      SET_FIELD( UART_FIFOERR,    reg.rxctrl, m_rxctrl.fifoerr  );
+      SET_FIELD( UART_DATAERR,    reg.rxctrl, m_rxctrl.dataerr  );
+      SET_FIELD( UART_RUNNING,    reg.rxctrl, m_rxctrl.running  );
+      SET_FIELD( UART_ENADMA,     reg.rxctrl, m_rxctrl.enadma   );
+      SET_FIELD( UART_ENAINTR,    reg.rxctrl, m_rxctrl.enaintr  );
+      SET_FIELD( UART_DATABITS,   reg.rxctrl, m_rxctrl.databits );
+      SET_FIELD( UART_STOPBITS,   reg.rxctrl, m_rxctrl.stopbits );
+      SET_FIELD( UART_PARITY,     reg.rxctrl, m_rxctrl.parity   );
+      SET_FIELD( UART_ODD,        reg.rxctrl, m_rxctrl.odd      );
+      SET_FIELD( UART_DEPTHEND,   reg.rxctrl, m_rxctrl.depthend );
+      SET_FIELD( UART_FIFOUSED,   reg.rxctrl, m_rxctrl.fifoused );
+      SET_FIELD( UART_BAUDRATE,   reg.rxctrl, m_rxctrl.baudrate );
+      break;
+    }
+    case /*read*/ UART_RXDMAP_REG:
+    {
+      reg.rxdmap = m_uart.rxdmap;
+      break;
+    }
+    case /*read*/ UART_RXDMAC_REG:
+    {
+      reg.rxdmac = m_uart.rxdmac;
+      break;
+    }
+    case /*read*/ UART_RXDATA_REG:
+    reg.rxdata = 0;
+    {
+      if ( not m_rxfifo.empty() ) {
+        m_register_vec[ UART_RXDATA_REG ] = m_rxfifo.front();
+        m_rxfifo.pop_front();
+        ++m_rxcount;
+      }
+      else {
+        m_register_vec[ UART_RXDATA_REG ] = uint8_t('\0xFF');
+      }
+      break;
+    }
+    case /*read*/ UART_TXCLOCKS_REG: // Read-only
+    {
+      reg.txclocks = m_uart.txclocks;
+      break;
+    }
+    case /*read*/ UART_RXCLOCKS_REG: // Read-only
+    {
+      reg.rxclocks = m_uart.rxclocks;
+      break;
+    }
+    case /*read*/ UART_MISC_REG: // Read-only
+    {
+      // data_bits + parity_bits + stop_bits
+      SET_FIELD( UART_RXBITS,   reg.misc, m_rxbits );
+      SET_FIELD( UART_TXBITS,   reg.misc, m_txbits );
+      bool    rxselect = IS_NONZERO( UART_RXSELECT, reg.misc );
+      uint8_t peekaddr = GET_FIELD( UART_PEEKADDR, reg.misc );
+      uint8_t peekdata = uint8_t('\0xFF');
+      if ( rxselect and peekaddr < m_rxfifo_capacity ) {
+        peekdata = m_rxfifo[ peekaddr ];
+      }
+      else if ( peekaddr < m_txfifo_capacity ) {
+        peekdata = m_txfifo[ peekaddr ];
+      }
+      SET_FIELD( UART_PEEKDATA, reg.misc, peekdata  );
+      break;
+    }
+    case /*read*/ UART_FIFOSTATS_REG: // Read-only
+    {
+      NOT_YET_IMPLEMENTED();
+      break;
+    }
+    default:
+    {
+      REPORT( ERROR, "Attempt to write illegal address" );
       break;
     }
   }
@@ -440,4 +875,4 @@ void Usart_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
 
 ///////////////////////////////////////////////////////////////////////////////
 // Copyright 2018 by Doulos. All rights reserved.
-//END usart.cpp @(#)$Id$
+//END uart.cpp @(#)$Id$

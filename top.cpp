@@ -31,6 +31,7 @@
 #include "pic.hpp"
 #include "gpio.hpp"
 #include "rgbled.hpp"
+#include "uart.hpp"
 #include "stub.hpp"
 #include <set>
 using namespace sc_core;
@@ -73,6 +74,7 @@ struct Top_module::Impl
   std::unique_ptr< RgbLED_module > led1;
   std::unique_ptr< Timer_module  > tmr;
   std::unique_ptr< Pic_module    > pic;
+  std::unique_ptr< Uart_module   > ser;
   std::unique_ptr< Stub_module   > dma;
 
   // Constructor
@@ -81,26 +83,28 @@ struct Top_module::Impl
   {
     // Instantiation
     switch ( options->get_configuration() ) { // Fall-thru intentional
-      case Interconnect::DMA:
+      case Platform::DMA:
         dma  = std::make_unique<Stub_module>  ( "dma" );
-      case Interconnect::GPIO:
+      case Platform::VirtualUART:
+        ser  = std::make_unique<Uart_module>  ( "ser" );
+      case Platform::GPIO:
         led1 = std::make_unique<RgbLED_module> ("led1");
-      case Interconnect::PIC:
+      case Platform::PIC:
         // fall thru
-      case Interconnect::NORTH_SOUTH:
+      case Platform::NORTH_SOUTH:
         sth  = std::make_unique<Bus_module>   ( "sth" );
         ddr  = std::make_unique<Memory_module>( "ddr" , 1*KB, Access::RW, 16,  8, DMI::enabled );
         // fall thru
-      case Interconnect::TIMER:
+      case Platform::TIMER:
         tmr  = std::make_unique<Timer_module> ( "tmr" , 2, 1, 2, 2 );
         gio  = std::make_unique<Gpio_module>  ( "gio" );
         pic  = std::make_unique<Pic_module>   ( "pic" );
         // fall thru
-      case Interconnect::MEMORY:
+      case Platform::MEMORY:
         rom  = std::make_unique<Memory_module>( "rom" , 1*KB, Access::RO, 16, 32, DMI::enabled );
         nth  = std::make_unique<Bus_module>   ( "nth" );
         // fall thru
-      case Interconnect::TRIVIAL:
+      case Platform::TRIVIAL:
         ram  = std::make_unique<Memory_module>( "ram" , 1*KB, Access::RW, 16,  8, DMI::enabled );
         cpu  = std::make_unique<Cpu_module>   ( "cpu" );
         break;
@@ -110,17 +114,17 @@ struct Top_module::Impl
 
     // Connectivity
     switch ( options->get_configuration() ) {
-      case Interconnect::TRIVIAL:
+      case Platform::TRIVIAL:
         cpu->init_socket.bind( ram->targ_socket );
         break;
 
-      case Interconnect::MEMORY:
+      case Platform::MEMORY:
         cpu->init_socket.bind( nth->targ_socket );
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );
         break;
 
-      case Interconnect::TIMER:
+      case Platform::TIMER:
         cpu->init_socket.bind( nth->targ_socket );
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );
@@ -131,7 +135,7 @@ struct Top_module::Impl
         tmr->intrq_port.bind ( cpu->intrq_xport );
         break;
 
-      case Interconnect::NORTH_SOUTH:
+      case Platform::NORTH_SOUTH:
         cpu->init_socket.bind( nth->targ_socket );
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );
@@ -144,7 +148,7 @@ struct Top_module::Impl
         tmr->intrq_port.bind ( cpu->intrq_xport );
         break;
 
-      case Interconnect::PIC:
+      case Platform::PIC:
         cpu->init_socket.bind( nth->targ_socket );
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );
@@ -158,7 +162,7 @@ struct Top_module::Impl
         pic->irq_send_port.bind ( cpu->intrq_xport    );
         break;
 
-      case Interconnect::GPIO:
+      case Platform::GPIO:
         cpu->init_socket.bind( nth->targ_socket );
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );
@@ -177,7 +181,27 @@ struct Top_module::Impl
         led1->b.bind ( gio->gpio_xport[2] );
         break;
 
-      case Interconnect::DMA:
+      case Platform::VirtualUART:
+        cpu->init_socket.bind( nth->targ_socket );
+        nth->init_socket.bind( rom->targ_socket );
+        nth->init_socket.bind( ram->targ_socket );
+        nth->init_socket.bind( ddr->targ_socket );
+        nth->init_socket.bind( sth->targ_socket );
+        sth->init_socket.bind( gio->targ_socket );
+        sth->init_socket.bind( tmr->targ_socket );
+        sth->init_socket.bind( pic->targ_socket );
+        sth->init_socket.bind( ser->targ_socket );
+        // Interrupts
+        tmr->intrq_port.bind    ( pic->irq_recv_xport );
+        gio->intrq_port.bind    ( pic->irq_recv_xport );
+        pic->irq_send_port.bind ( cpu->intrq_xport    );
+        // Miscellaneous
+        led1->r.bind ( gio->gpio_xport[0] );
+        led1->g.bind ( gio->gpio_xport[1] );
+        led1->b.bind ( gio->gpio_xport[2] );
+        break;
+
+      case Platform::DMA:
         cpu->init_socket.bind( nth->targ_socket );
         nth->init_socket.bind( rom->targ_socket );
         nth->init_socket.bind( ram->targ_socket );

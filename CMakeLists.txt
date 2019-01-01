@@ -31,6 +31,8 @@ add_executable( platform
   no_clock.cpp
   task.cpp
   netlist.cpp
+  platform_enum.cpp
+  test_enum.cpp
   options.cpp
   signal.cpp
   configuration.cpp
@@ -40,6 +42,7 @@ add_executable( platform
   memory_map.cpp
   timer_beh.cpp
   hexfile.cpp
+  parity.cpp
 # Major modules ----------------------------------------------------------------
   main.cpp
   top.cpp
@@ -51,6 +54,7 @@ add_executable( platform
   pic.cpp
   gpio.cpp
   rgbled.cpp
+  uart.cpp
 # dma.cpp
 # mmu.cpp
 # cache.cpp
@@ -60,7 +64,6 @@ add_executable( platform
 # usb.cpp
 # mouse.cpp
 # keyboard.cpp
-# uart.cpp
 # video.cpp
 # wifi.cpp
 # sbus.cpp
