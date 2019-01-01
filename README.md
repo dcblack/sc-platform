@@ -22,13 +22,14 @@ If errors are detected, main exists with a non-zero status.
 This project has several goals:
 
 1. Provide an example of a complete TLM-2 virtual platform for study using modern C++.
-2. Provide examples of different techniques of modeling.
+2. Should be able to demonstrate Blinky and Hello-world tests.
+3. Provide examples of different techniques of modeling.
   1. Loosely-timed and Approximately-timed models of initiators, interconnect and targets
   2. The absence of real clocks using the `no_clock` channel and the global distribution mechanism
   3. Resets and Power domain modeling
   4. Processor implementation with an ISS and support for interrupts
-3. Provide the basis for "Easier SystemC" templates.
-4. Several approaches to configuration
+4. Provide the basis for "Easier SystemC" templates.
+5. Several approaches to configuration
 
 At any point in time, this project represents a set of ideas in the making, and
 not expected to be complete. Various authors may contribute to this effort, and
@@ -237,23 +238,27 @@ Each module will its status noted here. The following states are allowed:
 
 In order of priority:
 
+1. Finish `pic_api.h` and add `pic_test.cpp`.
+1. Add `gpio_api.h` and add `gpio_test.cpp`.
+1. Finish `Uart_module`
 1. Add `Dma_module`
-2. Add power-down capability (?use CCI?) with reset
-3. Add timing to AT mode of `Bus_module` with analysis port support
-4. Add YAML or JASON support for configuration of top itself
-5. Implement filter interconnect
-6. Implement a CPU emulation (e.g. armv6m or Mini32)
+1. Add `dma_api.h` and `dma_test.cpp`
+1. Add power-down capability (?use CCI?) with reset
+1. Add timing to AT mode of `Bus_module` with analysis port support
+1. Add YAML or JASON support for configuration of top itself
+1. Implement filter interconnect
+1. Implement a CPU emulation (e.g. armv6m or Mini32)
 
 Optional:
 
 1. Add fancy report handler with XML option and expectations for error injection
-2. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
-3. Consider refactor `Memory_module` to use PIMPL
-4. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
-5. Add a `Stack_module` (LIFO).
-6. Add `Global` class to replace `g_` variables
-7. `Apb2tlm_adapter` and `Tlm2apb_adapter`
-8. `Axi2tlm_adapter` and `Tlm2axi_adapter`
+1. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
+1. Consider refactor `Memory_module` to use PIMPL
+1. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
+1. Add a `Stack_module` (LIFO).
+1. Add `Global` class to replace `g_` variables
+1. `Apb2tlm_adapter` and `Tlm2apb_adapter`
+1. `Axi2tlm_adapter` and `Tlm2axi_adapter`
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
