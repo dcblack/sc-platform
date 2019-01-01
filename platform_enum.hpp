@@ -37,20 +37,16 @@ bool          is_Platform( const std::string& str ) noexcept;
 Platform      to_Platform( const std::string& str );
 std::ostream& operator<< ( std::ostream& os, const Platform& rhs );
 std::istream& operator>> ( std::istream& is, Platform& rhs );
-bool operator<( const Platform& lhs, const Platform& rhs ) {
-  return std::underlying_type<Platform>::type(rhs)
-         < std::underlying_type<Platform>::type(rhs);
-}
-Platform operator++(Platform& x) {
+inline Platform operator++(Platform& x) {
   return x = (Platform)(std::underlying_type<Platform>::type(x) + 1); 
 }
-Platform operator*(Platform c) {
+inline Platform operator*(Platform c) {
   return c;
 }
-Platform begin(Platform r) {
+inline Platform begin(Platform r) {
   return (Platform)std::underlying_type<Platform>::type(0);
 }
-Platform end(Platform r) {
+inline Platform end(Platform r) {
   return Platform::end;
 }
 

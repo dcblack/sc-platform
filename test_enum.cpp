@@ -12,20 +12,20 @@ cstr test_str[] = {
 #undef KEY
 
 //------------------------------------------------------------------------------
-std::string to_string( const Test& elt )
+std::string to_string( const PlatformTest& elt )
 {
   return test_str[ static_cast<int>( elt ) ];
 }
 
 //------------------------------------------------------------------------------
-std::ostream& operator<<( std::ostream& os, const Test& rhs )
+std::ostream& operator<<( std::ostream& os, const PlatformTest& rhs )
 {
   os << to_string( rhs );
   return os;
 }
 
 //------------------------------------------------------------------------------
-bool is_Test( const std::string& str ) noexcept
+bool is_PlatformTest( const std::string& str ) noexcept
 {
   int size = sizeof( test_str ) / sizeof( char* );
   cstr* begin = test_str;
@@ -47,23 +47,23 @@ namespace {
 }
 
 //------------------------------------------------------------------------------
-Test to_Test( const std::string& str )
+PlatformTest to_PlatformTest( const std::string& str )
 {
-  static str_exception e{ "Test out of bounds!" };
+  static str_exception e{ "PlatformTest out of bounds!" };
   int size = sizeof( test_str ) / sizeof( char* );
   cstr* begin = test_str;
   cstr* end = begin + size;
   cstr* ptr = find( begin, end, str );
   if( ptr==end ) throw e;
-  return static_cast<Test>( ptr - begin );
+  return static_cast<PlatformTest>( ptr - begin );
 }
 
 //------------------------------------------------------------------------------
-std::istream& operator>>( std::istream& is, Test& rhs )
+std::istream& operator>>( std::istream& is, PlatformTest& rhs )
 {
   std::string str;
   is >> str;
-  rhs = to_Test( str );
+  rhs = to_PlatformTest( str );
   return is;
 }
 
@@ -74,7 +74,7 @@ int main( void )
 {
   std::string input;
   std::istringstream is;
-  Test vu, v0, v1, v2{ Test::MEMORY };
+  PlatformTest vu, v0, v1, v2{ PlatformTest::MEMORY };
   std::cout << "v1=" << v1 << std::endl;
   std::cout << "v2=" << v2 << std::endl;
   input = to_string( v2 );
@@ -88,8 +88,8 @@ int main( void )
   catch( std::exception& e ) {
     std::cout << "Successfully caught " << e.what() << std::endl;
   }
-  std::cout << "Tests:" << std::endl;
-  for( auto p : Test() ) {
+  std::cout << "PlatformTests:" << std::endl;
+  for( auto p : PlatformTest() ) {
     std::cout << "   " << p << std::endl;
   }
   // User testing
@@ -97,8 +97,8 @@ int main( void )
     std::cout << "Enter an enum name ('q' to quit): " << std::flush;
     std::cin >> input;
     size_t pos;
-    if( not is_Test( input ) ) {
-      if( input != "" ) std::cout << "Not a Test" << std::endl;
+    if( not is_PlatformTest( input ) ) {
+      if( input != "" ) std::cout << "Not a PlatformTest" << std::endl;
       continue;
     }
     is.str( input );
@@ -110,7 +110,7 @@ int main( void )
     catch( std::exception& e ) {
       std::cout << "Caught " << e.what() << std::endl;
     }
-    std::cout << "Converted result of '" << input << "' is Test::" << v0 << std::endl;
+    std::cout << "Converted result of '" << input << "' is PlatformTest::" << v0 << std::endl;
   } while ( input != "q" );
   return 0;
 }

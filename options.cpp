@@ -47,7 +47,7 @@ Options::Options( void )
 {
   m_interrupt.remove();
   // Establish defaults
-  m_configuration = Interconnect::GPIO;
+  m_configuration = Platform::GPIO;
 
   // Display command-line
   MESSAGE( "Invocation:\n%" );
@@ -77,7 +77,7 @@ Options::Options( void )
                << "  -help             \n"
                << "  -cfg PLATFORM     \n"
                << "  -map FILEPATH     \n"
-               << "  -test TESTNAME    \n"
+               << "  -test TESTLIST    \n"
                << "  -hyper            \n"
                << "  -debug+1          \n"
                << "  -debug            \n"
@@ -196,13 +196,30 @@ Options::Options( void )
         REPORT( ERROR, "Missing required argument for " << arg << " option." );
       }
       arg = sc_argv()[++iArg];
-      if ( is_Test( arg ) ) {
-        m_configuration = to_Test( arg );
+      bool unknown = false;
+      size_t pos = arg.find_first_of(',');
+      while( pos != string::npos ) {
+        string t = arg.substr(0,pos);
+        pos = arg.find_first_of(',');
+        arg.erase(0,pos+1);
+        if ( is_PlatformTest( t ) ) {
+          m_test_set.insert( to_PlatformTest( t ));
+        }
+        else {
+          MESSAGE( "Unknown test: " << t << "\n" );
+          unknown = true;
+        }
+      }
+      if ( is_PlatformTest( arg ) ) {
+        m_test_set.insert( to_PlatformTest( arg ));
       }
       else {
         MESSAGE( "Unknown test: " << arg << "\n" );
+        unknown = true;
+      }
+      if ( unknown ) {
         MESSAGE( "Choices are:\n" );
-        for( const auto& t : Test() ) {
+        for( const auto& t : PlatformTest() ) {
           MESSAGE( "  " << t );
         }
         REPORT( ERROR, "" );
@@ -234,7 +251,7 @@ Options::Options( void )
     INFO( ALWAYS, "Reporting errors at target." );
   }
 
-  if( m_test_set.empty() ) m_test_set.insert(Test::TRIVIAL);
+  if( m_test_set.empty() ) m_test_set.insert(PlatformTest::TRIVIAL);
   INFO( ALWAYS, "Constructed options" );
 }
 
