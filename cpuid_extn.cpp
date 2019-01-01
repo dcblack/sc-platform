@@ -27,13 +27,6 @@ void Cpuid_extn::copy_from( tlm_extension_base const& extn )
 }
 
 //------------------------------------------------------------------------------
-void Cpuid_extn::free(void)
-{
-  m_cpu_ptr = nullptr;
-  delete this;
-}
-
-//------------------------------------------------------------------------------
 void Cpuid_extn::set_module_ptr( sc_core::sc_module* cpu )
 {
   sc_assert( dynamic_cast<sc_core::sc_module*>( cpu ) != nullptr );

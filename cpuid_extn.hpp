@@ -9,7 +9,6 @@ struct Cpuid_extn
   Cpuid_extn( sc_core::sc_module* cpu = nullptr );
   virtual tlm_extension_base* clone( void ) const;
   virtual void copy_from( tlm_extension_base const& extn );
-  virtual void free( void );
   const char* name( void ) const;
   void set_module_ptr( sc_core::sc_module* cpu );
   sc_core::sc_module* get_module_ptr( void ) const;
