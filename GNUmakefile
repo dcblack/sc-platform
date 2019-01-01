@@ -3,6 +3,8 @@
 default:
 	@echo "+---------------------------------------------------------------------+" 1>&2 ;\
 	 echo "|                                                                     |" 1>&2 ;\
+	 echo "|  'make' not supported here. Instead use 'cmake' in build/ sub-      |" 1>&2 ;\
+	 echo "|  directory. See README.md for more information.                     |" 1>&2 ;\
 	 echo "|  You may need to source setup.profile or perform equivalent steps.  |" 1>&2 ;\
 	 echo "|  Either use 'bin/build' script or 'cd build && make'                |" 1>&2 ;\
 	 echo "|                                                                     |" 1>&2 ;\
