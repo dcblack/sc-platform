@@ -98,6 +98,21 @@ Status Register
    1 | Timers[1]                    | Read-only
    0 | Timers[0]                    | Read-only
 
+Usage Example
+-------------
+
+```cpp
+{:CODE SNIPPETS ***TO BE SUPPLIED***:}
+```
+
+Testing
+-----
+
+{:***TO BE SUPPLIED*** -- POSSIBLY AS FOLLOWS -- DELETE THIS LINE WHEN CORRECT:}
+```sh
+g++ -std=c++14 -DUART_EXAMPLE -o usart.exe usart.cpp && ./usart.exe
+```
+
 Files
 -----
 
