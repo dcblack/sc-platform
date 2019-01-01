@@ -24,6 +24,16 @@ sc_freq operator*( double lhs, const sc_freq& rhs ) {
 }
 
 //------------------------------------------------------------------------------
+double operator*( const sc_time& lhs, const sc_freq& rhs ) {
+  return rhs.value(SC_HZ) * lhs.to_seconds();
+}
+
+//------------------------------------------------------------------------------
+double operator*( const sc_freq& lhs, const sc_time& rhs ) {
+  return lhs.value(SC_HZ) * rhs.to_seconds();
+}
+
+//------------------------------------------------------------------------------
 sc_time operator/( double lhs, const sc_freq& rhs ) {
   double divisor { rhs.value(SC_HZ) };
   if( divisor == 0.0 ) {
