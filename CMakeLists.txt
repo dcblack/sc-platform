@@ -27,9 +27,12 @@ add_executable( platform
   report.cpp
   wallclock.cpp
   summary.cpp
+  news.cpp
   no_clock.cpp
   task.cpp
   netlist.cpp
+  platform_enum.cpp
+  test_enum.cpp
   options.cpp
   signal.cpp
   configuration.cpp
@@ -39,6 +42,7 @@ add_executable( platform
   memory_map.cpp
   timer_beh.cpp
   hexfile.cpp
+  parity.cpp
 # Major modules ----------------------------------------------------------------
   main.cpp
   top.cpp
@@ -48,8 +52,10 @@ add_executable( platform
   memory.cpp
   timer.cpp
   pic.cpp
+  gpio.cpp
+  rgbled.cpp
+  uart.cpp
 # dma.cpp
-# gpio.cpp
 # mmu.cpp
 # cache.cpp
 # crypto.cpp
@@ -58,7 +64,6 @@ add_executable( platform
 # usb.cpp
 # mouse.cpp
 # keyboard.cpp
-# usart.cpp
 # video.cpp
 # wifi.cpp
 # sbus.cpp
@@ -93,6 +98,16 @@ add_executable( signal
 target_compile_definitions( signal PRIVATE SIGNAL_EXAMPLE )
 
 ################################################################################
+add_executable( rgbled
+  rgbled.cpp
+  report.cpp
+  wallclock.cpp
+  summary.cpp
+  no_clock.cpp
+)
+target_compile_definitions( rgbled PRIVATE RGBLED_EXAMPLE )
+
+################################################################################
 add_executable( timer
   timer_beh.cpp
   common.cpp
@@ -117,16 +132,16 @@ target_compile_definitions( xyaml PRIVATE YAML_EXAMPLE )
 target_link_libraries( xyaml yaml-cpp )
 
 ################################################################################
-add_executable( map_test
-  map_test.cpp
-  memory_map.cpp
-  report.cpp
-  wallclock.cpp
-  summary.cpp
-  common.cpp
-  sc_freq.cpp
-)
-target_link_libraries( map_test yaml-cpp )
+# add_executable( map_test
+#   map_test.cpp
+#   memory_map.cpp
+#   report.cpp
+#   wallclock.cpp
+#   summary.cpp
+#   common.cpp
+#   sc_freq.cpp
+# )
+# target_link_libraries( map_test yaml-cpp )
 
 ################################################################################
 add_executable( freq_test

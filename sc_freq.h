@@ -113,6 +113,8 @@ private:
 };
 
 sc_freq operator*( double lhs, const sc_freq& rhs );
+double operator*( const sc_time& lhs, const sc_freq& rhs );
+double operator*( const sc_freq& lhs, const sc_time& rhs );
 sc_time operator/( double lhs, const sc_freq& rhs );
 double operator/( const sc_freq& lhs, const sc_freq& rhs );
 std::ostream& operator<<( std::ostream& os, const sc_freq& rhs );

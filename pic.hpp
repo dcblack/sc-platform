@@ -1,3 +1,5 @@
+#ifndef PIC_MODULE_HPP
+#define PIC_MODULE_HPP
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  #####  ###  ####         #     # ####   #                                     
@@ -9,8 +11,6 @@
 //  #      ###  ####  ###### #     # ####   #####                                 
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef PIC_MODULE_HPP
-#define PIC_MODULE_HPP
 #include "pic_reg.h"
 #include "interrupt.hpp"
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES

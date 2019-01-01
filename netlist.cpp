@@ -1,10 +1,13 @@
 #include "netlist.hpp"
+#include <tlm>
 #include "report.hpp"
 #include "options.hpp"
 #include <vector>
 #include <string>
 #include <cctype>
 using namespace sc_core;
+using namespace tlm;
+using std::string;
 namespace {
   const char* const MSGID{ "/Doulos/Example/Netlist" };
 }
@@ -12,20 +15,31 @@ namespace {
 namespace {
   // Traverse the entire object subhierarchy 
   // below a given object 
-  void scan_hierarchy(sc_object* obj,std::string indent)
+  void scan_hierarchy(sc_object* obj, string indent)
   { 
     std::vector<sc_object*> children = obj->get_child_objects(); 
     for( const auto& child : children ) {
       if ( child != nullptr ) {
-        std::string inst{ child->basename() };
-        std::string kind{ child->kind() };
-        std::string chan{ "" };
-        sc_port<sc_interface>* pPort { dynamic_cast< sc_port<sc_interface>* >( child ) };
-        if( pPort != nullptr ) {
-          sc_interface* pIntf = pPort->get_interface();
-          sc_module* pModl { dynamic_cast< sc_module* >( pIntf ) };
-          if( pModl != nullptr ) {
-            chan = pModl->name();
+        string inst{ child->basename() };
+        string kind{ child->kind() };
+        // Is this a port? If so, let's find out what it is connected to...
+        string channel_name{ "" };
+        const sc_interface* interface_ptr = nullptr;
+        // sc_export?
+        auto export_ptr = dynamic_cast< const sc_export_base* >( child );
+        if( export_ptr != nullptr ) {
+          interface_ptr = export_ptr->get_interface();
+        }
+        // sc_port?
+        auto port_ptr = dynamic_cast< const sc_port_base* >( child );
+        if( port_ptr != nullptr ) {
+          interface_ptr = port_ptr->get_interface();
+        }
+        if( interface_ptr != nullptr ) {
+          INFO( DEBUG, "Inteface points to " << HEX << interface_ptr ); 
+          auto object_ptr = dynamic_cast< const sc_object* >( interface_ptr );
+          if( object_ptr != nullptr ) {
+            channel_name = object_ptr->name();
           }
         }
         //{:TODO:} Filter types (unless verbose)
@@ -40,10 +54,10 @@ namespace {
         if( ok ) {
           MESSAGE( indent << "+- " << inst << ' ' << kind );
           //{:TODO:} Figure out and add where sc_port's are pointing
-          if( chan.length() > 0 ) MESSAGE( " -> " << chan );
+          if( channel_name.length() > 0 ) MESSAGE( " -> " << channel_name );
           MESSAGE( "\n" );
         }
-        scan_hierarchy(child, indent + std::string("| ")); 
+        scan_hierarchy(child, indent + string("| ")); 
       }//endif
     }//endfor
   }//end scan_hierarchy()

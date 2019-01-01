@@ -1,3 +1,5 @@
+#ifndef TIMER_MODULE_H
+#define TIMER_MODULE_H
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  ####### ### #     # ##### #####         #     # ####   #                     
@@ -9,8 +11,6 @@
 //     #    ### #     # ##### #    # ###### #     # ####   #####                 
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef TIMER_MODULE_H
-#define TIMER_MODULE_H
 #include "timer_beh.hpp"
 #include "timer_reg.h"
 #include "interrupt_if.hpp"

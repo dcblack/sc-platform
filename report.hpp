@@ -1,3 +1,5 @@
+#ifndef REPORT_HPP
+#define REPORT_HPP
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  #####  ##### #####   ####  #####  #######                                     
@@ -9,12 +11,10 @@
 //  #    # ##### #       ####  #    #    #                                        
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef REPORT_HPP
 // Improve reporting with macros, more overloads on `operator<<`,
 // and other enhancements to `sc_report_handler`.
 //
 // See `ABOUT_REPORT.md` for more information.
-#define REPORT_HPP
 #include <systemc>
 #include <tlm>
 #include <sstream>

@@ -7,6 +7,7 @@
 #include <memory>
 #include "report.hpp"
 #include "summary.hpp"
+#include "news.hpp"
 
 namespace {
   char const * const MSGID{ "/Doulos Inc/Example/main" };
@@ -19,6 +20,7 @@ using namespace std;
 int sc_main(int argc, char *argv[])
 {
   unique_ptr<Top_module> top;
+  News improved;
   // Elaborate
   Summary::starting_elaboration();
 

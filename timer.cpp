@@ -1,3 +1,4 @@
+#include "timer.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  ####### ### #     # ##### #####         #     # ####   #
@@ -9,7 +10,6 @@
 //     #    ### #     # ##### #    # ###### #     # ####   #####
 //
 ////////////////////////////////////////////////////////////////////////////////
-#include "timer.hpp"
 #include "report.hpp"
 #include "log2.hpp"
 #include "config_extn.hpp"
@@ -98,10 +98,10 @@ void Timer_module::timer_thread( void )
 
     if( intrq_port.size() == 1 ) {
       // Generate interrupt if any enabled timers has triggered
-      for( int iIrq=0; iIrq!=intrq_port.size(); ++iIrq ) {
-        if( m_timer_vec[iIrq].get_triggered() and irq_enabled(iIrq) ) {
-          timer_reg_vec(iIrq).status |= TIMER_IRQ(iIrq);
-          intrq_port->notify(name());
+      for( int iIrq=0; iIrq != intrq_port.size(); ++iIrq ) {
+        if( m_timer_vec[ iIrq ].get_triggered() and irq_enabled( iIrq ) ) {
+          timer_reg_vec( iIrq ).status |= TIMER_IRQ( iIrq );
+          intrq_port->notify( name() );
           break;
         }
       }

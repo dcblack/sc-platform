@@ -1,3 +1,4 @@
+#include "pic.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  #####  ###  ####         #     # ####   #                                     
@@ -9,7 +10,6 @@
 //  #      ###  ####  ###### #     # ####   #####                                 
 //
 ////////////////////////////////////////////////////////////////////////////////
-#include "pic.hpp"
 #include "report.hpp"
 #include "log2.hpp"
 #include "config_extn.hpp"
@@ -469,12 +469,12 @@ void Pic_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
 
   // Update from m_register_vec
   switch ( address ) {
-    case PIC_NEXT_REG   :
+    case /*write*/ PIC_NEXT_REG   :
     {
       // Ignored
       break;
     }
-    case PIC_DONE_REG   :
+    case /*write*/ PIC_DONE_REG   :
     {
       // Clear active flag for indicated interrupt source
       if( iSource < m_source_irq.size() ) {
@@ -485,7 +485,7 @@ void Pic_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
       m_target_level[ iTarget ].pop_front();
       break;
     }
-    case PIC_TARGET_REG :
+    case /*write*/ PIC_TARGET_REG :
     {
       // Set corresponding bits
       m_target_irq[ iTarget ].clearall = ( reg.target && PIC_CLEARALL_MASK ) ? 1 : 0;
@@ -505,22 +505,22 @@ void Pic_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
       }
       break;
     }
-    case PIC_IDENT_REG  :
+    case /*write*/ PIC_IDENT_REG  :
     {
       // Ignored
       break;
     }
-    case PIC_CONFIG_REG :
+    case /*write*/ PIC_CONFIG_REG :
     {
       // Ignored
       break;
     }
-    case PIC_SELECT_REG :
+    case /*write*/ PIC_SELECT_REG :
     {
       m_target_select[ iTarget ] = reg.select;
       break;
     }
-    case PIC_SOURCE_REG :
+    case /*write*/ PIC_SOURCE_REG :
     {
       // Set corresponding bits (except active)
       m_source_irq[ iSource ].pending = ( reg.source & PIC_PENDING_MASK ) ? 1 : 0;
@@ -528,7 +528,7 @@ void Pic_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
       m_source_irq[ iSource ].priority = reg.source & PIC_PRI_MASK;
       break;
     }
-    case PIC_TARGETS_REG:
+    case /*write*/ PIC_TARGETS_REG:
     {
       m_source_targets[ iSource ] = std::bitset<M>( reg.targets );
       break;
@@ -564,7 +564,7 @@ void Pic_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
 
   // Modify m_register_vec
   switch ( address ) {
-    case PIC_NEXT_REG   :
+    case /*read*/ PIC_NEXT_REG   :
     {
       // Find the highest priority pending interrupt for this interface that we're
       // currently able to process due to target mask level.
@@ -591,13 +591,13 @@ void Pic_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
       }
       break;
     }
-    case PIC_DONE_REG   :
+    case /*read*/ PIC_DONE_REG   :
     {
       // Read as zero
       reg.done = 0;
       break;
     }
-    case PIC_TARGET_REG :
+    case /*read*/ PIC_TARGET_REG :
     {
       reg.target = 0;
       reg.config |= ( iTarget  << PIC_TARGETS_LSB ) & PIC_TARGETS_MASK;
@@ -607,24 +607,24 @@ void Pic_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
       m_target_irq[ iTarget ].clearall = 0;
       break;
     }
-    case PIC_IDENT_REG  :
+    case /*read*/ PIC_IDENT_REG  :
     {
       reg.ident = m_pic_identity;
       break;
     }
-    case PIC_CONFIG_REG :
+    case /*read*/ PIC_CONFIG_REG :
     {
       reg.config = 0;
       reg.config |= ( m_target_id.size()  << PIC_TARGETS_LSB ) & PIC_TARGETS_MASK;
       reg.config |= ( m_source_irq.size() << PIC_SOURCES_LSB ) & PIC_SOURCES_MASK;
       break;
     }
-    case PIC_SELECT_REG :
+    case /*read*/ PIC_SELECT_REG :
     {
       reg.select = m_target_select[ iTarget ];
       break;
     }
-    case PIC_SOURCE_REG :
+    case /*read*/ PIC_SOURCE_REG :
     {
       reg.source = 0;
       reg.source |= m_source_irq[ iSource ].pending ? PIC_PENDING_MASK : 0;
@@ -633,7 +633,7 @@ void Pic_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
       reg.source |= m_source_irq[ iSource ].priority & PIC_PRI_MASK;
       break;
     }
-    case PIC_TARGETS_REG:
+    case /*read*/ PIC_TARGETS_REG:
     {
       reg.targets = m_source_targets[ iSource ].to_ulong();
       break;

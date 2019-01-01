@@ -1,3 +1,5 @@
+#ifndef BUS_MODULE_HPP
+#define BUS_MODULE_HPP
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  #####  #    #  ####         #     # ####   #
@@ -9,8 +11,6 @@
 //  #####   ####   ####  ###### #     # ####   #####
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef BUS_MODULE_HPP
-#define BUS_MODULE_HPP
 #ifndef SC_INCLUDE_DYNAMIC_PROCESSES
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 #endif

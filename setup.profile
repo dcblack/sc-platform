@@ -93,6 +93,7 @@ fi
 
 export PROJ_ROOT=$(realpath $(dirname $(firstreal ./.git ../.git ../../.git ../../../.git ../../../../.git)))
 PROJ_BIN="$PROJ_ROOT/bin"
+PROJECT="Example"
 prepend_path PATH $PROJ_BIN
 header -uc platform 1>&2
 if [[ "$(uname -s)" == "Darwin" ]]; then

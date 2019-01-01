@@ -157,19 +157,32 @@ struct Pic_api
   uint32_t get_ident( void )
   {
     assert( m_setup );
-    m_cpu.write32( pic_addr + {:REG:}, {:VAR:} );
+    uint32_t result = 0xDEADBEEF;
+    m_cpu.write32( pic_addr + PIC_IDENT_REG, result );
+    return  result;
+  }
+  uint32_t get_targetid( void )
+  {
+    assert( m_setup );
+    uint32_t result = 0xDEADBEEF;
+    m_cpu.write32( pic_addr + PIC_TARGET_REG, result );
+    return  GET_FIELD(PIC_TARGETID,result);
   }
 
   uint16_t get_source_count( void )
   {
     assert( m_setup );
-    m_cpu.write32( pic_addr + {:REG:}, {:VAR:} );
+    uint32_t result = 0xDEADBEEF;
+    m_cpu.write32( pic_addr + PIC_CONFIG_REG, result );
+    return  GET_FIELD(PIC_SOURCES,result);
   }
 
   uint16_t get_target_count( void )
   {
     assert( m_setup );
-    m_cpu.write32( pic_addr + {:REG:}, {:VAR:} );
+    uint32_t result = 0xDEADBEEF;
+    m_cpu.write32( pic_addr + PIC_CONFIG_REG, result );
+    return  GET_FIELD(PIC_TARGETS,result);
   }
 
   void     clearall( void )

@@ -1,3 +1,4 @@
+#include "options.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 //
 //   ####  #####  ####### ###  ####  #     #  ####                                
@@ -9,7 +10,6 @@
 //   ####  #         #    ###  ####  #     #  ####                                
 //
 ////////////////////////////////////////////////////////////////////////////////
-#include "options.hpp"
 #include "common.hpp"
 #include "report.hpp"
 #include "memory_map.hpp"
@@ -47,7 +47,7 @@ Options::Options( void )
 {
   m_interrupt.remove();
   // Establish defaults
-  m_configuration = Interconnect::PIC;
+  m_configuration = Platform::GPIO;
 
   // Display command-line
   MESSAGE( "Invocation:\n%" );
@@ -74,20 +74,22 @@ Options::Options( void )
                << "\n"
                << "Options:\n"
                << "\n"
-               << "  -help        \n"
-               << "  -map FILEPATH\n"
-               << "  -hyper       \n"
-               << "  -debug+1     \n"
-               << "  -debug       \n"
-               << "  -full        \n"
-               << "  -high        \n"
-               << "  -medium      \n"
-               << "  -low         \n"
-               << "  -none        \n"
-               << "  -AT          \n"
-               << "  -LT          \n"
-               << "  -error-at-target\n"
-               << "  -v(erbose)   \n"
+               << "  -help             \n"
+               << "  -cfg PLATFORM     \n"
+               << "  -map FILEPATH     \n"
+               << "  -test TESTLIST    \n"
+               << "  -hyper            \n"
+               << "  -debug+1          \n"
+               << "  -debug            \n"
+               << "  -full             \n"
+               << "  -high             \n"
+               << "  -medium           \n"
+               << "  -low              \n"
+               << "  -none             \n"
+               << "  -AT               \n"
+               << "  -LT               \n"
+               << "  -error-at-target  \n"
+               << "  -v(erbose)        \n"
                << "\n"
              );
       RULER( '-' );
@@ -170,27 +172,61 @@ Options::Options( void )
 
     //--------------------------------------------------------------------------
     // Configuration of top
-    else if ( arg == "-cfg" ) {
+    else if ( arg == "-cfg" or arg == "-C" ) {
       if( iArg+1 >= sc_argc() ) {
         REPORT( ERROR, "Missing required argument for " << arg << " option." );
       }
       arg = sc_argv()[++iArg];
-      if ( arg == "trivial" ) {
-        m_configuration = Interconnect::TRIVIAL;
+      if ( is_Platform( arg ) ) {
+        m_configuration = to_Platform( arg );
       }
-      else if ( arg == "memory" ) {
-        m_configuration = Interconnect::MEMORY;
-      }
-      else if ( arg == "timer" ) {
-        m_configuration = Interconnect::TIMER;
-      }
-      else if ( arg == "ns" ) {
-        m_configuration = Interconnect::NORTH_SOUTH;
-      }
-      else if ( arg == "pic" ) {
-        m_configuration = Interconnect::PIC;
+      else {
+        MESSAGE( "Unknown platform configuration: " << arg << "\n" );
+        MESSAGE( "Choices are:\n" );
+        for( const auto& p : Platform() ) {
+          MESSAGE( "  " << p );
+        }
+        REPORT( ERROR, "" );
       }
     }
+    //--------------------------------------------------------------------------
+    // Test selection
+    else if ( arg == "-test" or arg == "-T" ) {
+      if( iArg+1 >= sc_argc() ) {
+        REPORT( ERROR, "Missing required argument for " << arg << " option." );
+      }
+      arg = sc_argv()[++iArg];
+      bool unknown = false;
+      size_t pos = arg.find_first_of(',');
+      while( pos != string::npos ) {
+        string t = arg.substr(0,pos);
+        pos = arg.find_first_of(',');
+        arg.erase(0,pos+1);
+        if ( is_PlatformTest( t ) ) {
+          m_test_set.insert( to_PlatformTest( t ));
+        }
+        else {
+          MESSAGE( "Unknown test: " << t << "\n" );
+          unknown = true;
+        }
+      }
+      if ( is_PlatformTest( arg ) ) {
+        m_test_set.insert( to_PlatformTest( arg ));
+      }
+      else {
+        MESSAGE( "Unknown test: " << arg << "\n" );
+        unknown = true;
+      }
+      if ( unknown ) {
+        MESSAGE( "Choices are:\n" );
+        for( const auto& t : PlatformTest() ) {
+          MESSAGE( "  " << t );
+        }
+        REPORT( ERROR, "" );
+      }
+    }
+    //--------------------------------------------------------------------------
+    // Other options (flags) handled here. For example: -flag or -greeting=hello
     else if ( arg[0] == '-' ) {
       size_t pos = arg.find_first_of('=');
       if( pos == std::string::npos ) {
@@ -215,7 +251,7 @@ Options::Options( void )
     INFO( ALWAYS, "Reporting errors at target." );
   }
 
-  if( m_test_set.empty() ) m_test_set.insert(Test::TRIVIAL);
+  if( m_test_set.empty() ) m_test_set.insert(PlatformTest::TRIVIAL);
   INFO( ALWAYS, "Constructed options" );
 }
 

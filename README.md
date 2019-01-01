@@ -22,13 +22,14 @@ If errors are detected, main exists with a non-zero status.
 This project has several goals:
 
 1. Provide an example of a complete TLM-2 virtual platform for study using modern C++.
-2. Provide examples of different techniques of modeling.
+2. Should be able to demonstrate Blinky and Hello-world tests.
+3. Provide examples of different techniques of modeling.
   1. Loosely-timed and Approximately-timed models of initiators, interconnect and targets
   2. The absence of real clocks using the `no_clock` channel and the global distribution mechanism
   3. Resets and Power domain modeling
   4. Processor implementation with an ISS and support for interrupts
-3. Provide the basis for "Easier SystemC" templates.
-4. Several approaches to configuration
+4. Provide the basis for "Easier SystemC" templates.
+5. Several approaches to configuration
 
 At any point in time, this project represents a set of ideas in the making, and
 not expected to be complete. Various authors may contribute to this effort, and
@@ -49,41 +50,35 @@ make it easy to understand. Comment blocks are highly encouraged.
 ```
 Top
 +------------------------------------------------------------------+
-|               SystemMgr           Mcu                            |
-|                +-----+            +-----+                        |
-|                | sys |            |mcu2 |                        |
-|                +-----+            +--v--+                        |
-| Mcu                                  |                           |
-| +------------------------------------v-------------------------+ |
-| |mcu1                                |                       r0| |
-| | .--------------.                   |                         | |
-| | |              |      +-----+   +--v--+             +-----+  | |
-| | | Proc         |      | TBD |   | mbx |Mailbox      | TBD |  | |
-| |.|..........    |      +-----+   +--^--+             +-----+  | |
-| |:| prc   r1:    |                   |                         | |
-| |:|         :    |                   x---------.               | |
-| |:|         :....|.....                        |               | |
-| |:| Cpu     : Dma|  r2: Pic       Gpio         |      Crypto   | |
-| |:| +-----+ : +--^--+ : +-----+   +-----+      |      +-----+  | |
-| |:| ! cpu ! : | dma ! : ! pic !   | gio !      x------>crypt!  | |
-| |:| +--v-v+ : +--^--+ : +--^--+   +--^--+      |      +-----+  | |
-| |:|    | |  :....|....:    |         |         |               | |
-| |:|    | |  :    |         |         |         |               | |
-| |:'--->| |  :    '---------x---------x---------x      SBus     | |
-| |:     | '--:---.          |         |         |      +-----+  | |
-| |:  Mmu|    :   |          |         |         x------> spi !  | |
-| |:  +--v--+ :+--v--+    +--v--+   +--v--+      |      +--v--+  | |
-| |:  ! mmu ! :| tcm |    | ssd |   |flash|      |         |     | |
-| |:  +v---v+ :+-----+    +-----+   +-----+      |    .----'     | |
-| |:  P|  S|  :Memory     Ssd       Flash        |    | Environ  | |
-| |:   |   |  :                                  |    | +-----+  | |
-| |:.--'   |  ...............................    |    x-> env |  | |
-| |:| Cache|  : Ssd   r4: Mouse r5: Keybd r6:    |    | +-----+  | |
-| |:| +----v+ : +-----+ : +-----+ : +-----+ :    |    |          | |
-| |:| | l2c | : | thb | : | ptr | : | kbd | :    |    | +-----+  | |
-| |:| +--v--+ : +--^--+ : +--^--+ : +--^--+ :    |    '-> gps |  | |
-| |:|    |    :....|....:....|....:....|....:    |      +-----+  | |
-| |:'--->|    :    '---------x---------'         |      Gps      | |
+|                                                                  |
+|    SystemMgr            Mcu                                      |
+|     +-----+             +-----+   +-----+                        |
+|     | sys |             |mcu2 >---> mbx >------.                 |
+|     +-----+             +-----+   +-----+      |                 |
+| Mcu                                            |                 |
+| +----------------------------------------------^---------------+ |
+| |......................                        |             r0| |
+| |:  Cpu   r1: Dma   r2: Pic       Gpio         |     Crypto    | |
+| |:  +-----+ : +-----+ : +-----+   +-----+      |     +-----+   | |
+| |:  ! cpu ! : | dma ! : ! pic !   | gio !      x----->crypt!   | |
+| |:  +--v-v+ : +v-^-v+ : +--^--+   +--^--+      |     +-----+   | |
+| |:     | |  :..|.|.|..:    |         |         |               | |
+| |:     | |  :  | | |       |         |         |               | |
+| |:     |<|-----' '-x-------x---------x---------x     SBus      | |
+| |:     | |  :              |         |         |     +-----+   | |
+| |:  Mmu| '------.          |         |         x-----> spi !   | |
+| |:  +--v--+ :+--v--+    +--v--+   +--v--+      |     +--v--+   | |
+| |:  ! mmu ! :| tcm |    | ssd |   |flash|      |        |      | |
+| |:  +v---v+ :+-----+    +-----+   +-----+     S|   .----'      | |
+| |:  P|  S|  :Memory     Ssd       Flash       o|   | Environ   | |
+| |:   |   |  :                                 u|   | +-----+   | |
+| |:.--'   |  ...............................   t|   x-> env |   | |
+| |:| Cache|  : Ssd   r4: Mouse r5: Keybd r6:   h|   | +-----+   | |
+| |:| +----v+ : +-----+ : +-----+ : +-----+ :    |   |           | |
+| |:| | l2c | : | thb | : | ptr | : | kbd | :   B|   | +-----+   | |
+| |:| +--v--+ : +--^--+ : +--^--+ : +--^--+ :   u|   '-> gps |   | |
+| |:|    |    :....|....:....|....:....|....:   s|     +-----+   | |
+| |:'--->|    :    '---------x---------'         |     Gps       | |
 | |:.....|....:              |                   |               | |
 | |   Bus|      Disk      Usb|      Bus          |     Memory    | |
 | |   +--V--+   +-----+   +--^--+   +-----+      |     +-----+   | |
@@ -97,7 +92,7 @@ Top
 | |   +--v--+   +--v--+ : +--v--+   +--v--+ : +--v--+  +--v--+   | |
 | |   | ram |   | rom | : | net !   | vid ! : | tmr !  | ser !   | |
 | |   +-----+   +-----+ : +-----+   +-----+ : +-----+  +-----+   | |
-| |   Memory    Memory  : Wifi      Video   : Timer    Usart     | |
+| |   Memory    Memory  : Wifi      Video   : Timer    Uart      | |
 | |                     :...................:                    | |
 | |                                                              | |
 | +--------------------------------------------------------------+ |
@@ -121,7 +116,7 @@ Top
 | dma   | 0x4000'4000  | sth |   32 |  1  | Dma        |
 | flash | 0x4000'5000  | sth |   4K | 13  | Flash      |
 | spi   | 0x4000'6000  | sth |   32 |  6  | SBus       |
-| ser   | 0x4000'7000  | sth |   32 |  7  | Usart      |
+| ser   | 0x4000'7000  | sth |   32 |  7  | Uart       |
 | mbx   | 0x4000'7000  | sth |   32 | 14  | Mailbox    |
 | dsk   | 0x4008'0000  | NTH |   1K |  8  | DiskC      |
 | net   | 0x4008'1000  | NTH |   32 |  9  | Wifi       |
@@ -154,16 +149,16 @@ Top
 - STH is 16 bits  50MHz
 - rom is a type flash (fast write)
 - flash is paged slower flash with separate controls
-- Gpio has 4 LEDs, 8 toggles, 2 momentary
+- Gpio has 64 pins and can additionally be stimulated or record from/to files
 - Terminal communicates via TCP sockets
 - Video reads/writes files
 - Wifi sends/receives from web
 - Timer is expandable (1-16)
 - Memory has read-only option & supports DMI
 - Mmu has zero latency
-- DiskCtrl reads/writes real files
-- Dma has configurable # channels (1-16)
-- Pic accepts 256 sources, simple priority
+- `DiskCtrl` reads/writes real files
+- `Dma` has configurable # channels (1-16)
+- `Pic` accepts N sources, simple priority interrupt controller
 - Serial I/O configurable baud
 - Eventually Video or Wifi may become a hierarchical sub-system
 - Eventually one of the buses will become customized
@@ -220,13 +215,14 @@ Each module will its status noted here. The following states are allowed:
 | `Disk_module`       | Disk simulation using file system            |  TBS  | Thought |
 | `SBus_module`       | Serial interconnect (SPI or I2C)             |  TBS  | Thought |
 | `Crypto_module`     | Cryptography unit                            |  TBS  | Thought |
-| `Gpio_module`       | General purpose I/O                          |  TBS  | Thought |
+| `Gpio_module`       | General purpose I/O                          |   Y   | Basic   |
+| `Gpio_extn`         | GPIO extension to read/write from/to files   |   Y   | Started |
 | `Ssd_module`        | Solid state memory (possibly sophisticated)  |  TBS  | Thought |
 | `Flash_module`      | Flash memory unit (various types modeled)    |  TBS  | Thought |
 | `Environ_module`    | Environment sensors (temp, magnetic, ...)    |  TBS  | Thought |
 | `Usb_module`        | USB interconnect                             |  TBS  | Thought |
 | `Video_module`      | Video display (possibly GPU too)             |  TBS  | Thought |
-| `Usart_module`      | Serial port                                  |  TBS  | Thought |
+| `Uart_module`       | Serial port                                  |  TBS  | Started |
 | `Gps_module`        | GPS location                                 |  TBS  | Thought |
 | `Wifi_module`       | WiFi using network to simulate               |  TBS  | Thought |
 | `Proc_module`       | Simple hierarchical wrapper                  |  TBS  | Thought |
@@ -234,30 +230,35 @@ Each module will its status noted here. The following states are allowed:
 | `Mailbox_module`    | Mailbox for heterogenous interconnect        |  TBS  | Thought |
 | `SystemMgr_module`  | System manager for clocks/power/resets       |  TBS  | Thought |
 | `News`              | report handler extensions                    |  TBS  | Started |
+| `RgbLED_module`     | Simulate a single RGB LED. Not TLM-2         |   N   | Basic   |
+| `Portex`            | Expands port from `sc_bv[N]` to `sc_bit[N]`  |  TBS  | Basic   |
+| {:TBS:}             | {:TBS:}                                      |  TBS  | {:TBS:} |
 
 ## <a name="ToDo"></a>To Do List
 
 In order of priority:
 
-1. Add `Pic_module`
-3. Add `Dma_module`
-4. Add power-down capability (?use CCI?) with reset
-5. Add timing to AT mode of `Bus_module` with analysis port support
-6. Add YAML or JASON support for configuration
-7. Implement filter interconnect
-8. Implement a CPU emulation (e.g. armv6m)
+1. Finish `pic_api.h` and add `pic_test.cpp`.
+1. Add `gpio_api.h` and add `gpio_test.cpp`.
+1. Finish `Uart_module`
+1. Add `Dma_module`
+1. Add `dma_api.h` and `dma_test.cpp`
+1. Add power-down capability (?use CCI?) with reset
+1. Add timing to AT mode of `Bus_module` with analysis port support
+1. Add YAML or JASON support for configuration of top itself
+1. Implement filter interconnect
+1. Implement a CPU emulation (e.g. armv6m or Mini32)
 
 Optional:
 
 1. Add fancy report handler with XML option and expectations for error injection
-2. Implement one module as RTL and provide an example adaptor (? AXI streaming ?)
-3. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
-4. Consider refactor `Memory_module` to use PIMPL
-5. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
-6. Add a `Stack_module` (LIFO).
-7. Add `Global` class to replace `g_` variables
-8. `Apb2tlm_adapter` and `Tlm2apb_adapter`
-9. `Axi2tlm_adapter` and `Tlm2axi_adapter`
+1. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
+1. Consider refactor `Memory_module` to use PIMPL
+1. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
+1. Add a `Stack_module` (LIFO).
+1. Add `Global` class to replace `g_` variables
+1. `Apb2tlm_adapter` and `Tlm2apb_adapter`
+1. `Axi2tlm_adapter` and `Tlm2axi_adapter`
 
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
 
@@ -359,7 +360,7 @@ Windows
 
 This document was created as a MarkDown text file.
 
-- Best viewed with a Markdown rendering tool.
+- Best viewed with a Markdown rendering tool (e.g. MacDown, ReText or Atom).
 - Or generate HTML, PDF or DOC using pandoc <http://pandoc.org/installing.html>
 - Do not edit derived files
 - For apps that view/edit markdown see <https://github.com/karthik/markdown_science/wiki/Tools-to-support-your-markdown-authoring>.
