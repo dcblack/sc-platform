@@ -30,7 +30,7 @@ Cpu_module::Cpu_module( sc_module_name instance_name )
 : m_mm                  { Memory_manager<>::instance()   }
 , m_init_peq            { "init_peq", this, &Cpu_module::init_peq_cb }
 , m_request_in_progress { nullptr                        }
-, m_cpuid               { this }
+, m_cpuid               { new Cpuid_extn(this) }
 , cpu_task_mgr          { "cpu", this }
 {
   SC_HAS_PROCESS( Cpu_module );
@@ -418,7 +418,7 @@ Cpu_module::transport
           )
       };
 
-      trans.set_extension( &m_cpuid );
+      trans.set_extension( m_cpuid );
 
       sc_time delay = m_qk.get_local_time();
       init_socket->b_transport( trans, delay );

@@ -133,7 +133,7 @@ private:
   tlm_payload_t*               m_request_in_progress;
   sc_event                     m_end_request_event;
   sc_event                     m_transport_done_event;
-  Cpuid_extn                   m_cpuid;
+  Cpuid_extn*                  m_cpuid;
   Style                        m_prev_style;
   std::map<std::string,Addr_t> m_stat; // Statistics
   sc_core::sc_mutex            m_transport_mutex;
