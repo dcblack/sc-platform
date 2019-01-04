@@ -231,7 +231,7 @@ Each module will its status noted here. The following states are allowed:
 | `SystemMgr_module`  | System manager for clocks/power/resets       |  TBS  | Thought |
 | `News`              | report handler extensions                    |  TBS  | Started |
 | `RgbLED_module`     | Simulate a single RGB LED. Not TLM-2         |   N   | Basic   |
-| `Portex`            | Expands port from `sc_bv[N]` to `sc_bit[N]`  |  TBS  | Basic   |
+| `Fanout`            | Expands from `sc_bv[N]` to `sc_bit[N]`       |  TBS  | Basic   |
 | {:TBS:}             | {:TBS:}                                      |  TBS  | {:TBS:} |
 
 ## <a name="ToDo"></a>To Do List
