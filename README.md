@@ -1,5 +1,6 @@
 Table of Contents
 =================
+<a name="ToC"></a>
 
 + [About the Project](#AbtMe)
 + [The Grand Design](#GrandDesign)
@@ -7,12 +8,13 @@ Table of Contents
   - [Memory Map](#MemMap)
   - [Design Notes](#DNotes)
   - [Module Status](#Stats)
-  - [To Do List](#ToDo)
+  - [To Do List, Wishlist and Issues](#ToDo)(#IssuesNideas)
 + [Rules, Conventions, and Guidelines](#CRules)
 + [Instructions for Building](#HowTo)
-+ [About Markdown](#Mrkdown)
++ [About **THIS document** and Markdown](#Mrkdown)
 
-# <a name="AbtMe"></a>About the Project
+<a name="AbtMe"/a>About the Project
+-----------------------------------
 
 This directory contains a basic SystemC design using TLM-2.0 with a single
 top-level module and a practical main implementation that validates each step,
@@ -37,9 +39,10 @@ as such, coding guidelines have bee provided here-in. It is important that this
 code be *model code* and meet high levels of documentation and formatting to
 make it easy to understand. Comment blocks are highly encouraged.
 
-# <a name="GrandDesign"></a>The Grand Design
+# <a name="GrandDesign"/>The Grand Design
 
-## <a name="BlkDiag"></a>Block Diagram
+## <a name="BlkDiag"/a>Block Diagram
+[Back to Table of Contents](#ToC)
 
 - Names inside the boxes are instance names.
 - Names outside the boxes are part of a module name.
@@ -100,8 +103,9 @@ Top
 
 ```
 
-## <a name="MemMap"></a>Memory Map
-----------
+<a name="MemMap"></a>Memory Map
+----------------------------------
+[Back to Table of Contents](#ToC)
 
 | Block | Base Address | Bus | Size | Irq | Module     |
 | ----- | :----------- | --- | ---: | --: | :-----     |
@@ -138,7 +142,9 @@ Top
 | mcu2  | n/a          |  -  |    - |  -  | Mcu        |
 | sys   | n/a          |  -  |    - |  -  | SystemMgr  |
 
-## <a name="DNotes"></a>Design Notes
+<a name="DNotes"></a>Design Notes
+---------------------------------
+[Back to Table of Contents](#ToC)
 
 - Main buses are designated as North (nth), and South (sth)
 - North bus is closest to the "main" processor (cpu)
@@ -167,7 +173,9 @@ Top
 - One hierarchical boundary in the `Proc_module` represented by r1
 - SystemManager manages clocks/power/resets
 
-## <a name="Stats"></a>Module Status
+<a name="Stats"></a>Module Status
+---------------------------------
+[Back to Table of Contents](#ToC)
 
 Each module will its status noted here. The following states are allowed:
 
@@ -234,7 +242,9 @@ Each module will its status noted here. The following states are allowed:
 | `Fanout`            | Expands from `sc_bv[N]` to `sc_bit[N]`       |  TBS  | Basic   |
 | {:TBS:}             | {:TBS:}                                      |  TBS  | {:TBS:} |
 
-## <a name="ToDo"></a>To Do List
+<a name="ToDo"></a>To Do List
+-----------------------------
+[Back to Table of Contents](#ToC)
 
 In order of priority:
 
@@ -256,11 +266,26 @@ Optional:
 1. Consider refactor `Memory_module` to use PIMPL
 1. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
 1. Add a `Stack_module` (LIFO).
-1. Add `Global` class to replace `g_` variables
+1. Add `Global` class to replace `g_` variables and provide better control/observation. Or use CCI.
 1. `Apb2tlm_adapter` and `Tlm2apb_adapter`
 1. `Axi2tlm_adapter` and `Tlm2axi_adapter`
 
+<a name="IssuesNideas"></a>Issues
+---------------------------------
+
+Add liberally here if you have contribution permissions; otherwise, use GitHub issues.
+
+- More collaborators might be good
+- Testing needs to go deeper
+- Stronger emphasis on the &lt;AS-IS&gt; state of the project.
+
+### See Also
+
+- Related project <https://github.com/dcblack/sc-templates>
+
 # <a name="CRules"></a>Rules, Conventions, and Guidelines
+-----------------------
+[Back to Table of Contents](#ToC)
 
 - Documentation will be maintained in GitHub style Markdown
    + ABOUT_{:NAME:}.md will document each module
@@ -323,7 +348,9 @@ Numerous extras have been added including:
 - `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `Configuration`
   built in.
 
-# <a name="HowTo"></a>Instructions for Building
+<a name="HowTo"></a>Instructions for Building
+---------------------------------------------
+[Back to Table of Contents](#ToC)
 
 Dependencies
 ------------
@@ -340,6 +367,7 @@ If you would like to contribute, you should also have:
 
 Linux/OSX
 ---------
+
 1. Open a terminal and navigate into the `build/` directory located where this file is located.
 2. Configure by typing `cmake ..`
 3. Build code with `make` or `make all`
@@ -354,9 +382,21 @@ Boost environment.
 
 Windows
 -------
+
 *To be determined*
 
-# <a name="Mrkdown"></a>About Markdown
+<a name="Mrkdown"></a>About Markdown
+====================================
+[Back to Table of Contents](#ToC)
+
+This document is maintained with the rest of the project on GitHub at <https://github.com/dcblack/sc-platform>.
+
+Tip: If you are reading this document in raw text, you will notice unique
+labels in this document. For instance, this section starts an HTML anchor
+with an attribute value inside double quotes. If you are in Vim (vi or gvim too),
+you can place the cursor on the word and press asterisk `*`, which will take you
+to the table of contents.  Another press will bring you back. So you can quickly
+navigate anywhere from the table of contents! :-)
 
 This document was created as a MarkDown text file.
 
