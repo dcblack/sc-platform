@@ -5,12 +5,12 @@ Features
 --------
 - TLM 2.0 base protocol compliant
 - Supports `Config_extn`
-- {:FEATURE:}
+- Works on Linux, OS X and Windows
 
 Requirements
 ------------
 - SystemC 2.3.2 or better
-- C++14 or better
+- C++98 or better
 
 Functional Description
 ----------------------
