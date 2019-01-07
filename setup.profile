@@ -83,10 +83,16 @@ remove_path() {
   eval $(perl -M'Cwd(abs_path)' -e '$v=$ARGV[0];$p=abs_path($ARGV[1]);for(split(qr":",$ENV{$v})){$e=abs_path($_);if($p ne $e){$push(@e,$e);}};print "$v=",join(":",@e)' "$1" "$2")
 }
 
-if [ "$EDA" = "" ]; then
+# Setup Modules 
+# - obtained from <https://github.com/cea-hpc/modules>
+# - see ABOUT_MODULES.md
+# Environment variable is EDA used to locate Modules installation
+# - You may need to customize this bit.
+if [[ "$EDA" = "" ]]; then
   export EDA=/apps
 fi
-if [ "$MODULESHOME" = "" && -x $EDA/Modules/default/init/bash ]; then
+# Check if environment is already setup. If not, start it.
+if [[ "$MODULESHOME" = "" && -x $EDA/Modules/default/init/bash ]]; then
   echo "Setting up modules"
   . /apps/Modules/default/init/bash
 fi
