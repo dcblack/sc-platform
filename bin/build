@@ -18,30 +18,39 @@ sc_ver_file="$SYSTEMC/include/sysc/kernel/sc_ver.h"
 if [[ ! -r $sc_ver_file ]]; then
   Error "SYSTEMC does not refer to a proper installation."
 fi
-if [[ error_count -gt 0 ]]; then
-  echo "Please fix errors and retry."
-  exit 1
-fi
 
 # Setup option defaults
 HERE=$(/bin/pwd)
 TARGET="" # default
+MAKER=""
 CMAKE_OPTS=""
 MAKE_OPTS=""
 RUN_OPTS=""
 ARGS=""
-RUN=0
-CLEAN=0
+BUILD_LOGNAME='build.log'
+RUN_LOGNAME='run.log'
+RUN_FLAG=0
+CLEAN_FLAG=0
 GDBP=""
 # If name of script is run...
 if [[ $0 =~ .*run ]]; then
-  RUN=1
+  RUN_FLAG=1
 fi
 
 # Put up a big banner
 printf "|\n|\n|\n"
+if [[ $error_count == 0 ]]; then
 clear;
+fi
 ruler '*'
+
+# Determine build directory (may be overridden later)
+ROOT_DIR="."
+BUILD_DIR="."
+if [[ -r ./build ]]; then
+  ROOT_DIR=".."
+  BUILD_DIR="build"
+fi
 
 # Scan command-line for option overrides
 while [[ "$1" =~ -.* ]]; do
@@ -51,19 +60,36 @@ while [[ "$1" =~ -.* ]]; do
     VERBOSE=1
     shift
   elif [[ "$1" == "-norun" ]]; then
-    RUN=1
+    RUN_FLAG=1
     shift
   elif [[ "$1" == "-run" ]]; then
-    RUN=1
+    RUN_FLAG=1
     shift
   elif [[ "$1" == "-clean" ]]; then
-    CLEAN=1
+    CLEAN_FLAG=1
     shift
   elif [[ "$1" == "-gdb" ]]; then
-    RUN=1
+    RUN_FLAG=1
     GDBP=gdb
     shift
-  elif [[ "$1" == "-d" ]]; then
+  elif [[ "$1" == "-B" ]]; then
+    if [[ $# -ge 2 ]]; then
+      ROOT_DIR=".."
+      BUILD_DIR="$2"
+      shift
+    else
+      Error "Must supply directory name with $1 option."
+    fi
+    shift
+  elif [[ "$1" == "-M" ]]; then
+    if [[ $# -ge 2 ]]; then
+      MAKER="$2"
+      shift
+    else
+      Error "Must supply directory name with $1 option."
+    fi
+    shift
+  elif [[ "$1" == "-debug" ]]; then
     CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Debug"
     RUN_OPTS="${RUN_OPTS} -debug"
     shift
@@ -87,62 +113,82 @@ else
   echo "INFO: Using default target - $TARGET"
 fi
 if [[ "$TARGET" != "" ]]; then
-header -uc "$TARGET"
+  if [[ $error_count == 0 ]]; then
+    header -uc "$TARGET"
+  else
+    echo "> $TARGET"
+  fi
+fi
+
+# Choose build-system
+if [[ "$(which $MAKER)" == '' ]]; then
+  for MAKER in ninja gmake make; do
+    if [[ "$(which $MAKER)" != '' ]]; then
+      break
+    fi
+  done
+fi
+if [[ "$(which $MAKER)" == '' ]]; then
+  Error "Unable to find valid 'make' tool"
+fi
+GENERATOR='Unix Makefiles'
+test "$MAKER" == 'ninja' && GENERATOR='Ninja'
+
+if [[ error_count -gt 0 ]]; then
+  echo "Please fix errors and retry."
+  exit 1
 fi
 
 # Move into build directory if present (recommended)
-ROOT_DIR="."
-BUILD_DIR="."
-if [[ -r ./build ]]; then
-  ROOT_DIR=".."
-  BUILD_DIR="build"
+if [[ "$BUILD_DIR" != '.' ]]; then
+  mkdir -p "$BUILD_DIR"
   echo "cd $BUILD_DIR"
-  cd $BUILD_DIR
+  cd $BUILD_DIR 1>/dev/null
 fi
 
 # Build
-rm -f make.log run.log $ROOT_DIR/make.log $ROOT_DIR/run.log
+rm -f $BUILD_LOGNAME $RUN_LOGNAME $ROOT_DIR/$BUILD_LOGNAME $ROOT_DIR/$RUN_LOGNAME
 if [[ -r $ROOT_DIR/CMakeLists.txt ]]; then
-  echo "cmake ${CMAKE_OPTS}$ROOT_DIR 2>&1 | tee -a make.log"
-  cmake "${CMAKE_OPTS}" $ROOT_DIR
+  echo "cmake -G "$GENERATOR" ${CMAKE_OPTS} $ROOT_DIR 2>&1 | tee -a $BUILD_LOGNAME"
+  cmake -G "$GENERATOR" "${CMAKE_OPTS}" -S $ROOT_DIR
 fi
-if [[ $CLEAN == 1 ]]; then
-  echo "make clean 2>&1 | tee -a $ROOT_DIR/make.log"
-  make clean 2>&1 | tee -a $ROOT_DIR/make.log
+if [[ $CLEAN_FLAG == 1 ]]; then
+  echo "$MAKER clean 2>&1 | tee -a $ROOT_DIR/$BUILD_LOGNAME"
+  $MAKER clean 2>&1 | tee -a $ROOT_DIR/$BUILD_LOGNAME
 fi
 if [[ "$TARGET" == "" ]]; then
-  TARGET=$(make help | perl -lane '/^\.\.\. .*\.x$/ && print $F[1]')
+  TARGET=$($MAKER help | perl -lane '/^\.\.\. .*\.x$/ && print $F[1]')
   header -uc "$TARGET"
 fi
 if [[ -x $TARGET ]]; then rm $TARGET; fi
-echo "make $TARGET ${MAKE_OPTS} 2>&1 | tee -a $ROOT_DIR/make.log"
-make $TARGET ${MAKE_OPTS} 2>&1 | c++filt |tee -a $ROOT_DIR/make.log
-filter-mlog $ROOT_DIR/make.log
+echo "$MAKER $TARGET ${MAKE_OPTS} 2>&1 | tee -a $ROOT_DIR/$BUILD_LOGNAME"
+$MAKER $TARGET ${MAKE_OPTS} 2>&1 | c++filt |tee -a $ROOT_DIR/$BUILD_LOGNAME
+filter-mlog $ROOT_DIR/$BUILD_LOGNAME
 
 # Run
-if [[ $RUN == 1 ]]; then
+if [[ $RUN_FLAG == 1 ]]; then
   cd $ROOT_DIR;
   env DEBUG=1\
     LD_LIBRARY_PATH=$SYSTEMC/lib \
     DYLD_LIBRARY_PATH=$SYSTEMC/lib \
-  $GDBP $BUILD_DIR/$TARGET -- $RUN_OPTS ${ARGS} 2>&1 \
-  | tee $BUILD_DIR/run.log;
+  $GDBP $BUILD_DIR/$TARGET -- $RUN_OPTS $ARGS 2>&1 \
+  | tee $BUILD_DIR/$RUN_LOGNAME;
 
   if [[ "$ROOT_DIR" != "$BUILD_DIR" ]]; then
-    #filter-sclog $BUILD_DIR/run.log | c++filt >run.log;
-    c++filt < $BUILD_DIR/run.log >run.log;
+    #filter-sclog $BUILD_DIR/$RUN_LOGNAME | c++filt >$RUN_LOGNAME;
+    c++filt < $BUILD_DIR/$RUN_LOGNAME >$RUN_LOGNAME;
   else
-    # filter-sclog $BUILD_DIR/run.log | c++filt >$BUILD_DIR/run2.log;
-    c++filt < $BUILD_DIR/run.log >$BUILD_DIR/run2.log;
-    rm $BUILD_DIR/run.log
-    mv $BUILD_DIR/run2.log run.log
+    # filter-sclog $BUILD_DIR/$RUN_LOGNAME | c++filt >$BUILD_DIR/run2.log;
+    c++filt < $BUILD_DIR/$RUN_LOGNAME >$BUILD_DIR/run2.log;
+    rm $BUILD_DIR/$RUN_LOGNAME
+    mv $BUILD_DIR/run2.log $RUN_LOGNAME
   fi
 fi
-if [[ -r make.log ]]; then
-  echo "Info: Created make.log"
+if [[ -r $BUILD_LOGNAME ]]; then
+  echo "Info: Created $BUILD_LOGNAME"
 fi
-if [[ -r run.log ]]; then
-  echo "Info: Created run.log"
+if [[ -r $RUN_LOGNAME ]]; then
+  echo "Info: Created $RUN_LOGNAME"
 fi
 
 # The end
