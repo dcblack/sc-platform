@@ -32,6 +32,7 @@ case "$VERS" in
   11) CPPSTD="c++11"; CPLUSPLUS=201103L;;
   14) CPPSTD="c++14"; CPLUSPLUS=201402L;;
   17) CPPSTD="c++17"; CPLUSPLUS=201703L;;
+  --help) echo "SYNTAX: apicheck 98|03|11|14|17" 1>&2; exit 0;;
    *) echo "FATAL: Illegal version! Must be one of 98, 03, 11, 14 or 17." 1>&2; exit 1;;
 esac
 
