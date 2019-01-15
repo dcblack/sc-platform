@@ -4,7 +4,9 @@
 # $Syntax: build [OPTIONS] TARGET $
 # $Options: -d => debug mode; -gdb => invoke with gdb; -run => execute after compile; -v => verbose compile
 
+#-------------------------------------------------------------------------------
 # Check for proper environment
+#-------------------------------------------------------------------------------
 let error_count=0
 function Error() {
   echo "ERROR: $@" 1>&2
@@ -19,7 +21,9 @@ if [[ ! -r $sc_ver_file ]]; then
   Error "SYSTEMC does not refer to a proper installation."
 fi
 
+#-------------------------------------------------------------------------------
 # Setup option defaults
+#-------------------------------------------------------------------------------
 HERE=$(/bin/pwd)
 TARGET="" # default
 MAKER=""
@@ -37,14 +41,17 @@ if [[ $0 =~ .*run ]]; then
   RUN_FLAG=1
 fi
 
+#-------------------------------------------------------------------------------
 # Put up a big banner
-printf "|\n|\n|\n"
+#-------------------------------------------------------------------------------
 if [[ $error_count == 0 ]]; then
 clear;
 fi
 ruler '*'
 
+#-------------------------------------------------------------------------------
 # Determine build directory (may be overridden later)
+#-------------------------------------------------------------------------------
 ROOT_DIR="."
 BUILD_DIR="."
 if [[ -r ./build ]]; then
