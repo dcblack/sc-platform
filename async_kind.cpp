@@ -5,30 +5,30 @@
 #define ASYNC_KIND_KEY(_a) #_a,
 namespace {
 using cstr = const char * const;
-cstr async_kind_str[] = {
+cstr s_async_kind_str[] = {
   ASYNC_KIND_ENUMS(ASYNC_KIND_KEY)
 };
 }
 #undef KEY
 
 //------------------------------------------------------------------------------
-std::string to_string( const Async_kind& elt )
+std::string async_kind_str( const Async_kind& elt )
 {
-  return async_kind_str[ static_cast<int>( elt ) ];
+  return s_async_kind_str[ static_cast<int>( elt ) ];
 }
 
 //------------------------------------------------------------------------------
 std::ostream& operator<<( std::ostream& os, const Async_kind& rhs )
 {
-  os << to_string( rhs );
+  os << async_kind_str( rhs );
   return os;
 }
 
 //------------------------------------------------------------------------------
 bool is_Async_kind( const std::string& str ) noexcept
 {
-  int size = sizeof( async_kind_str ) / sizeof( char* );
-  cstr* begin = async_kind_str;
+  int size = sizeof( s_async_kind_str ) / sizeof( char* );
+  cstr* begin = s_async_kind_str;
   cstr* end = begin + size;
   cstr* ptr = find( begin, end, str );
   return (ptr != end);
@@ -50,8 +50,8 @@ namespace {
 Async_kind to_Async_kind( const std::string& str )
 {
   static str_exception e{ "Async_kind out of bounds!" };
-  int size = sizeof( async_kind_str ) / sizeof( char* );
-  cstr* begin = async_kind_str;
+  int size = sizeof( s_async_kind_str ) / sizeof( char* );
+  cstr* begin = s_async_kind_str;
   cstr* end = begin + size;
   cstr* ptr = find( begin, end, str );
   if( ptr==end ) throw e;

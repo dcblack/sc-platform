@@ -32,7 +32,7 @@ enum class Platform : int {
   };
 #undef PLATFORM_KEY
 
-std::string   to_string  ( const Platform& elt    );
+std::string   platform_str( const Platform& elt    );
 bool          is_Platform( const std::string& str ) noexcept;
 Platform      to_Platform( const std::string& str );
 std::ostream& operator<< ( std::ostream& os, const Platform& rhs );

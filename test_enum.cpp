@@ -5,16 +5,16 @@
 #define TEST_KEY(_a) #_a,
 namespace {
 using cstr = const char * const;
-cstr test_str[] = {
+cstr s_test_str[] = {
   TEST_ENUMS(TEST_KEY)
 };
 }
 #undef KEY
 
 //------------------------------------------------------------------------------
-std::string to_string( const PlatformTest& elt )
+std::string test_str( const PlatformTest& elt )
 {
-  return test_str[ static_cast<int>( elt ) ];
+  return s_test_str[ static_cast<int>( elt ) ];
 }
 
 //------------------------------------------------------------------------------
@@ -27,8 +27,8 @@ std::ostream& operator<<( std::ostream& os, const PlatformTest& rhs )
 //------------------------------------------------------------------------------
 bool is_PlatformTest( const std::string& str ) noexcept
 {
-  int size = sizeof( test_str ) / sizeof( char* );
-  cstr* begin = test_str;
+  int size = sizeof( s_test_str ) / sizeof( char* );
+  cstr* begin = s_test_str;
   cstr* end = begin + size;
   cstr* ptr = find( begin, end, str );
   return (ptr != end);
@@ -50,8 +50,8 @@ namespace {
 PlatformTest to_PlatformTest( const std::string& str )
 {
   static str_exception e{ "PlatformTest out of bounds!" };
-  int size = sizeof( test_str ) / sizeof( char* );
-  cstr* begin = test_str;
+  int size = sizeof( s_test_str ) / sizeof( char* );
+  cstr* begin = s_test_str;
   cstr* end = begin + size;
   cstr* ptr = find( begin, end, str );
   if( ptr==end ) throw e;

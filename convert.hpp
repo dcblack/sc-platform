@@ -8,6 +8,13 @@
 #include <exception>
 #include <ctype.h>
 
+/*
+Convert strings containing number representations to integers.
+Allows for C++14 style numeric field separators (e.g. 1'000'000)
+and SI suffices for bytes (e..g  4.2GB). Useful in making YAML
+for memory more readable.
+*/
+
 template<typename T>
 void to_int( T& result, std::string the_string )
 {

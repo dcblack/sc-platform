@@ -26,7 +26,7 @@ enum class PlatformTest : int {
   };
 #undef TEST_KEY
 
-std::string to_string( const PlatformTest& elt );
+std::string platformtest_str( const PlatformTest& elt );
 bool is_PlatformTest( const std::string& str ) noexcept;
 PlatformTest to_PlatformTest( const std::string& str );
 std::ostream& operator<<( std::ostream& os, const PlatformTest& rhs );

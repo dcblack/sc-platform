@@ -21,10 +21,10 @@
 #define ASYNC_KIND_KEY(_a) _a,
 enum class Async_kind : int {
   ASYNC_KIND_ENUMS(ASYNC_KIND_KEY)
-  };
+};
 #undef ASYNC_KIND_KEY
 
-std::string to_string( const Async_kind& elt );
+std::string async_kind_str( const Async_kind& elt );
 bool is_Async_kind( const std::string& str ) noexcept;
 Async_kind to_Async_kind( const std::string& str );
 std::ostream& operator<<( std::ostream& os, const Async_kind& rhs );
@@ -32,13 +32,13 @@ std::istream& operator>>( std::istream& is, Async_kind& rhs );
 inline Async_kind operator++(Async_kind& x) {
   return x = (Async_kind)(std::underlying_type<Async_kind>::type(x) + 1); 
 }
-inline Async_kind operator*(Async_kind c) const {
+inline Async_kind operator*(Async_kind c) {
   return c;
 }
-inline Async_kind begin(Async_kind r) const {
+inline Async_kind begin(Async_kind r) {
   return (Async_kind)std::underlying_type<Async_kind>::type(0);
 }
-inline Async_kind end(Async_kind r) const {
+inline Async_kind end(Async_kind r) {
   return Async_kind::end;
 }
 

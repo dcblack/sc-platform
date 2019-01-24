@@ -98,6 +98,15 @@ add_executable( signal
 target_compile_definitions( signal PRIVATE SIGNAL_EXAMPLE )
 
 ################################################################################
+add_executable( payload
+  async_kind.cpp
+  async_payload.cpp
+)
+
+target_link_libraries( payload yaml-cpp )
+target_compile_definitions( payload PRIVATE ASYNC_PAYLOAD_EXAMPLE )
+
+################################################################################
 add_executable( rgbled
   rgbled.cpp
   report.cpp

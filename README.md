@@ -13,8 +13,8 @@ Table of Contents
 + [Instructions for Building](#HowTo)
 + [About **THIS document** and Markdown](#Mrkdown)
 
-<a name="AbtMe"/a>About the Project
------------------------------------
+<a name="AbtMe">About the Project</a>
+-------------------------------------
 
 This directory contains a basic SystemC design using TLM-2.0 with a single
 top-level module and a practical main implementation that validates each step,
@@ -103,7 +103,7 @@ Top
 
 ```
 
-<a name="MemMap"></a>Memory Map
+<a name="MemMap">Memory Map</a>
 ----------------------------------
 [Back to Table of Contents](#ToC)
 
@@ -142,7 +142,7 @@ Top
 | mcu2  | n/a          |  -  |    - |  -  | Mcu        |
 | sys   | n/a          |  -  |    - |  -  | SystemMgr  |
 
-<a name="DNotes"></a>Design Notes
+<a name="DNotes">Design Notes</a>
 ---------------------------------
 [Back to Table of Contents](#ToC)
 
@@ -173,7 +173,7 @@ Top
 - One hierarchical boundary in the `Proc_module` represented by r1
 - SystemManager manages clocks/power/resets
 
-<a name="Stats"></a>Module Status
+<a name="Stats">Module Status</a>
 ---------------------------------
 [Back to Table of Contents](#ToC)
 
@@ -242,7 +242,7 @@ Each module will its status noted here. The following states are allowed:
 | `Fanout`            | Expands from `sc_bv[N]` to `sc_bit[N]`       |  TBS  | Basic   |
 | {:TBS:}             | {:TBS:}                                      |  TBS  | {:TBS:} |
 
-<a name="ToDo"></a>To Do List
+<a name="ToDo">To Do List</a>
 -----------------------------
 [Back to Table of Contents](#ToC)
 
@@ -270,7 +270,7 @@ Optional:
 1. `Apb2tlm_adapter` and `Tlm2apb_adapter`
 1. `Axi2tlm_adapter` and `Tlm2axi_adapter`
 
-<a name="IssuesNideas"></a>Issues
+<a name="IssuesNideas">Issues</a>
 ---------------------------------
 
 Add liberally here if you have contribution permissions; otherwise, use GitHub issues.
@@ -283,8 +283,8 @@ Add liberally here if you have contribution permissions; otherwise, use GitHub i
 
 - Related project <https://github.com/dcblack/sc-templates>
 
-# <a name="CRules"></a>Rules, Conventions, and Guidelines
------------------------
+# <a name="CRules">Rules, Conventions, and Guidelines</a>
+---------------------------------------------------------
 [Back to Table of Contents](#ToC)
 
 - Documentation will be maintained in GitHub style Markdown
@@ -348,7 +348,7 @@ Numerous extras have been added including:
 - `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `Configuration`
   built in.
 
-<a name="HowTo"></a>Instructions for Building
+<a name="HowTo">Instructions for Building</a>
 ---------------------------------------------
 [Back to Table of Contents](#ToC)
 
@@ -385,7 +385,7 @@ Windows
 
 *To be determined*
 
-<a name="Mrkdown"></a>About Markdown
+<a name="Mrkdown">About Markdown</a>
 ====================================
 [Back to Table of Contents](#ToC)
 

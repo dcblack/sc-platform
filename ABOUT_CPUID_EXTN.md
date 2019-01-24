@@ -2,6 +2,7 @@ About `Cpuid_extn`
 ===================
 
 TLM 2.0 transaction extension to identify the originating initiator in a transaction.
+Used by `Pic_module`
 
 Features
 --------

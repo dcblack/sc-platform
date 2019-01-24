@@ -5,16 +5,16 @@
 #define PLATFORM_KEY(_a) #_a,
 namespace {
 using cstr = const char * const;
-cstr platform_str[] = {
+cstr s_platform_str[] = {
   PLATFORM_ENUMS(PLATFORM_KEY)
 };
 }
 #undef KEY
 
 //------------------------------------------------------------------------------
-std::string to_string( const Platform& elt )
+std::string platform_str( const Platform& elt )
 {
-  return platform_str[ static_cast<int>( elt ) ];
+  return s_platform_str[ static_cast<int>( elt ) ];
 }
 
 //------------------------------------------------------------------------------
@@ -27,8 +27,8 @@ std::ostream& operator<<( std::ostream& os, const Platform& rhs )
 //------------------------------------------------------------------------------
 bool is_Platform( const std::string& str ) noexcept
 {
-  int size = sizeof( platform_str ) / sizeof( char* );
-  cstr* begin = platform_str;
+  int size = sizeof( s_platform_str ) / sizeof( char* );
+  cstr* begin = s_platform_str;
   cstr* end = begin + size;
   cstr* ptr = find( begin, end, str );
   return (ptr != end);
@@ -50,8 +50,8 @@ namespace {
 Platform to_Platform( const std::string& str )
 {
   static str_exception e{ "Platform out of bounds!" };
-  int size = sizeof( platform_str ) / sizeof( char* );
-  cstr* begin = platform_str;
+  int size = sizeof( s_platform_str ) / sizeof( char* );
+  cstr* begin = s_platform_str;
   cstr* end = begin + size;
   cstr* ptr = find( begin, end, str );
   if( ptr==end ) throw e;
