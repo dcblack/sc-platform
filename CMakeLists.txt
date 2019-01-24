@@ -17,46 +17,48 @@ find_package(Boost 1.65 REQUIRED filesystem)
 
 add_compile_definitions(SC_INCLUDE_FX SC_INCLUDE_DYNAMIC_PROCESSES)
 include_directories(${Boost_INCLUDE_DIRS})
+include_directories( . )
+
 
 ################################################################################
 add_executable( platform
 # Support ----------------------------------------------------------------------
-  common.cpp
-  sc_freq.cpp
-  log2.cpp
-  report.cpp
-  wallclock.cpp
-  summary.cpp
-  news.cpp
-  no_clock.cpp
-  task.cpp
-  netlist.cpp
-  platform_enum.cpp
-  test_enum.cpp
-  options.cpp
-  signal.cpp
-  configuration.cpp
-  config_extn.cpp
-  config_proxy.cpp
-  cpuid_extn.cpp
-  memory_map.cpp
-  timer_beh.cpp
-  hexfile.cpp
-  parity.cpp
+  common/common.cpp
+  common/log2.cpp
+  scx/sc_freq.cpp
+  report/report.cpp
+  top/wallclock.cpp
+  report/summary.cpp
+  top/news.cpp
+  no_clock/no_clock.cpp
+  cpu/task.cpp
+  top/netlist.cpp
+  top/platform_enum.cpp
+  unit_test/test_enum.cpp
+  top/options.cpp
+  utility/signal.cpp
+  config/configuration.cpp
+  config/config_extn.cpp
+  config/config_proxy.cpp
+  cpu/cpuid_extn.cpp
+  bus/memory_map.cpp
+  timer/timer_beh.cpp
+  utility/hexfile.cpp
+  uart/parity.cpp
 # Major modules ----------------------------------------------------------------
-  main.cpp
-  top.cpp
-  cpu.cpp
-  bus.cpp
-  stub.cpp
-  memory.cpp
-  timer.cpp
-  pic.cpp
-  gpio.cpp
-  rgbled.cpp
-  uart.cpp
-# dma.cpp
-# mmu.cpp
+  top/main.cpp
+  top/top.cpp
+  cpu/cpu.cpp
+  bus/bus.cpp
+  top/stub.cpp
+  memory/memory.cpp
+  timer/timer.cpp
+  interrupt/pic.cpp
+  gpio/gpio.cpp
+  gpio/rgbled.cpp
+  uart/uart.cpp
+# dma/dma.cpp
+# mmu/mmu.cpp
 # cache.cpp
 # crypto.cpp
 # flash.cpp
@@ -66,41 +68,41 @@ add_executable( platform
 # keyboard.cpp
 # video.cpp
 # wifi.cpp
-# sbus.cpp
+# sbus/bus.cpp
 # environ.cpp
 # gps.cpp
 # Testing ----------------------------------------------------------------------
 # program.cpp
-  memory_test.cpp
-  timer_test.cpp
+  memory/memory_test.cpp
+  timer/timer_test.cpp
 )
 target_link_libraries( platform yaml-cpp Boost::filesystem)
 
 ################################################################################
 add_executable( config
-  configuration.cpp
-  report.cpp
-  wallclock.cpp
-  summary.cpp
-  common.cpp
-  sc_freq.cpp
+  common/common.cpp
+  config/configuration.cpp
+  report/report.cpp
+  top/wallclock.cpp
+  report/summary.cpp
+  scx/sc_freq.cpp
 )
 target_compile_definitions( config PRIVATE CONFIG_EXAMPLE )
 
 ################################################################################
 add_executable( signal
-  signal.cpp
-  report.cpp
-  wallclock.cpp
-  summary.cpp
+  utility/signal.cpp
+  report/report.cpp
+  top/wallclock.cpp
+  report/summary.cpp
 )
 
 target_compile_definitions( signal PRIVATE SIGNAL_EXAMPLE )
 
 ################################################################################
 add_executable( payload
-  async_kind.cpp
-  async_payload.cpp
+  async/async_kind.cpp
+  async/async_payload.cpp
 )
 
 target_link_libraries( payload yaml-cpp )
@@ -108,54 +110,54 @@ target_compile_definitions( payload PRIVATE ASYNC_PAYLOAD_EXAMPLE )
 
 ################################################################################
 add_executable( rgbled
-  rgbled.cpp
-  report.cpp
-  wallclock.cpp
-  summary.cpp
-  no_clock.cpp
+  gpio/rgbled.cpp
+  report/report.cpp
+  top/wallclock.cpp
+  report/summary.cpp
+  no_clock/no_clock.cpp
 )
 target_compile_definitions( rgbled PRIVATE RGBLED_EXAMPLE )
 
 ################################################################################
 add_executable( timer
-  timer_beh.cpp
-  common.cpp
-  sc_freq.cpp
-  report.cpp
-  wallclock.cpp
-  summary.cpp
-  no_clock.cpp
+  timer/timer_beh.cpp
+  common/common.cpp
+  scx/sc_freq.cpp
+  report/report.cpp
+  top/wallclock.cpp
+  report/summary.cpp
+  no_clock/no_clock.cpp
 )
 target_compile_definitions( timer PRIVATE TIMER_EXAMPLE )
 
 ################################################################################
 add_executable( xyaml
-  xyaml.cpp
-  report.cpp
-  wallclock.cpp
-  summary.cpp
-  common.cpp
-  sc_freq.cpp
+  unit_test/xyaml.cpp
+  report/report.cpp
+  top/wallclock.cpp
+  report/summary.cpp
+  common/common.cpp
+  scx/sc_freq.cpp
 )
 target_compile_definitions( xyaml PRIVATE YAML_EXAMPLE )
 target_link_libraries( xyaml yaml-cpp )
 
 ################################################################################
 # add_executable( map_test
-#   map_test.cpp
-#   memory_map.cpp
-#   report.cpp
-#   wallclock.cpp
-#   summary.cpp
-#   common.cpp
-#   sc_freq.cpp
+#   bus/map_test.cpp
+#   bus/memory_map.cpp
+#   report/report.cpp
+#   top/wallclock.cpp
+#   report/summary.cpp
+#   common/common.cpp
+#   scx/sc_freq.cpp
 # )
 # target_link_libraries( map_test yaml-cpp )
 
 ################################################################################
 add_executable( freq_test
-  freq_test.cpp
-  sc_freq.cpp
+  scx/freq_test.cpp
+  scx/sc_freq.cpp
 )
 
 ################################################################################

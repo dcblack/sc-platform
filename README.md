@@ -343,7 +343,7 @@ Numerous extras have been added including:
 
 - `report.h` is provided to simplify message reporting. See `report.h` comments
   for more information.
-- `configuration.h` and `configuration.cpp` provide a generalized configuration mechanism that
+- `configuration.h` and `config/configuration.cpp` provide a generalized configuration mechanism that
   used to configure memory maps and other features.
 - `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `Configuration`
   built in.

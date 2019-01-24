@@ -1,178 +1,3158 @@
-!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
-!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
-!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
-!_TAG_PROGRAM_NAME	Exuberant Ctags	//
-!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.8	//
-Access	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	c
-Access_t	memory_manager.h	/^  struct Access_t$/;"	s	struct:Memory_manager
-BUS_H	bus.h	13;"	d
-Bus_module	bus.cpp	/^Bus_module::Bus_module( sc_module_name instance_name )$/;"	f	class:Bus_module
-Bus_module	bus.h	/^struct Bus_module: sc_core::sc_module$/;"	s
-COMMON_H	common.h	2;"	d
-CONFIG_EXTN_H	config_extn.h	2;"	d
-CPU_H	cpu.h	13;"	d
-Config_extn	config_extn.cpp	/^Config_extn::Config_extn(void) \/\/< Constructor$/;"	f	class:Config_extn
-Config_extn	config_extn.h	/^struct Config_extn$/;"	s
-Cpu_module	cpu.cpp	/^Cpu_module::Cpu_module( sc_module_name instance_name )$/;"	f	class:Cpu_module
-Cpu_module	cpu.h	/^struct Cpu_module: sc_core::sc_module$/;"	s
-DEFAULT	common.h	/^enum class Style { DEFAULT, LT, AT };$/;"	m	class:Style
-DMA_H	dma.h	13;"	d
-DMI_EXTN_H	dmi_extn.h	2;"	d
-Dma_module	dma.cpp	/^Dma_module::Dma_module$/;"	f	class:Dma_module
-Dma_module	dma.h	/^struct Dma_module: sc_core::sc_module$/;"	s
-Dmi_extn	dmi_extn.cpp	/^Dmi_extn::Dmi_extn(void) \/\/< Constructor$/;"	f	class:Dmi_extn
-Dmi_extn	dmi_extn.h	/^struct Dmi_extn$/;"	s
-Feature	common.h	/^enum class Feature { none, enabled };$/;"	c
-G	common.h	12;"	d
-INFO	report.h	45;"	d
-K	common.h	10;"	d
-LT	common.h	/^enum class Style { DEFAULT, LT, AT };$/;"	m	class:Style
-M	common.h	11;"	d
-MEMORY_H	memory.h	13;"	d
-MEMORY_MANAGER_H	memory_manager.h	2;"	d
-MSGID	main.cpp	/^  const char* MSGID = "\/Doulos Inc\/{:PROJECT:}\/main";$/;"	m	namespace:__anon4	file:
-MSGID	memory_manager.h	134;"	d
-MSGID	memory_manager.h	37;"	d
-MSGID	top.cpp	/^  const char* const MSGID="\/Doulos\/Example\/Platform";$/;"	m	namespace:__anon7	file:
-Memory_manager	memory_manager.h	/^Memory_manager<T>::Memory_manager( void )$/;"	f	class:Memory_manager
-Memory_manager	memory_manager.h	/^struct Memory_manager: public tlm::tlm_mm_interface$/;"	s
-Memory_module	memory.cpp	/^Memory_module::Memory_module \/\/ Constructor$/;"	f	class:Memory_module
-Memory_module	memory.h	/^struct Memory_module: sc_core::sc_module$/;"	s
-NOT_YET_IMPLEMENTED	report.h	55;"	d
-RC	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-RCSID	top.cpp	/^  const char* const RCSID="$Id$";$/;"	m	namespace:__anon7	file:
-REPORT	report.h	37;"	d
-REPORT_H	report.h	32;"	d
-RO	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-RS	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-RW	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-SC_ALWAYS	report.h	44;"	d
-SC_INCLUDE_DYNAMIC_PROCESSES	bus.h	15;"	d
-SC_INCLUDE_DYNAMIC_PROCESSES	cpu.h	15;"	d
-SC_INCLUDE_DYNAMIC_PROCESSES	dma.h	15;"	d
-SC_INCLUDE_DYNAMIC_PROCESSES	memory.h	15;"	d
-Style	common.h	/^enum class Style { DEFAULT, LT, AT };$/;"	c
-TODO	report.h	54;"	d
-TOP_H	top.h	2;"	d
-Top_module	top.cpp	/^Top_module::Top_module(sc_module_name instance_name)$/;"	f	class:Top_module
-Top_module	top.h	/^struct Top_module$/;"	s
-UTIL_H	util.h	13;"	d
-W0C	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-W0S	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-W0T	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-W1C	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-W1S	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-W1T	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-WALLCLOCK_H	wallclock.h	2;"	d
-WO	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-allocate	memory_manager.h	/^T* Memory_manager<T>::allocate()$/;"	f	class:Memory_manager
-allocate_acquire	memory_manager.h	/^T* Memory_manager<T>::allocate_acquire( void )$/;"	f	class:Memory_manager
-b_transport	bus.cpp	/^Bus_module::b_transport( int id, tlm_generic_payload& trans, sc_time& delay )$/;"	f	class:Bus_module
-b_transport	memory.cpp	/^Memory_module::b_transport$/;"	f	class:Memory_module
-check_transaction	cpu.cpp	/^void Cpu_module::check_transaction( tlm::tlm_generic_payload& trans )$/;"	f	class:Cpu_module
-clone	config_extn.cpp	/^Config_extn::clone()$/;"	f	class:Config_extn
-clone	dmi_extn.cpp	/^Dmi_extn::clone()$/;"	f	class:Dmi_extn
-copy_from	config_extn.cpp	/^Config_extn::copy_from(tlm_extension_base const& ext)$/;"	f	class:Config_extn
-copy_from	dmi_extn.cpp	/^Dmi_extn::copy_from(tlm_extension_base const& ext)$/;"	f	class:Dmi_extn
-cpu	top.h	/^  Cpu_module*    cpu;$/;"	m	struct:Top_module
-cpu_thread	cpu.cpp	/^Cpu_module::cpu_thread( void )$/;"	f	class:Cpu_module
-decompose	bus.cpp	/^Bus_module::decompose( uint64_t address, uint64_t& masked_address )$/;"	f	class:Bus_module
-dma_thread	dma.cpp	/^Dma_module::dma_thread( void )$/;"	f	class:Dma_module
-elaboration_time	main.cpp	/^  double elaboration_time=-1.0, starting_time=-1.0, finished_time=-1.0;$/;"	m	namespace:__anon4	file:
-empties	memory_manager.h	/^  Access_t* empties;$/;"	m	struct:Memory_manager
-execute_transaction	memory.cpp	/^void Memory_module::execute_transaction( Memory_module::tlm_payload_t& trans )$/;"	f	class:Memory_module
-execute_transaction_process	memory.cpp	/^Memory_module::execute_transaction_process( void )$/;"	f	class:Memory_module
-finished_time	main.cpp	/^  double elaboration_time=-1.0, starting_time=-1.0, finished_time=-1.0;$/;"	m	namespace:__anon4	file:
-free	config_extn.cpp	/^Config_extn::free(void)$/;"	f	class:Config_extn
-free	dmi_extn.cpp	/^Dmi_extn::free(void)$/;"	f	class:Dmi_extn
-free	memory_manager.h	/^void Memory_manager<T>::free(T* trans)$/;"	f	class:Memory_manager
-free_list	memory_manager.h	/^  Access_t* free_list;$/;"	m	struct:Memory_manager
-get_cpu_time	wallclock.cpp	/^double get_cpu_time(){$/;"	f
-get_direct_mem_ptr	bus.cpp	/^Bus_module::get_direct_mem_ptr( int id, tlm_generic_payload& trans,$/;"	f	class:Bus_module
-get_direct_mem_ptr	memory.cpp	/^Memory_module::get_direct_mem_ptr$/;"	f	class:Memory_module
-get_wall_time	wallclock.cpp	/^double get_wall_time(){$/;"	f
-init_peq_cb	cpu.cpp	/^Cpu_module::init_peq_cb$/;"	f	class:Cpu_module
-init_peq_cb	dma.cpp	/^Dma_module::init_peq_cb$/;"	f	class:Dma_module
-init_socket	bus.h	/^  tlm_utils::multi_passthrough_initiator_socket<Bus_module> init_socket;$/;"	m	struct:Bus_module
-init_socket	dma.h	/^  tlm_utils::simple_initiator_socket<Dma_module> init_socket;$/;"	m	struct:Dma_module
-invalidate_direct_mem_ptr	bus.cpp	/^Bus_module::invalidate_direct_mem_ptr( int id, uint64 start_range,$/;"	f	class:Bus_module
-invalidate_direct_mem_ptr	cpu.cpp	/^Cpu_module::invalidate_direct_mem_ptr$/;"	f	class:Cpu_module
-invalidate_direct_mem_ptr	dma.cpp	/^Dma_module::invalidate_direct_mem_ptr$/;"	f	class:Dma_module
-m_access	memory.h	/^  Access  m_access;        \/\/ Default RW, optional RO$/;"	m	struct:Memory_module
-m_addr_latency	memory.h	/^  sc_time m_addr_latency;  \/\/ time to receive address\/control$/;"	m	struct:Memory_module
-m_alignment	memory.h	/^  size_t  m_alignment;     \/\/ required minimum alignment$/;"	m	struct:Memory_module
-m_base_address	memory.h	/^  size_t  m_base_address;$/;"	m	struct:Memory_module
-m_byte_enables	memory.h	/^  Feature m_byte_enables;$/;"	m	struct:Memory_module
-m_coding_style	cpu.h	/^  Style                        m_coding_style;$/;"	m	struct:Cpu_module
-m_count	memory_manager.h	/^  int     m_count;$/;"	m	struct:Memory_manager
-m_dmi_allowed	memory.h	/^  Feature m_dmi_allowed;$/;"	m	struct:Memory_module
-m_dmi_granted	memory.h	/^  bool                 m_dmi_granted;$/;"	m	struct:Memory_module
-m_end_req_pending	memory.h	/^  tlm_payload_t*       m_end_req_pending;$/;"	m	struct:Memory_module
-m_end_request_event	cpu.h	/^  sc_event                     m_end_request_event;$/;"	m	struct:Cpu_module
-m_init_peq	cpu.h	/^  tlm_peq_t                    m_init_peq;$/;"	m	struct:Cpu_module
-m_max_burst	memory.h	/^  size_t  m_max_burst;     \/\/ maximum number of bytes per burst (0 => infinite for LT)$/;"	m	struct:Memory_module
-m_mem	memory.h	/^  std::vector<uint8_t> m_mem;$/;"	m	struct:Memory_module
-m_memory_depth	memory.h	/^  size_t  m_memory_depth;$/;"	m	struct:Memory_module
-m_mm	cpu.h	/^  Memory_manager<>             m_mm; \/\/ for managing generic payload$/;"	m	struct:Cpu_module
-m_next_response_pending	memory.h	/^  tlm_payload_t*       m_next_response_pending;$/;"	m	struct:Memory_module
-m_qk	cpu.h	/^  tlm_utils::tlm_quantumkeeper m_qk;$/;"	m	struct:Cpu_module
-m_read_latency	memory.h	/^  sc_time m_read_latency;  \/\/ time per bus beat to respond with data$/;"	m	struct:Memory_module
-m_request_in_progress	cpu.h	/^  tlm_payload_t*               m_request_in_progress;$/;"	m	struct:Cpu_module
-m_response_in_progress	memory.h	/^  bool                 m_response_in_progress;$/;"	m	struct:Memory_module
-m_targ_peq	memory.h	/^  tlm_peq_t            m_targ_peq;$/;"	m	struct:Memory_module
-m_transport_done_event	cpu.h	/^  sc_event                     m_transport_done_event;$/;"	m	struct:Cpu_module
-m_used	memory.h	/^  std::vector<bool>    m_used;$/;"	m	struct:Memory_module
-m_write_latency	memory.h	/^  sc_time m_write_latency; \/\/ time per bus beat to write data$/;"	m	struct:Memory_module
-main	wallclock.cpp	/^int main(){$/;"	f
-mout	main.cpp	/^std::ostringstream mout;$/;"	v
-ms	common.h	9;"	d
-nb_transport_bw	bus.cpp	/^Bus_module::nb_transport_bw( int id, tlm_generic_payload& trans,$/;"	f	class:Bus_module
-nb_transport_bw	cpu.cpp	/^Cpu_module::nb_transport_bw$/;"	f	class:Cpu_module
-nb_transport_bw	dma.cpp	/^Dma_module::nb_transport_bw$/;"	f	class:Dma_module
-nb_transport_fw	bus.cpp	/^Bus_module::nb_transport_fw( int id, tlm_generic_payload& trans,$/;"	f	class:Bus_module
-nb_transport_fw	memory.cpp	/^Memory_module::nb_transport_fw$/;"	f	class:Memory_module
-next	memory_manager.h	/^    Access_t* next;$/;"	m	struct:Memory_manager::Access_t
-none	common.h	/^enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ };$/;"	m	class:Access
-none	common.h	/^enum class Feature { none, enabled };$/;"	m	class:Feature
-ns	common.h	7;"	d
-operator <<	util.h	/^std::ostream& operator<<( std::ostream& os, const std::vector<T>& vec )$/;"	f
-payload_is_ok	memory.cpp	/^bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, unsigned int len )$/;"	f	class:Memory_module
-prev	memory_manager.h	/^    Access_t* prev;$/;"	m	struct:Memory_manager::Access_t
-ram	top.h	/^  Memory_module* ram;$/;"	m	struct:Top_module
-rand_ps	util.cpp	/^sc_time rand_ps( double mean, double stddev )$/;"	f
-read	cpu.h	/^  virtual void read     ( uint64_t address, unsigned char* data, int32_t length )$/;"	f	struct:Cpu_module
-read	cpu.h	/^  void read     ( uint64_t address, std::vector<T> data )$/;"	f	struct:Cpu_module
-read16	cpu.h	/^  virtual void read16   ( uint64_t address, uint16_t& data )$/;"	f	struct:Cpu_module
-read32	cpu.h	/^  virtual void read32   ( uint64_t address, uint32_t& data )$/;"	f	struct:Cpu_module
-read8	cpu.h	/^  virtual void read8    ( uint64_t address, uint8_t&  data )$/;"	f	struct:Cpu_module
-rom	top.h	/^  Memory_module* rom;$/;"	m	struct:Top_module
-sc_main	main.cpp	/^int sc_main(int argc, char *argv[])$/;"	f
-send_end_req	memory.cpp	/^Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )$/;"	f	class:Memory_module
-send_response	memory.cpp	/^Memory_module::send_response( Memory_module::tlm_payload_t& trans )$/;"	f	class:Memory_module
-starting_time	main.cpp	/^  double elaboration_time=-1.0, starting_time=-1.0, finished_time=-1.0;$/;"	m	namespace:__anon4	file:
-summary	main.cpp	/^  int summary(void)$/;"	f	namespace:__anon5
-targ_peq_cb	memory.cpp	/^Memory_module::targ_peq_cb$/;"	f	class:Memory_module
-targ_socket	bus.h	/^  tlm_utils::multi_passthrough_target_socket<Bus_module>    targ_socket;$/;"	m	struct:Bus_module
-targ_socket	dma.h	/^  tlm_utils::simple_target_socket<Dma_module>    targ_socket;$/;"	m	struct:Dma_module
-target_done_event	memory.h	/^  sc_event             target_done_event;$/;"	m	struct:Memory_module
-trans	memory_manager.h	/^    T* trans;$/;"	m	struct:Memory_manager::Access_t
-transaction_in_progress	memory.h	/^  tlm_payload_t*       transaction_in_progress;$/;"	m	struct:Memory_module
-transport	cpu.cpp	/^Cpu_module::transport$/;"	f	class:Cpu_module
-transport	dma.cpp	/^Dma_module::transport$/;"	f	class:Dma_module
-transport	memory.cpp	/^Memory_module::transport$/;"	f	class:Memory_module
-transport_dbg	bus.cpp	/^Bus_module::transport_dbg( int id, tlm_generic_payload& trans )$/;"	f	class:Bus_module
-transport_dbg	memory.cpp	/^Memory_module::transport_dbg$/;"	f	class:Memory_module
-us	common.h	8;"	d
-write	cpu.h	/^  virtual void write    ( uint64_t address, unsigned char* data, int32_t length )$/;"	f	struct:Cpu_module
-write	cpu.h	/^  void write    ( uint64_t address, std::vector<T> data )$/;"	f	struct:Cpu_module
-write16	cpu.h	/^  virtual void write16  ( uint64_t address, uint16_t data )$/;"	f	struct:Cpu_module
-write32	cpu.h	/^  virtual void write32  ( uint64_t address, uint32_t data )$/;"	f	struct:Cpu_module
-write32	dma.h	/^  virtual void write32  ( uint64_t address, uint32_t data )$/;"	f	struct:Dma_module
-write8	cpu.h	/^  virtual void write8   ( uint64_t address, uint8_t  data )$/;"	f	struct:Cpu_module
-~Bus_module	bus.cpp	/^Bus_module::~Bus_module( void )$/;"	f	class:Bus_module
-~Cpu_module	cpu.h	/^  ~Cpu_module( void ){}$/;"	f	struct:Cpu_module
-~Dma_module	dma.cpp	/^Dma_module::~Dma_module( void )$/;"	f	class:Dma_module
-~Memory_manager	memory_manager.h	/^Memory_manager<T>::~Memory_manager( void )$/;"	f	class:Memory_manager
-~Memory_module	memory.cpp	/^Memory_module::~Memory_module( void )$/;"	f	class:Memory_module
-~Top_module	top.cpp	/^Top_module::~Top_module(void) {$/;"	f	class:Top_module
+
+async/async_kind.cpp,510
+#define ASYNC_KIND_KEY(5,69
+using cstr ::cstr7,113
+cstr s_async_kind_str[::s_async_kind_str8,146
+#undef KEY12,214
+std::string async_kind_str(15,307
+std::ostream& operator<<(21,499
+bool is_Async_kind(28,697
+  class str_exception::str_exception38,951
+    str_exception(::str_exception::str_exception42,1013
+    const char* what(::str_exception::what43,1065
+    const char* m_msg;::str_exception::m_msg45,1138
+Async_kind to_Async_kind(50,1250
+std::istream& operator>>(62,1679
+int main(73,1890
+
+async/async_payload.cpp,62
+#define SHOWVEC(16,287
+#define SHOW(24,540
+int main(26,600
+
+bus/bus.cpp,628
+Bus_module::Bus_module(33,1213
+Bus_module::~Bus_module(46,1898
+Bus_module::b_transport(55,2124
+Bus_module::nb_transport_fw77,2922
+Bus_module::get_direct_mem_ptr123,4157
+Bus_module::transport_dbg(154,5113
+Bus_module::nb_transport_bw189,6220
+Bus_module::invalidate_direct_mem_ptr210,6786
+Bus_module::mask_if_fits(232,7444
+bool Bus_module::configure248,8023
+Bus_module::decode_address273,8730
+Bus_module::reconstruct_address309,9793
+void Bus_module::start_of_simulation(343,10574
+Bus_module::build_port_map(352,10765
+Bus_module::dump_port_map(436,14155
+Bus_module::check_port_map_and_update_configuration(461,15013
+
+bus/map_test.cpp,874
+string name(23,597
+string kind(30,729
+struct Command37,862
+  string       m_initiator;Command::m_initiator39,879
+  string       m_bus;Command::m_bus40,907
+  string       m_target;Command::m_target41,929
+  string       m_yaml;Command::m_yaml42,954
+  Addr_t       m_addr;Command::m_addr43,977
+  bool         m_processing{Command::m_processing44,1000
+  list<string> m_cmds;Command::m_cmds45,1037
+  Address_map m_addr_map;Command::m_addr_map46,1060
+  bool         processing(Command::processing47,1086
+  void add(Command::add49,1187
+  size_t size(Command::size52,1278
+} command;53,1332
+void Command::process(55,1344
+int sc_main(100,2655
+Addr_t find_address 158,4146
+Port_t decode_address 171,4659
+Addr_t reconstruct_address(203,5685
+void build_port_map(234,6566
+void dump_port_map(266,7629
+void check_port_map_and_update_configuration(288,8361
+
+bus/memory_map.cpp,467
+std::ostream& operator<<(22,944
+Memory_map& Memory_map::instance(41,1594
+Memory_map::Origin_map& Memory_map::origin_map(48,1768
+void dump_path(::dump_path53,1874
+Addr_t Memory_map::find_address 62,2177
+/*static*/ int Memory_map::max_irq(75,2753
+/*static*/ int Memory_map::find_irq(84,2976
+/*static*/ Target_info Memory_map::find_target_info(95,3275
+/*static*/ Address_map Memory_map::get_address_map(168,5464
+/*static*/ void Memory_map::read_yaml(193,6484
+
+common/common.cpp,160
+std::ostream& operator<<(6,85
+std::ostream& operator<<(26,772
+std::ostream& operator<<(32,911
+bool  g_error_at_target 44,1262
+Style g_coding_style 45,1297
+
+common/requires.cpp,42
+#define REQUIRES_CPP 1,0
+int main(7,150
+
+config/config_extn.cpp,91
+Config_extn::Config_extn(11,286
+Config_extn::clone(17,441
+Config_extn::copy_from(26,661
+
+config/config_proxy.cpp,487
+Config_proxy::Config_proxy24,1048
+  targ_socket.bind(*this)this37,1375
+  init_socket.bind(*this)this38,1402
+Config_proxy::~Config_proxy(55,2256
+void Config_proxy::b_transport(63,2481
+tlm_sync_enum Config_proxy::nb_transport_fw(69,2682
+bool Config_proxy::get_direct_mem_ptr(75,2932
+unsigned int Config_proxy::transport_dbg(81,3160
+tlm_sync_enum Config_proxy::nb_transport_bw(95,3590
+void Config_proxy::invalidate_direct_mem_ptr(101,3839
+bool Config_proxy::configure 111,4225
+
+config/configuration.cpp,992
+std::unordered_map<size_t, std::unique_ptr<Configuration::Function_t>> Configuration::s_function;22,1005
+Configuration::Configuration(26,1200
+Configuration::Configuration(35,1404
+Configuration& Configuration::operator=(Configuration::operator=55,2120
+void Configuration::set_defaults(78,2882
+bool Configuration::operator==(Configuration::operator==115,4462
+void Configuration::update(135,5270
+void Configuration::erase(144,5521
+void Configuration::clear_data(151,5704
+void Configuration::addkey(158,5864
+void Configuration::delkey(184,6607
+void Configuration::clear_keys(192,6824
+bool Configuration::is_key(199,6997
+bool Configuration::has_key(205,7180
+bool Configuration::is_reqd(211,7364
+bool Configuration::full(217,7552
+bool Configuration::empty(223,7726
+bool Configuration::has_reqd(229,7881
+int Configuration::count(241,8138
+int Configuration::avail(247,8291
+std::ostream& operator<<(253,8444
+string is(::is321,10888
+SC_MODULE(327,11027
+int sc_main(396,13748
+
+cpu/cpu.cpp,555
+Cpu_module::Cpu_module(29,1114
+, m_request_in_progress 32,1299
+Cpu_module::cpu_thread(64,2833
+Cpu_module::irq_thread(126,5076
+Cpu_module::nb_transport_bw152,6326
+Cpu_module::invalidate_direct_mem_ptr164,6573
+Cpu_module::start_of_simulation 195,7795
+Cpu_module::end_of_simulation 203,8005
+Cpu_module::init_peq_cb236,9286
+void Cpu_module::check_transaction(270,10239
+Cpu_module::record_transaction282,10594
+Addr_t Cpu_module::find_address 324,11747
+Cpu_module::transport331,11943
+void Cpu_module::put(523,18392
+void Cpu_module::get(530,18625
+
+cpu/cpuid_extn.cpp,245
+Cpuid_extn::Cpuid_extn(7,169
+tlm_extension_base* Cpuid_extn::clone(13,332
+void Cpuid_extn::copy_from(19,514
+void Cpuid_extn::set_module_ptr(30,898
+sc_core::sc_module* Cpuid_extn::get_module_ptr(42,1255
+const char* Cpuid_extn::name(48,1422
+
+cpu/extn_list.cpp,113
+Extn_list::~Extn_list(3,30
+void Extn_list::copy(7,65
+void Extn_list::move(19,423
+void Extn_list::free(30,615
+
+cpu/task.cpp,254
+std::map<string,Task_manager::Task_list> Task_manager::s_tasks;9,140
+Task_manager::Task_manager(12,238
+Task_manager::Task_manager(29,699
+const Task_manager::Task_map_t& Task_manager::tasks(47,1204
+Task_manager::Task_obj_t* Task_manager::obj(61,1595
+
+dma/dma.cpp,271
+Dma_module::Dma_module20,948
+Dma_module::~Dma_module(33,1426
+Dma_module::nb_transport_bw42,1662
+Dma_module::invalidate_direct_mem_ptr54,1880
+Dma_module::dma_thread(68,2178
+Dma_module::init_peq_cb78,2416
+Dma_module::targ_peq_cb88,2620
+Dma_module::transport98,2824
+
+dmi/dmi_extn.cpp,102
+Dmi_extn::Dmi_extn(11,275
+Dmi_extn::clone(17,422
+Dmi_extn::copy_from(25,580
+Dmi_extn::free(32,747
+
+exclusive/excl_extn.cpp,112
+Excl_extn::Excl_extn(11,271
+Excl_extn::clone(17,422
+Excl_extn::copy_from(24,560
+Excl_extn::exclusive(30,706
+
+exclusive/excl_filt.cpp,394
+Excl_filt::Excl_filt24,1056
+  , m_excl_size 33,1345
+Excl_filt::~Excl_filt(44,1707
+void Excl_filt::b_transport(52,1926
+tlm_sync_enum Excl_filt::nb_transport_fw(59,2149
+bool Excl_filt::get_direct_mem_ptr(66,2421
+unsigned int Excl_filt::transport_dbg(72,2646
+tlm_sync_enum Excl_filt::nb_transport_bw(82,2969
+void Excl_filt::invalidate_direct_mem_ptr(88,3215
+bool Excl_filt::Excl 98,3598
+
+gpio/gpio.cpp,553
+Gpio_module::Gpio_module 26,1094
+, m_read_clocks 33,1303
+, m_write_clocks 34,1351
+    sensitive 41,1601
+void Gpio_module::execute_transaction(167,5447
+Gpio_module::nb_transport_fw179,5782
+Gpio_module::targ_peq_cb196,6188
+Gpio_module::send_end_req(258,7703
+Gpio_module::send_response(280,8408
+Gpio_module::execute_transaction_process(307,9141
+bool Gpio_module::payload_is_ok328,9849
+Gpio_module::transport 388,11736
+void Gpio_module::gpio_thread(420,12808
+void Gpio_module::write_actions(471,14646
+void Gpio_module::read_actions(589,17990
+
+gpio/rgbled.cpp,158
+RgbLED_module::RgbLED_module(13,302
+RgbLED_module::~RgbLED_module(25,642
+void RgbLED_module::rgbled_method(30,779
+SC_MODULE(78,3000
+int sc_main(127,4457
+
+interrupt/pic.cpp,539
+Pic_module::Pic_module 28,1179
+, m_read_clocks 35,1386
+, m_write_clocks 36,1434
+    sensitive 43,1696
+void Pic_module::execute_transaction(163,5470
+Pic_module::nb_transport_fw175,5804
+Pic_module::targ_peq_cb192,6219
+Pic_module::send_end_req(254,7789
+Pic_module::send_response(276,8497
+Pic_module::execute_transaction_process(303,9235
+bool Pic_module::payload_is_ok324,9942
+Pic_module::transport 384,11828
+void Pic_module::pic_thread(416,12898
+void Pic_module::write_actions(448,14150
+void Pic_module::read_actions(544,17043
+
+junk/initializer_lists.cpp,61
+#define REQUIRES_CPP 1,0
+void print(8,127
+int main(19,360
+
+junk/lower_bounds.cpp,122
+static size_t l{l8,111
+#define DUMP(9,131
+std::map< int, std::string, greater<int> > addr_map;12,226
+int main(14,280
+
+mailbox/mailbox.cpp,672
+Memory_module::Memory_module 26,1112
+, m_dmi_allowed 41,1550
+, m_access 42,1598
+, m_byte_enables 43,1646
+, m_alignment 44,1694
+, m_max_burst 45,1742
+, m_addr_clocks 46,1790
+, m_read_clocks 47,1838
+, m_write_clocks 48,1886
+    sensitive 53,2093
+void Memory_module::resize(163,6329
+void Memory_module::execute_transaction(171,6596
+Memory_module::nb_transport_fw183,6952
+Memory_module::get_direct_mem_ptr197,7282
+Memory_module::targ_peq_cb225,8026
+Memory_module::send_end_req(282,9496
+Memory_module::send_response(307,10434
+Memory_module::execute_transaction_process(335,11198
+bool Memory_module::payload_is_ok(354,11897
+Memory_module::transport413,14059
+
+memory/memory.cpp,672
+Memory_module::Memory_module 26,1039
+, m_dmi_allowed 40,1445
+, m_access 41,1493
+, m_byte_enables 42,1541
+, m_alignment 43,1589
+, m_max_burst 44,1637
+, m_addr_clocks 45,1685
+, m_read_clocks 46,1733
+, m_write_clocks 47,1781
+    sensitive 52,1990
+void Memory_module::resize(161,6156
+void Memory_module::execute_transaction(169,6423
+Memory_module::nb_transport_fw181,6779
+Memory_module::get_direct_mem_ptr195,7109
+Memory_module::targ_peq_cb223,7853
+Memory_module::send_end_req(280,9322
+Memory_module::send_response(305,10260
+Memory_module::execute_transaction_process(333,11024
+bool Memory_module::payload_is_ok(352,11723
+Memory_module::transport411,13883
+
+memory/memory_test.cpp,72
+#define VALUE(12,219
+#define TEST_RAM(13,282
+void memory_test(29,954
+
+mmu/mmu.cpp,389
+Mmu_module::Mmu_module(28,1128
+  , m_mm 31,1249
+Mmu_module::~Mmu_module(43,1879
+Mmu_module::b_transport(52,2105
+Mmu_module::nb_transport_fw74,2903
+Mmu_module::get_direct_mem_ptr120,4122
+Mmu_module::transport_dbg(151,5061
+Mmu_module::nb_transport_bw178,5876
+Mmu_module::invalidate_direct_mem_ptr199,6431
+Mmu_module::decode_address220,7119
+Mmu_module::reconstruct_address237,7461
+
+no_clock/no_clock.cpp,480
+no_clock::clock_map_t no_clock::s_global;29,1055
+no_clock& no_clock::global 31,1098
+no_clock& no_clock::global65,1911
+no_clock::no_clock 78,2333
+no_clock::no_clock 116,3595
+no_clock::~no_clock(149,4684
+void no_clock::set_frequency153,4730
+void no_clock::set_period_time166,5111
+void no_clock::set_offset_time179,5473
+void no_clock::set_duty_cycle 186,5633
+void no_clock::set_sample_time 198,6056
+void no_clock::set_setedge_time 208,6386
+void no_clock::reset 217,6642
+
+power/power.cpp,231
+PowerDomain::PowerDomain(10,131
+PowerDomain::~PowerDomain(14,205
+  string message;20,338
+  message 27,559
+PowerSetting PowerDomain::state(34,728
+void  PowerDomain::set_state(51,1137
+Power_map_t  PowerDomain::s_level;57,1288
+
+sc-platform/bus.cpp,628
+Bus_module::Bus_module(33,1213
+Bus_module::~Bus_module(46,1898
+Bus_module::b_transport(55,2124
+Bus_module::nb_transport_fw77,2922
+Bus_module::get_direct_mem_ptr123,4157
+Bus_module::transport_dbg(154,5113
+Bus_module::nb_transport_bw189,6220
+Bus_module::invalidate_direct_mem_ptr210,6786
+Bus_module::mask_if_fits(232,7444
+bool Bus_module::configure248,8023
+Bus_module::decode_address273,8730
+Bus_module::reconstruct_address309,9793
+void Bus_module::start_of_simulation(343,10574
+Bus_module::build_port_map(352,10765
+Bus_module::dump_port_map(436,14155
+Bus_module::check_port_map_and_update_configuration(461,15013
+
+sc-platform/common.cpp,160
+std::ostream& operator<<(6,85
+std::ostream& operator<<(26,772
+std::ostream& operator<<(32,911
+bool  g_error_at_target 44,1262
+Style g_coding_style 45,1297
+
+sc-platform/config_extn.cpp,91
+Config_extn::Config_extn(11,286
+Config_extn::clone(17,441
+Config_extn::copy_from(26,661
+
+sc-platform/config_proxy.cpp,487
+Config_proxy::Config_proxy24,1048
+  targ_socket.bind(*this)this37,1375
+  init_socket.bind(*this)this38,1402
+Config_proxy::~Config_proxy(55,2256
+void Config_proxy::b_transport(63,2481
+tlm_sync_enum Config_proxy::nb_transport_fw(69,2682
+bool Config_proxy::get_direct_mem_ptr(75,2932
+unsigned int Config_proxy::transport_dbg(81,3160
+tlm_sync_enum Config_proxy::nb_transport_bw(95,3590
+void Config_proxy::invalidate_direct_mem_ptr(101,3839
+bool Config_proxy::configure 111,4225
+
+sc-platform/configuration.cpp,992
+std::unordered_map<size_t, std::unique_ptr<Configuration::Function_t>> Configuration::s_function;22,1005
+Configuration::Configuration(26,1200
+Configuration::Configuration(35,1404
+Configuration& Configuration::operator=(Configuration::operator=55,2120
+void Configuration::set_defaults(78,2882
+bool Configuration::operator==(Configuration::operator==115,4462
+void Configuration::update(135,5270
+void Configuration::erase(144,5521
+void Configuration::clear_data(151,5704
+void Configuration::addkey(158,5864
+void Configuration::delkey(184,6607
+void Configuration::clear_keys(192,6824
+bool Configuration::is_key(199,6997
+bool Configuration::has_key(205,7180
+bool Configuration::is_reqd(211,7364
+bool Configuration::full(217,7552
+bool Configuration::empty(223,7726
+bool Configuration::has_reqd(229,7881
+int Configuration::count(241,8138
+int Configuration::avail(247,8291
+std::ostream& operator<<(253,8444
+string is(::is321,10888
+SC_MODULE(327,11027
+int sc_main(396,13748
+
+sc-platform/cpu.cpp,574
+Cpu_module::Cpu_module(29,1103
+, m_request_in_progress 32,1288
+, m_cpuid 33,1347
+Cpu_module::cpu_thread(64,2806
+Cpu_module::irq_thread(126,5049
+Cpu_module::nb_transport_bw152,6299
+Cpu_module::invalidate_direct_mem_ptr164,6546
+Cpu_module::start_of_simulation 195,7768
+Cpu_module::end_of_simulation 203,7978
+Cpu_module::init_peq_cb236,9259
+void Cpu_module::check_transaction(270,10212
+Cpu_module::record_transaction282,10567
+Addr_t Cpu_module::find_address 324,11720
+Cpu_module::transport331,11916
+void Cpu_module::put(523,18366
+void Cpu_module::get(530,18599
+
+sc-platform/cpuid_extn.cpp,276
+Cpuid_extn::Cpuid_extn(7,169
+tlm_extension_base* Cpuid_extn::clone(13,332
+void Cpuid_extn::copy_from(19,514
+void Cpuid_extn::free(30,898
+void Cpuid_extn::set_module_ptr(37,1050
+sc_core::sc_module* Cpuid_extn::get_module_ptr(49,1407
+const char* Cpuid_extn::name(55,1574
+
+sc-platform/dma.cpp,271
+Dma_module::Dma_module20,948
+Dma_module::~Dma_module(33,1426
+Dma_module::nb_transport_bw42,1662
+Dma_module::invalidate_direct_mem_ptr54,1880
+Dma_module::dma_thread(68,2178
+Dma_module::init_peq_cb78,2416
+Dma_module::targ_peq_cb88,2620
+Dma_module::transport98,2824
+
+sc-platform/dmi_extn.cpp,102
+Dmi_extn::Dmi_extn(11,275
+Dmi_extn::clone(17,422
+Dmi_extn::copy_from(25,580
+Dmi_extn::free(32,747
+
+sc-platform/excl_extn.cpp,112
+Excl_extn::Excl_extn(11,271
+Excl_extn::clone(17,422
+Excl_extn::copy_from(24,560
+Excl_extn::exclusive(30,706
+
+sc-platform/excl_filt.cpp,394
+Excl_filt::Excl_filt24,1056
+  , m_excl_size 33,1345
+Excl_filt::~Excl_filt(44,1707
+void Excl_filt::b_transport(52,1926
+tlm_sync_enum Excl_filt::nb_transport_fw(59,2149
+bool Excl_filt::get_direct_mem_ptr(66,2421
+unsigned int Excl_filt::transport_dbg(72,2646
+tlm_sync_enum Excl_filt::nb_transport_bw(82,2969
+void Excl_filt::invalidate_direct_mem_ptr(88,3215
+bool Excl_filt::Excl 98,3598
+
+sc-platform/freq_test.cpp,41
+#define SHOW(11,179
+int sc_main(13,237
+
+sc-platform/gpio.cpp,553
+Gpio_module::Gpio_module 26,1087
+, m_read_clocks 33,1296
+, m_write_clocks 34,1344
+    sensitive 41,1594
+void Gpio_module::execute_transaction(167,5440
+Gpio_module::nb_transport_fw179,5775
+Gpio_module::targ_peq_cb196,6181
+Gpio_module::send_end_req(258,7696
+Gpio_module::send_response(280,8401
+Gpio_module::execute_transaction_process(307,9134
+bool Gpio_module::payload_is_ok328,9842
+Gpio_module::transport 388,11729
+void Gpio_module::gpio_thread(420,12801
+void Gpio_module::write_actions(471,14639
+void Gpio_module::read_actions(589,17983
+
+sc-platform/hexfile.cpp,235
+namespace hexfile 9,143
+  void strip_leading(hexfile::strip_leading21,523
+  void strip_trailing(hexfile::strip_trailing31,803
+  void strip_underscores(hexfile::strip_underscores41,1093
+dump(57,1403
+save(82,2145
+load(110,2917
+
+sc-platform/mailbox.cpp,672
+Memory_module::Memory_module 26,1105
+, m_dmi_allowed 41,1543
+, m_access 42,1591
+, m_byte_enables 43,1639
+, m_alignment 44,1687
+, m_max_burst 45,1735
+, m_addr_clocks 46,1783
+, m_read_clocks 47,1831
+, m_write_clocks 48,1879
+    sensitive 53,2086
+void Memory_module::resize(163,6322
+void Memory_module::execute_transaction(171,6589
+Memory_module::nb_transport_fw183,6945
+Memory_module::get_direct_mem_ptr197,7275
+Memory_module::targ_peq_cb225,8019
+Memory_module::send_end_req(282,9489
+Memory_module::send_response(307,10427
+Memory_module::execute_transaction_process(335,11191
+bool Memory_module::payload_is_ok(354,11890
+Memory_module::transport413,14052
+
+sc-platform/main.cpp,20
+int sc_main(20,510
+
+sc-platform/map_test.cpp,873
+string name(23,593
+string kind(30,725
+struct Command37,858
+  string       m_initiator;Command::m_initiator39,875
+  string       m_bus;Command::m_bus40,903
+  string       m_target;Command::m_target41,925
+  string       m_yaml;Command::m_yaml42,950
+  Addr_t       m_addr;Command::m_addr43,973
+  bool         m_processing{Command::m_processing44,996
+  list<string> m_cmds;Command::m_cmds45,1033
+  Address_map m_addr_map;Command::m_addr_map46,1056
+  bool         processing(Command::processing47,1082
+  void add(Command::add49,1183
+  size_t size(Command::size52,1274
+} command;53,1328
+void Command::process(55,1340
+int sc_main(100,2651
+Addr_t find_address 158,4142
+Port_t decode_address 171,4655
+Addr_t reconstruct_address(203,5681
+void build_port_map(234,6562
+void dump_port_map(266,7625
+void check_port_map_and_update_configuration(288,8357
+
+sc-platform/memory.cpp,672
+Memory_module::Memory_module 26,1032
+, m_dmi_allowed 40,1438
+, m_access 41,1486
+, m_byte_enables 42,1534
+, m_alignment 43,1582
+, m_max_burst 44,1630
+, m_addr_clocks 45,1678
+, m_read_clocks 46,1726
+, m_write_clocks 47,1774
+    sensitive 52,1983
+void Memory_module::resize(161,6149
+void Memory_module::execute_transaction(169,6416
+Memory_module::nb_transport_fw181,6772
+Memory_module::get_direct_mem_ptr195,7102
+Memory_module::targ_peq_cb223,7846
+Memory_module::send_end_req(280,9315
+Memory_module::send_response(305,10253
+Memory_module::execute_transaction_process(333,11017
+bool Memory_module::payload_is_ok(352,11716
+Memory_module::transport411,13876
+
+sc-platform/memory_map.cpp,467
+std::ostream& operator<<(22,944
+Memory_map& Memory_map::instance(41,1594
+Memory_map::Origin_map& Memory_map::origin_map(48,1768
+void dump_path(::dump_path53,1874
+Addr_t Memory_map::find_address 62,2177
+/*static*/ int Memory_map::max_irq(75,2753
+/*static*/ int Memory_map::find_irq(84,2976
+/*static*/ Target_info Memory_map::find_target_info(95,3275
+/*static*/ Address_map Memory_map::get_address_map(168,5464
+/*static*/ void Memory_map::read_yaml(193,6484
+
+sc-platform/memory_test.cpp,72
+#define VALUE(12,207
+#define TEST_RAM(13,270
+void memory_test(29,942
+
+sc-platform/mmu.cpp,389
+Mmu_module::Mmu_module(28,1128
+  , m_mm 31,1249
+Mmu_module::~Mmu_module(43,1879
+Mmu_module::b_transport(52,2105
+Mmu_module::nb_transport_fw74,2903
+Mmu_module::get_direct_mem_ptr120,4122
+Mmu_module::transport_dbg(151,5061
+Mmu_module::nb_transport_bw178,5876
+Mmu_module::invalidate_direct_mem_ptr199,6431
+Mmu_module::decode_address220,7119
+Mmu_module::reconstruct_address237,7461
+
+sc-platform/netlist.cpp,99
+using std::string;10,183
+  void scan_hierarchy(::scan_hierarchy18,358
+Netlist::Netlist(66,2231
+
+sc-platform/news.cpp,237
+bool News::initialized 11,190
+News::News(13,223
+void News::report_handler(20,349
+std::map<string,size_t> News::tag_map 42,979
+void News::add_tag(49,1077
+size_t News::get_tag_count(57,1247
+const string News::compose_report(65,1461
+
+sc-platform/no_clock.cpp,480
+no_clock::clock_map_t no_clock::s_global;29,1055
+no_clock& no_clock::global 31,1098
+no_clock& no_clock::global65,1911
+no_clock::no_clock 78,2333
+no_clock::no_clock 116,3595
+no_clock::~no_clock(149,4684
+void no_clock::set_frequency153,4730
+void no_clock::set_period_time166,5111
+void no_clock::set_offset_time179,5473
+void no_clock::set_duty_cycle 186,5633
+void no_clock::set_sample_time 198,6056
+void no_clock::set_setedge_time 208,6386
+void no_clock::reset 217,6642
+
+sc-platform/options.cpp,146
+Options* const Options::instance(25,1045
+inline bool Options::has_flag(31,1138
+std::string Options::get_flag(36,1255
+Options::Options(46,1490
+
+sc-platform/parity.cpp,230
+struct Parity::Parity5,56
+    Parity(::Parity::Parity7,74
+    inline bool odd(::Parity::odd14,193
+    bool odd_table[::Parity::odd_table22,444
+  } parity;::parity23,469
+bool odd(26,485
+bool odd(31,552
+int main(44,794
+
+sc-platform/pic.cpp,539
+Pic_module::Pic_module 28,1150
+, m_read_clocks 35,1357
+, m_write_clocks 36,1405
+    sensitive 43,1667
+void Pic_module::execute_transaction(163,5441
+Pic_module::nb_transport_fw175,5775
+Pic_module::targ_peq_cb192,6190
+Pic_module::send_end_req(254,7760
+Pic_module::send_response(276,8468
+Pic_module::execute_transaction_process(303,9206
+bool Pic_module::payload_is_ok324,9913
+Pic_module::transport 384,11799
+void Pic_module::pic_thread(416,12869
+void Pic_module::write_actions(448,14121
+void Pic_module::read_actions(544,17014
+
+sc-platform/platform_enum.cpp,488
+#define PLATFORM_KEY(5,72
+using cstr ::cstr7,114
+cstr platform_str[::platform_str8,147
+#undef KEY12,207
+std::string to_string(15,300
+std::ostream& operator<<(21,481
+bool is_Platform(28,672
+  class str_exception::str_exception38,916
+    str_exception(::str_exception::str_exception42,978
+    const char* what(::str_exception::what43,1030
+    const char* m_msg;::str_exception::m_msg45,1103
+Platform to_Platform(50,1215
+std::istream& operator>>(62,1628
+int main(73,1833
+
+sc-platform/power.cpp,231
+PowerDomain::PowerDomain(10,131
+PowerDomain::~PowerDomain(14,205
+  string message;20,338
+  message 27,559
+PowerSetting PowerDomain::state(34,728
+void  PowerDomain::set_state(51,1137
+Power_map_t  PowerDomain::s_level;57,1288
+
+sc-platform/report.cpp,115
+std::ostringstream mout;9,139
+string to_string(11,165
+string to_string(22,470
+std::string verbosity2str(36,811
+
+sc-platform/requires.cpp,42
+#define REQUIRES_CPP 1,0
+int main(7,136
+
+sc-platform/rgbled.cpp,158
+RgbLED_module::RgbLED_module(13,302
+RgbLED_module::~RgbLED_module(25,642
+void RgbLED_module::rgbled_method(30,779
+SC_MODULE(78,3000
+int sc_main(127,4457
+
+sc-platform/sc_freq.cpp,280
+namespace sc_core 3,22
+double sc_freq::magnitude(sc_core::sc_freq::magnitude5,43
+std::string sc_freq::str(10,250
+sc_freq operator*(22,579
+double operator*(27,755
+double operator*(32,946
+sc_time operator/(37,1137
+double operator/(47,1446
+std::ostream& operator<<(52,1641
+
+sc-platform/secure_extn.cpp,91
+Secure_extn::Secure_extn(11,286
+Secure_extn::clone(17,441
+Secure_extn::copy_from(24,575
+
+sc-platform/signal.cpp,471
+  void my_stop(::my_stop26,1044
+  void my_abort(::my_abort32,1188
+void my_interrupt(37,1276
+std::forward_list<Signal*> Signal::s_handlers;43,1392
+Signal::Signal(45,1440
+Signal::~Signal(53,1583
+void Signal::remove(61,1689
+void Signal::revert(68,1791
+void Signal::install(77,1933
+void Signal::add(106,2665
+std::array<size_t,2> count_array;136,3784
+extern "C" void Handler1(139,3900
+extern "C" void Handler2(145,4068
+SC_MODULE(151,4237
+int sc_main(203,5844
+
+sc-platform/stub.cpp,611
+Stub_module::Stub_module 24,1055
+, m_dmi_allowed 38,1457
+, m_access 39,1505
+, m_byte_enables 40,1553
+, m_alignment 41,1601
+, m_max_burst 42,1649
+, m_addr_clocks 43,1697
+, m_read_clocks 44,1745
+, m_write_clocks 45,1793
+    sensitive 50,1996
+void Stub_module::execute_transaction(145,5766
+Stub_module::nb_transport_fw157,6118
+Stub_module::get_direct_mem_ptr171,6444
+Stub_module::targ_peq_cb184,6727
+Stub_module::send_end_req(241,8190
+Stub_module::send_response(264,8928
+Stub_module::execute_transaction_process(292,9686
+bool Stub_module::payload_is_ok(311,10383
+Stub_module::transport370,12539
+
+sc-platform/summary.cpp,434
+#define REQUIRES_CPP 2,23
+double       Summary::s_elaboration_time 15,368
+double       Summary::s_starting_time 16,417
+double       Summary::s_finished_time 17,466
+unsigned int Summary::s_errors 18,515
+unsigned int Summary::s_warnings 19,561
+void Summary::starting_elaboration(22,689
+void Summary::starting_simulation(28,857
+void Summary::finished_simulation(35,1044
+int Summary::errors(46,1314
+int Summary::report(55,1572
+
+sc-platform/task.cpp,254
+std::map<string,Task_manager::Task_list> Task_manager::s_tasks;9,140
+Task_manager::Task_manager(12,238
+Task_manager::Task_manager(29,699
+const Task_manager::Task_map_t& Task_manager::tasks(47,1204
+Task_manager::Task_obj_t* Task_manager::obj(61,1595
+
+sc-platform/test_enum.cpp,488
+#define TEST_KEY(5,68
+using cstr ::cstr7,106
+cstr test_str[::test_str8,139
+#undef KEY12,187
+std::string to_string(15,280
+std::ostream& operator<<(21,461
+bool is_PlatformTest(28,656
+  class str_exception::str_exception38,896
+    str_exception(::str_exception::str_exception42,958
+    const char* what(::str_exception::what43,1010
+    const char* m_msg;::str_exception::m_msg45,1083
+PlatformTest to_PlatformTest(50,1195
+std::istream& operator>>(62,1616
+int main(73,1825
+
+sc-platform/timer.cpp,842
+Timer_module::Timer_module 26,955
+  , m_timer_quantity 34,1277
+  , m_addr_clocks 35,1327
+  , m_read_clocks 36,1377
+  , m_write_clocks 37,1427
+  sensitive 47,1850
+Timer_module::b_transport131,4753
+Timer_module::transport_dbg148,5069
+bool Timer_module::configure(189,6064
+void Timer_module::execute_transaction(216,7034
+Timer_module::nb_transport_fw230,7377
+Timer_module::targ_peq_cb247,7794
+Timer_module::send_end_req(309,9428
+Timer_module::send_response(331,10138
+Timer_module::execute_transaction_process(358,10878
+bool Timer_module::payload_is_ok379,11587
+Timer_module::transport439,13475
+Timer_reg_t& Timer_module::timer_reg_vec(476,14630
+uint32_t Timer_module::get_timer_status485,14998
+void Timer_module::set_timer_status515,15839
+void Timer_module::write_actions557,17235
+void Timer_module::read_actions(658,20729
+
+sc-platform/timer_beh.cpp,446
+Timer::Timer(27,1095
+Timer::~Timer(38,1375
+void Timer::start(44,1525
+void Timer::stop(60,2034
+void Timer::pause(73,2467
+void Timer::resume(83,2838
+sc_time Timer::curr_time(97,3390
+sc_time Timer::get_time_left(104,3608
+sc_time Timer::get_time_since(116,3997
+bool Timer::is_running(127,4313
+void Timer::trigger_thread(136,4618
+std::string Timer::to_string(169,5763
+void Timer::reset(191,6739
+SC_MODULE(229,8215
+int sc_main(376,12854
+
+sc-platform/timer_test.cpp,73
+#define VALUE(13,231
+#define TEST_TIMER(14,294
+void timer_test(27,836
+
+sc-platform/top.cpp,1220
+  const char* const MSGID=::MSGID40,1393
+Top_module::Top_module(45,1549
+Top_module::~Top_module(53,1763
+struct Top_module::Impl60,1925
+  std::unique_ptr< Cpu_module    > cpu;Top_module::Impl::cpu67,2042
+  std::unique_ptr< Bus_module    > nth;Top_module::Impl::nth68,2082
+  std::unique_ptr< Bus_module    > sth;Top_module::Impl::sth69,2122
+  std::unique_ptr< Memory_module > rom;Top_module::Impl::rom70,2162
+  std::unique_ptr< Memory_module > ram;Top_module::Impl::ram71,2202
+  std::unique_ptr< Memory_module > ddr;Top_module::Impl::ddr72,2242
+  std::unique_ptr< Gpio_module   > gio;Top_module::Impl::gio73,2282
+  std::unique_ptr< RgbLED_module > led1;Top_module::Impl::led174,2322
+  std::unique_ptr< Timer_module  > tmr;Top_module::Impl::tmr75,2363
+  std::unique_ptr< Pic_module    > pic;Top_module::Impl::pic76,2403
+  std::unique_ptr< Uart_module   > ser;Top_module::Impl::ser77,2443
+  std::unique_ptr< Stub_module   > dma;Top_module::Impl::dma78,2483
+  Impl(Top_module::Impl::Impl81,2541
+  Options* const options Top_module::Impl::options231,8388
+void Top_module::end_of_elaboration(234,8430
+void Top_module::start_of_simulation(241,8550
+void Top_module::end_of_simulation(251,8779
+
+sc-platform/uart.cpp,734
+Uart_module::Uart_module 27,1116
+, m_read_clocks 34,1325
+, m_write_clocks 35,1373
+    sensitive 42,1616
+Uart_module::b_transport120,4617
+Uart_module::transport_dbg136,4920
+bool Uart_module::configure(177,5914
+void Uart_module::execute_transaction(204,6881
+Uart_module::nb_transport_fw216,7216
+Uart_module::targ_peq_cb233,7622
+Uart_module::send_end_req(295,9139
+Uart_module::send_response(317,9844
+Uart_module::execute_transaction_process(344,10577
+bool Uart_module::payload_is_ok365,11285
+Uart_module::transport 425,13172
+void Uart_module::send(457,14244
+void Uart_module::tx_thread(499,15858
+void Uart_module::rx_thread(544,17502
+void Uart_module::write_actions(589,19157
+void Uart_module::read_actions(752,25239
+
+sc-platform/wallclock.cpp,134
+double get_wall_time(17,435
+double get_cpu_time(30,777
+double get_wall_time(48,1256
+double get_cpu_time(57,1521
+int main(69,1772
+
+sc-platform/xyaml.cpp,87
+string nodeType(13,228
+#define SHOW(26,743
+#define SHOW2(32,855
+int sc_main(38,983
+
+scx/freq_test.cpp,41
+#define SHOW(11,183
+int sc_main(13,241
+
+scx/sc_freq.cpp,280
+namespace sc_core 3,22
+double sc_freq::magnitude(sc_core::sc_freq::magnitude5,43
+std::string sc_freq::str(10,250
+sc_freq operator*(22,579
+double operator*(27,755
+double operator*(32,946
+sc_time operator/(37,1137
+double operator/(47,1446
+std::ostream& operator<<(52,1641
+
+secure/secure_extn.cpp,91
+Secure_extn::Secure_extn(11,286
+Secure_extn::clone(17,441
+Secure_extn::copy_from(24,575
+
+tcpip/tcpip_rx.cpp,133
+Tcpip_rx_channel::Tcpip_rx_channel(7,227
+Tcpip_rx_channel::~Tcpip_rx_channel(19,579
+void Tcpip_rx_channel::tcpip_rx_thread(24,722
+
+tcpip/tcpip_tx.cpp,133
+Tcpip_tx_channel::Tcpip_tx_channel(7,227
+Tcpip_tx_channel::~Tcpip_tx_channel(19,579
+void Tcpip_tx_channel::tcpip_tx_thread(24,722
+
+timer/timer.cpp,842
+Timer_module::Timer_module 26,976
+  , m_timer_quantity 34,1298
+  , m_addr_clocks 35,1348
+  , m_read_clocks 36,1398
+  , m_write_clocks 37,1448
+  sensitive 47,1871
+Timer_module::b_transport131,4774
+Timer_module::transport_dbg148,5090
+bool Timer_module::configure(189,6085
+void Timer_module::execute_transaction(216,7055
+Timer_module::nb_transport_fw230,7398
+Timer_module::targ_peq_cb247,7815
+Timer_module::send_end_req(309,9449
+Timer_module::send_response(331,10159
+Timer_module::execute_transaction_process(358,10899
+bool Timer_module::payload_is_ok379,11608
+Timer_module::transport439,13496
+Timer_reg_t& Timer_module::timer_reg_vec(476,14651
+uint32_t Timer_module::get_timer_status485,15019
+void Timer_module::set_timer_status515,15860
+void Timer_module::write_actions557,17256
+void Timer_module::read_actions(658,20750
+
+timer/timer_beh.cpp,446
+Timer::Timer(27,1099
+Timer::~Timer(38,1379
+void Timer::start(44,1529
+void Timer::stop(60,2038
+void Timer::pause(73,2471
+void Timer::resume(83,2842
+sc_time Timer::curr_time(97,3394
+sc_time Timer::get_time_left(104,3612
+sc_time Timer::get_time_since(116,4001
+bool Timer::is_running(127,4317
+void Timer::trigger_thread(136,4622
+std::string Timer::to_string(169,5767
+void Timer::reset(191,6743
+SC_MODULE(229,8235
+int sc_main(376,12874
+
+timer/timer_test.cpp,73
+#define VALUE(13,255
+#define TEST_TIMER(14,318
+void timer_test(27,860
+
+tmr/harness.cpp,151
+using boost::format;6,124
+static const char* MSGID 8,170
+harness::harness(9,230
+harness::~harness(31,1130
+void harness::end_of_simulation(41,1312
+
+tmr/ltbus_module.cpp,422
+using boost::format;6,121
+static const char* MSGID 7,142
+ltbus_module::ltbus_module 9,201
+ltbus_module::~ltbus_module 26,629
+ltbus_module::b_transport36,876
+ltbus_module::nb_transport_fw75,2132
+ltbus_module::get_direct_mem_ptr(86,2319
+ltbus_module::transport_dbg93,2484
+tlm_sync_enum ltbus_module::nb_transport_bw(120,3448
+void ltbus_module::invalidate_direct_mem_ptr(130,3644
+bool ltbus_module::range(140,3883
+
+tmr/main.cpp,50
+static char const* MSGID 5,68
+int sc_main(7,154
+
+tmr/testbench.cpp,823
+using boost::format;3,51
+static const char* MSGID 7,139
+static const addr_t FIRST_TIMER 9,196
+static const addr_t TIMER_SPACING 10,239
+testbench::testbench 14,378
+testbench::~testbench(27,697
+void testbench::initiator_thread(34,894
+tlm_sync_enum testbench::nb_transport_bw(63,2001
+void testbench::invalidate_direct_mem_ptr(73,2195
+void testbench::write(85,2478
+data_t testbench::read(108,3397
+addr_t testbench::timer_addr(133,4264
+void testbench::clear_all_interrupts(141,4507
+void testbench::clear_interrupt(147,4672
+void testbench::stop_all_timers(154,4912
+void testbench::stop_timer(162,5108
+void testbench::set_timer(168,5308
+data_t testbench::read_timer(174,5536
+data_t testbench::read_status(181,5773
+void testbench::end_of_elaboration(188,5983
+void testbench::wait_for_interrupt_thread(197,6260
+
+tmr/timer_beh.cpp,269
+using boost::format;8,163
+timer::timer(11,210
+timer::timer(18,350
+void Timer::start(25,534
+void Timer::stop(31,655
+void Timer::pause(37,745
+void Timer::resume(43,856
+void timer::set_time(50,992
+sc_time timer::get_time_left(61,1308
+bool timer::timeout(68,1581
+
+tmr/timer_module.cpp,320
+using boost::format;6,121
+static const char* MSGID 7,142
+timer_module::timer_module 9,201
+timer_module::~timer_module(32,893
+timer_module::b_transport38,1026
+timer_module::nb_transport_fw111,3596
+timer_module::get_direct_mem_ptr(122,3783
+timer_module::transport_dbg129,3948
+timer_module::timeout_method138,4076
+
+top/main.cpp,20
+int sc_main(20,510
+
+top/netlist.cpp,99
+using std::string;10,183
+  void scan_hierarchy(::scan_hierarchy18,358
+Netlist::Netlist(66,2231
+
+top/news.cpp,237
+bool News::initialized 11,190
+News::News(13,223
+void News::report_handler(20,349
+std::map<string,size_t> News::tag_map 42,979
+void News::add_tag(49,1077
+size_t News::get_tag_count(57,1247
+const string News::compose_report(65,1461
+
+top/options.cpp,146
+Options* const Options::instance(25,1056
+inline bool Options::has_flag(31,1149
+std::string Options::get_flag(36,1266
+Options::Options(46,1501
+
+top/platform_enum.cpp,495
+#define PLATFORM_KEY(5,72
+using cstr ::cstr7,114
+cstr s_platform_str[::s_platform_str8,147
+#undef KEY12,209
+std::string platform_str(15,302
+std::ostream& operator<<(21,488
+bool is_Platform(28,679
+  class str_exception::str_exception38,927
+    str_exception(::str_exception::str_exception42,989
+    const char* what(::str_exception::what43,1041
+    const char* m_msg;::str_exception::m_msg45,1114
+Platform to_Platform(50,1226
+std::istream& operator>>(62,1643
+int main(73,1848
+
+top/stub.cpp,611
+Stub_module::Stub_module 24,1062
+, m_dmi_allowed 38,1464
+, m_access 39,1512
+, m_byte_enables 40,1560
+, m_alignment 41,1608
+, m_max_burst 42,1656
+, m_addr_clocks 43,1704
+, m_read_clocks 44,1752
+, m_write_clocks 45,1800
+    sensitive 50,2003
+void Stub_module::execute_transaction(145,5773
+Stub_module::nb_transport_fw157,6125
+Stub_module::get_direct_mem_ptr171,6451
+Stub_module::targ_peq_cb184,6734
+Stub_module::send_end_req(241,8197
+Stub_module::send_response(264,8935
+Stub_module::execute_transaction_process(292,9693
+bool Stub_module::payload_is_ok(311,10390
+Stub_module::transport370,12546
+
+top/summary.cpp,434
+#define REQUIRES_CPP 2,23
+double       Summary::s_elaboration_time 15,375
+double       Summary::s_starting_time 16,424
+double       Summary::s_finished_time 17,473
+unsigned int Summary::s_errors 18,522
+unsigned int Summary::s_warnings 19,568
+void Summary::starting_elaboration(22,696
+void Summary::starting_simulation(28,864
+void Summary::finished_simulation(35,1051
+int Summary::errors(46,1321
+int Summary::report(55,1579
+
+top/top.cpp,1220
+  const char* const MSGID=::MSGID40,1470
+Top_module::Top_module(45,1626
+Top_module::~Top_module(53,1840
+struct Top_module::Impl60,2002
+  std::unique_ptr< Cpu_module    > cpu;Top_module::Impl::cpu67,2119
+  std::unique_ptr< Bus_module    > nth;Top_module::Impl::nth68,2159
+  std::unique_ptr< Bus_module    > sth;Top_module::Impl::sth69,2199
+  std::unique_ptr< Memory_module > rom;Top_module::Impl::rom70,2239
+  std::unique_ptr< Memory_module > ram;Top_module::Impl::ram71,2279
+  std::unique_ptr< Memory_module > ddr;Top_module::Impl::ddr72,2319
+  std::unique_ptr< Gpio_module   > gio;Top_module::Impl::gio73,2359
+  std::unique_ptr< RgbLED_module > led1;Top_module::Impl::led174,2399
+  std::unique_ptr< Timer_module  > tmr;Top_module::Impl::tmr75,2440
+  std::unique_ptr< Pic_module    > pic;Top_module::Impl::pic76,2480
+  std::unique_ptr< Uart_module   > ser;Top_module::Impl::ser77,2520
+  std::unique_ptr< Stub_module   > dma;Top_module::Impl::dma78,2560
+  Impl(Top_module::Impl::Impl81,2618
+  Options* const options Top_module::Impl::options231,8465
+void Top_module::end_of_elaboration(234,8507
+void Top_module::start_of_simulation(241,8627
+void Top_module::end_of_simulation(251,8856
+
+top/wallclock.cpp,134
+double get_wall_time(17,435
+double get_cpu_time(30,777
+double get_wall_time(48,1256
+double get_cpu_time(57,1521
+int main(69,1772
+
+uart/parity.cpp,230
+struct Parity::Parity5,56
+    Parity(::Parity::Parity7,74
+    inline bool odd(::Parity::odd14,193
+    bool odd_table[::Parity::odd_table22,444
+  } parity;::parity23,469
+bool odd(26,485
+bool odd(31,552
+int main(44,799
+
+uart/uart.cpp,734
+Uart_module::Uart_module 27,1128
+, m_read_clocks 34,1337
+, m_write_clocks 35,1385
+    sensitive 42,1628
+Uart_module::b_transport120,4629
+Uart_module::transport_dbg136,4932
+bool Uart_module::configure(177,5926
+void Uart_module::execute_transaction(204,6893
+Uart_module::nb_transport_fw216,7228
+Uart_module::targ_peq_cb233,7634
+Uart_module::send_end_req(295,9151
+Uart_module::send_response(317,9856
+Uart_module::execute_transaction_process(344,10589
+bool Uart_module::payload_is_ok365,11297
+Uart_module::transport 425,13184
+void Uart_module::send(457,14256
+void Uart_module::tx_thread(499,15870
+void Uart_module::rx_thread(544,17514
+void Uart_module::write_actions(589,19169
+void Uart_module::read_actions(752,25251
+
+unit_test/test_enum.cpp,491
+#define TEST_KEY(5,68
+using cstr ::cstr7,106
+cstr s_test_str[::s_test_str8,139
+#undef KEY12,189
+std::string test_str(15,282
+std::ostream& operator<<(21,464
+bool is_PlatformTest(28,659
+  class str_exception::str_exception38,903
+    str_exception(::str_exception::str_exception42,965
+    const char* what(::str_exception::what43,1017
+    const char* m_msg;::str_exception::m_msg45,1090
+PlatformTest to_PlatformTest(50,1202
+std::istream& operator>>(62,1627
+int main(73,1836
+
+unit_test/xyaml.cpp,87
+string nodeType(13,239
+#define SHOW(26,754
+#define SHOW2(32,866
+int sc_main(38,994
+
+utility/hexfile.cpp,235
+namespace hexfile 9,151
+  void strip_leading(hexfile::strip_leading21,531
+  void strip_trailing(hexfile::strip_trailing31,811
+  void strip_underscores(hexfile::strip_underscores41,1101
+dump(57,1411
+save(82,2153
+load(110,2925
+
+utility/report.cpp,115
+std::ostringstream mout;9,139
+string to_string(11,165
+string to_string(22,470
+std::string verbosity2str(36,811
+
+utility/signal.cpp,471
+  void my_stop(::my_stop26,1056
+  void my_abort(::my_abort32,1200
+void my_interrupt(37,1288
+std::forward_list<Signal*> Signal::s_handlers;43,1404
+Signal::Signal(45,1452
+Signal::~Signal(53,1595
+void Signal::remove(61,1701
+void Signal::revert(68,1803
+void Signal::install(77,1945
+void Signal::add(106,2677
+std::array<size_t,2> count_array;136,3815
+extern "C" void Handler1(139,3931
+extern "C" void Handler2(145,4099
+SC_MODULE(151,4268
+int sc_main(203,5875
+
+async/async_if.hpp,142
+#define ASYNC_IF_HPP2,21
+struct Async_tx_if8,113
+struct Async_rx_base_if15,314
+struct Async_rx_if25,745
+struct Async_if:Async_if42,1599
+
+async/async_kind.hpp,412
+#define ASYNC_KIND_HPP2,23
+#define ASYNC_KIND_ENUMS(12,173
+#define ASYNC_KIND_KEY(21,358
+enum class Async_kind 22,389
+  ASYNC_KIND_ENUMS(Async_kind::ASYNC_KIND_ENUMS23,419
+  ASYNC_KIND_ENUMS(ASYNC_KIND_KEY)Async_kind::ASYNC_KIND_KEY23,419
+#undef ASYNC_KIND_KEY25,457
+inline Async_kind operator++(32,772
+inline Async_kind operator*(35,895
+inline Async_kind begin(38,953
+inline Async_kind end(41,1059
+
+async/async_payload.hpp,2054
+#define ASYNC_PAYLOAD_HPP2,26
+struct Async_payload34,1040
+  static const uint64_t UNDEFINED Async_payload::UNDEFINED36,1063
+  Async_payloadAsync_payload::Async_payload38,1130
+  void clear(Async_payload::clear55,1466
+  Async_payload(Async_payload::Async_payload63,1615
+  ~Async_payload(Async_payload::~Async_payload67,1663
+  Async_payload(Async_payload::Async_payload72,1737
+  Async_payload& operator=(Async_payload::operator=77,1844
+  void       set_orig Async_payload::set_orig96,2385
+  void       set_dest Async_payload::set_dest97,2446
+  void       set_time Async_payload::set_time98,2507
+  void       set_kind Async_payload::set_kind99,2568
+  void       set_data Async_payload::set_data100,2648
+  void       set_data Async_payload::set_data101,2731
+  uint64_t   get_id Async_payload::get_id104,2843
+  uint64_t   get_vers Async_payload::get_vers105,2899
+  uint64_t   get_orig Async_payload::get_orig106,2955
+  uint64_t   get_dest Async_payload::get_dest107,3011
+  uint64_t   get_time Async_payload::get_time108,3067
+  Async_kind get_kind Async_payload::get_kind109,3123
+  Data_t     get_data Async_payload::get_data110,3179
+  bool       has_kind Async_payload::has_kind111,3235
+  bool       has_data Async_payload::has_data112,3295
+  std::string to_string(Async_payload::to_string113,3355
+  void pack(Async_payload::pack121,3490
+  std::string pack(Async_payload::pack140,4244
+  void unpack(Async_payload::unpack147,4349
+  static uint64_t next(Async_payload::next178,5429
+  uint32_t    m_id;Async_payload::m_id183,5541
+  uint32_t    m_vers{Async_payload::m_vers184,5561
+  uint64_t    m_orig;Async_payload::m_orig185,5593
+  uint64_t    m_dest;Async_payload::m_dest186,5617
+  uint64_t    m_time;Async_payload::m_time187,5644
+  Async_kind  m_kind;Async_payload::m_kind188,5666
+  Data_t      m_data;Async_payload::m_data189,5688
+  bool        m_has_data{Async_payload::m_has_data190,5710
+  bool        m_has_kind{Async_payload::m_has_kind191,5745
+std::ostream& operator<<(195,5810
+
+async/async_rx.hpp,1099
+#define ASYNC_RX_HPP2,21
+struct Async_rx_channel12,189
+  Async_rx_channel(Async_rx_channel::Async_rx_channel17,273
+  ~Async_rx_channel(Async_rx_channel::~Async_rx_channel23,407
+  bool notify(Async_rx_channel::notify28,522
+  void update(Async_rx_channel::update37,734
+  bool is_empty(Async_rx_channel::is_empty42,796
+  void wait_unless_available(Async_rx_channel::wait_unless_available49,970
+  size_t available(Async_rx_channel::available55,1108
+  const sc_core::sc_event& default_event(Async_rx_channel::default_event66,1329
+  bool nb_read(Async_rx_channel::nb_read72,1545
+  void read(Async_rx_channel::read83,1905
+  bool nb_peek(Async_rx_channel::nb_peek90,2119
+  void peek(Async_rx_channel::peek100,2458
+  void drop(Async_rx_channel::drop109,2747
+  std::queue< Async_payload<T> > m_queue;Async_rx_channel::m_queue120,2967
+  mutable std::mutex             m_queue_mutex;Async_rx_channel::m_queue_mutex121,3009
+  sc_core::sc_event              m_event;Async_rx_channel::m_event122,3057
+  bool                           m_peeked{Async_rx_channel::m_peeked123,3099
+
+async/async_tx.hpp,1329
+#define ASYNC_TX_HPP2,21
+struct Async_tx_channel13,219
+  Async_tx_channel(Async_tx_channel::Async_tx_channel18,303
+  ~Async_tx_channel(Async_tx_channel::~Async_tx_channel24,437
+  bool notify(Async_tx_channel::notify29,552
+  bool is_empty(Async_tx_channel::is_empty39,799
+  void wait_unless_available(Async_tx_channel::wait_unless_available46,973
+  size_t available(Async_tx_channel::available55,1239
+  const sc_core::sc_event& default_event(Async_tx_channel::default_event66,1454
+  bool nb_read(Async_tx_channel::nb_read72,1664
+  void read(Async_tx_channel::read84,2046
+  bool nb_peek(Async_tx_channel::nb_peek91,2260
+  void peek(Async_tx_channel::peek101,2593
+  void drop(Async_tx_channel::drop110,2876
+  std::queue< Async_payload<T> > m_queue;Async_tx_channel::m_queue122,3120
+  std::mutex                     m_queue_mutex;Async_tx_channel::m_queue_mutex123,3162
+  std::mutex                     m_condition_mutex;Async_tx_channel::m_condition_mutex124,3210
+  std::condition_variable        m_condition_variable;Async_tx_channel::m_condition_variable125,3262
+  bool                           m_ready{Async_tx_channel::m_ready126,3317
+  sc_core::sc_event              m_event;Async_tx_channel::m_event127,3368
+  bool                           m_peeked{Async_tx_channel::m_peeked128,3410
+
+bus/bus.hpp,520
+#define BUS_MODULE_HPP2,23
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,598
+struct Bus_module:Bus_module28,967
+  using tlm_payload_t Bus_module::tlm_payload_t31,1024
+  using tlm_accessor_t Bus_module::tlm_accessor_t32,1074
+  const char* kind(Bus_module::kind41,1411
+  Configuration     m_configuration;Bus_module::m_configuration64,2553
+  Address_map       m_addr_map;Bus_module::m_addr_map65,2590
+  Memory_manager<>& m_mm;Bus_module::m_mm66,2649
+  tlm_accessor_t    m_accessor;Bus_module::m_accessor67,2707
+
+bus/memory_map.hpp,1792
+#define MEMORY_MAP_HPP2,23
+#define UNASSIGNED 22,905
+#define UNLIMITED 23,926
+struct Target_info 24,947
+  Port_t      port Target_info::port26,1040
+  Addr_t      base Target_info::base27,1094
+  Addr_t      last Target_info::last28,1147
+  Depth_t     size Target_info::size29,1195
+  int         irq Target_info::irq30,1248
+using Address_map 35,1481
+struct Memory_map38,1576
+  using Target_ptr Memory_map::Target_ptr41,1613
+  enum { BAD_TARG Memory_map::BAD_TARG42,1664
+  using Targ_t Memory_map::Targ_t43,1690
+  using Target_map Memory_map::Target_map44,1712
+  using Target_ptr_map Memory_map::Target_ptr_map45,1771
+  enum class Category Memory_map::Category46,1835
+  enum class Category { unknown,Memory_map::Category::unknown46,1835
+  enum class Category { unknown, initiator,Memory_map::Category::initiator46,1835
+  enum class Category { unknown, initiator, interconnect,Memory_map::Category::interconnect46,1835
+  enum class Category { unknown, initiator, interconnect, router,Memory_map::Category::router46,1835
+  enum class Category { unknown, initiator, interconnect, router, target Memory_map::Category::target46,1835
+  struct Origin_info Memory_map::Origin_info47,1911
+    std::string name;Memory_map::Origin_info::name48,1934
+    Category    category;Memory_map::Origin_info::category49,1956
+    Addr_t      base;Memory_map::Origin_info::base50,1982
+    Depth_t     size{Memory_map::Origin_info::size51,2004
+    Target_map  target_map;Memory_map::Origin_info::target_map52,2039
+  using Origin_map Memory_map::Origin_map54,2089
+  static void        set_filename Memory_map::set_filename63,2591
+  Origin_map     m_origin_map;Memory_map::m_origin_map82,3160
+  Target_ptr_map m_target_ptr_map;Memory_map::m_target_ptr_map83,3191
+
+bus/route_extn.hpp,82
+#define ROUTE_EXTN_HPP2,23
+struct Route_extn4,47
+  int id;Route_extn::id7,120
+
+cache/cache_extn.hpp,1037
+#define CACHE_EXTN_HPP2,23
+struct Cache_extn4,47
+  using Cache_id_t Cache_extn::Cache_id_t8,117
+  enum class Cache_op Cache_extn::Cache_op9,153
+  enum class Cache_op { NONE,Cache_extn::Cache_op::NONE9,153
+  enum class Cache_op { NONE, INVALIDATE_ALL,Cache_extn::Cache_op::INVALIDATE_ALL9,153
+  enum class Cache_op { NONE, INVALIDATE_ALL, CLEAN_ALL,Cache_extn::Cache_op::CLEAN_ALL9,153
+  enum class Cache_op { NONE, INVALIDATE_ALL, CLEAN_ALL, INVALIDATE_ADDR,Cache_extn::Cache_op::INVALIDATE_ADDR9,153
+  enum class Cache_op { NONE, INVALIDATE_ALL, CLEAN_ALL, INVALIDATE_ADDR, CLEAN_ADDR Cache_extn::Cache_op::CLEAN_ADDR9,153
+  void       reset(Cache_extn::reset16,474
+  void       set_cache_id(Cache_extn::set_cache_id17,554
+  void       set_cache_op(Cache_extn::set_cache_op18,614
+  Cache_id_t get_cache_id(Cache_extn::get_cache_id19,674
+  Cache_op   get_cache_op(Cache_extn::get_cache_op20,734
+  Cache_id_t      m_id Cache_extn::m_id22,803
+  Cache_op m_op { Cache_op::NONE Cache_extn::Cache_op::NONE23,868
+
+common/common.hpp,1578
+#define COMMON_HPP2,19
+#define REQUIRES_CPP 7,74
+#define KB 12,178
+#define MB 13,205
+#define GB 14,234
+#define MAX_ADDR 15,263
+#define BAD_ADDR 16,298
+#define BAD_DEPTH 17,333
+#define BAD_PORT 18,368
+using Addr_t 20,404
+using Depth_t 21,435
+using Port_t 22,489
+using byte_t 23,544
+enum class Feature 26,611
+enum class Feature { none,Feature::none26,611
+enum class Feature { none, enabled Feature::enabled26,611
+using DMI 27,649
+using Byte_enables 28,670
+enum class Access 29,700
+enum class Access { none,Access::none29,700
+enum class Access { none, RW,Access::RW29,700
+enum class Access { none, RW, RO,Access::RO29,700
+enum class Access { none, RW, RO, WO,Access::WO29,700
+enum class Access { none, RW, RO, WO, RC,Access::RC29,700
+enum class Access { none, RW, RO, WO, RC, RS,Access::RS29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C,Access::W1C29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C,Access::W0C29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S,Access::W1S29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S,Access::W0S29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T,Access::W1T29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T,Access::W0T29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ Access::RAZ29,700
+enum class Style30,783
+{ UNKNOWNStyle::UNKNOWN31,800
+, DEFAULTStyle::DEFAULT32,810
+, LT Style::LT33,820
+, AT Style::AT34,842
+, TD Style::TD35,870
+
+common/log2.hpp,86
+constexpr bool isPowerOfTwo(4,40
+auto log2(10,139
+constexpr int bits(::bits17,224
+
+common/require_cxx_version.hpp,233
+#      define CPP_VERSION 15,438
+#      define CPP_VERSION 19,561
+#      define CPP_VERSION 23,684
+#      define CPP_VERSION 27,807
+#      define CPP_VERSION 31,881
+#  undef REQUIRES_CPP39,1151
+#    define CPP_VERSION 42,1201
+
+config/config_extn.hpp,118
+#define CONFIG_EXTN_HPP2,24
+struct Config_extn6,79
+  Configuration configuration;Config_extn::configuration13,336
+
+config/config_proxy.hpp,440
+#define CONFIG_PROXY_HPP2,25
+struct Config_proxy19,851
+  using tlm_payload_t Config_proxy::tlm_payload_t24,952
+  tlm::tlm_initiator_socket<> init_socket;Config_proxy::init_socket27,1014
+  tlm::tlm_target_socket<>    targ_socket;Config_proxy::targ_socket28,1057
+  const char* kind(Config_proxy::kind41,1564
+  Configuration m_configuration;Config_proxy::m_configuration58,2323
+  Config_extn*  m_extn{Config_proxy::m_extn59,2356
+
+config/configuration.hpp,1354
+#define CONFIGURATION_HPP2,26
+using sc_core::sc_time;15,287
+using sc_core::SC_ZERO_TIME;16,311
+using std::string;17,340
+struct Configuration19,360
+  using Printer_t Configuration::Printer_t30,765
+  using Equal_t Configuration::Equal_t31,842
+  using Assign_t Configuration::Assign_t32,923
+  struct Function_t Configuration::Function_t33,1018
+    Function_tConfiguration::Function_t::Function_t35,1043
+    , equal Configuration::Function_t::equal41,1138
+    Printer_t printer;Configuration::Function_t::printer44,1185
+    Equal_t   equal;Configuration::Function_t::equal45,1208
+    Assign_t  assign;Configuration::Function_t::assign46,1229
+  void set(Configuration::set71,2310
+  void get(Configuration::get87,2829
+  static std::unordered_map<Configuration::std::unordered_map102,3419
+  static std::unordered_map<size_t, std::unique_ptr<Function_t>> s_function;Configuration::s_function102,3419
+  std::unordered_map<Configuration::std::unordered_map107,3523
+  std::unordered_map<string, boost::any>  m_data_map;Configuration::m_data_map107,3523
+  std::unordered_map<Configuration::std::unordered_map108,3577
+  std::unordered_map<string, boost::any>  m_dflt_map;Configuration::m_dflt_map108,3577
+  std::unordered_set<string>              m_reqd_key_set;Configuration::m_reqd_key_set109,3631
+void config_key(116,3877
+
+cpu/cpu.hpp,2071
+#define CPU_MODULE_HPP2,23
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,598
+using sc_core::sc_time;30,1000
+using sc_core::sc_event;31,1024
+using sc_core::sc_signal;32,1049
+struct Cpu_module:Cpu_module34,1076
+  using tlm_payload_t Cpu_module::tlm_payload_t36,1116
+  using tlm_phase_t Cpu_module::tlm_phase_t37,1166
+  using tlm_peq_t Cpu_module::tlm_peq_t38,1206
+  ~Cpu_module(Cpu_module::~Cpu_module50,1730
+  const char* kind(Cpu_module::kind51,1754
+  void write64 Cpu_module::write6494,3070
+  void read64 Cpu_module::read6496,3186
+  void write32 Cpu_module::write3298,3303
+  void read32 Cpu_module::read32100,3419
+  void write16 Cpu_module::write16102,3536
+  void read16 Cpu_module::read16104,3652
+  void write8 Cpu_module::write8106,3769
+  void read8 Cpu_module::read8108,3885
+  void write Cpu_module::write111,4025
+  void read Cpu_module::read114,4194
+  void write Cpu_module::write116,4340
+  void read Cpu_module::read118,4553
+  Style                        m_coding_style{Cpu_module::m_coding_style128,5037
+  tlm_utils::tlm_quantumkeeper m_qk;Cpu_module::m_qk129,5097
+  std::vector<tlm::tlm_dmi>    dmi_table;Cpu_module::dmi_table130,5134
+  Memory_manager<>&            m_mm;Cpu_module::m_mm131,5206
+  tlm_peq_t                    m_init_peq;Cpu_module::m_init_peq132,5275
+  tlm_payload_t*               m_request_in_progress;Cpu_module::m_request_in_progress133,5318
+  sc_event                     m_end_request_event;Cpu_module::m_end_request_event134,5372
+  sc_event                     m_transport_done_event;Cpu_module::m_transport_done_event135,5424
+  Cpuid_extn*                  m_cpuid;Cpu_module::m_cpuid136,5479
+  Style                        m_prev_style;Cpu_module::m_prev_style137,5519
+  std::map<Cpu_module::std::map138,5564
+  std::map<std::string,Addr_t> m_stat;Cpu_module::m_stat138,5564
+  sc_core::sc_mutex            m_transport_mutex;Cpu_module::m_transport_mutex139,5617
+  Task_manager                 cpu_task_mgr;Cpu_module::cpu_task_mgr140,5667
+Cpu_module::transport_dbg147,5917
+
+cpu/cpu_if.hpp,44
+#define CPU_IF_HPP2,19
+struct Cpu_if 6,80
+
+cpu/cpuid_extn.hpp,113
+#define CPUID_EXTN_HPP2,23
+struct Cpuid_extn6,63
+  sc_core::sc_module* m_cpu_ptr;Cpuid_extn::m_cpu_ptr16,423
+
+cpu/extn_list.hpp,531
+#define EXTN_LIST_HPP2,22
+struct Extn_list11,187
+  using extn_ptr_t Extn_list::extn_ptr_t13,206
+  void set_extension(Extn_list::set_extension17,337
+  std::unordered_set<unsigned int> m_id;Extn_list::m_id45,1152
+  std::unordered_map<Extn_list::std::unordered_map46,1193
+  std::unordered_map<unsigned int,tlm::tlm_extension_base*> m_sticky;Extn_list::m_sticky46,1193
+  std::unordered_map<Extn_list::std::unordered_map47,1263
+  std::unordered_map<unsigned int,tlm::tlm_extension_base*> m_auto;Extn_list::m_auto47,1263
+
+cpu/task.hpp,629
+#define TASK_HPP2,17
+struct Task_manager8,88
+  using Task_body_t Task_manager::Task_body_t10,110
+  using Task_obj_t Task_manager::Task_obj_t11,148
+  using Task_map_t Task_manager::Task_map_t12,190
+  struct Task_listTask_manager::Task_list14,248
+    Task_obj_t* boss_ptr{Task_manager::Task_list::boss_ptr16,271
+    Task_map_t  task;Task_manager::Task_list::task17,306
+  std::string m_boss_name;Task_manager::m_boss_name28,606
+  std::string m_task_name;Task_manager::m_task_name29,633
+  static std::map<Task_manager::std::map30,660
+  static std::map<std::string,Task_list> s_tasks;Task_manager::s_tasks30,660
+
+dma/dma.hpp,155
+#define DMA_HPP2,16
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,811
+struct Dma_module:Dma_module23,1048
+  virtual void write32 Dma_module::write3252,2416
+
+dmi/dmi_extn.hpp,47
+#define DMI_EXTN_HPP2,21
+struct Dmi_extn6,59
+
+exclusive/excl_extn.hpp,141
+#define EXCL_EXTN_HPP2,22
+struct Excl_extn6,61
+  void succeeded(Excl_extn::succeeded14,381
+  bool m_success Excl_extn::m_success16,443
+
+exclusive/excl_filt.hpp,410
+#define EXCL_FILT_HPP2,22
+struct Excl_filt19,857
+  using tlm_payload_t Excl_filt::tlm_payload_t24,955
+  tlm::tlm_initiator_socket<> init_socket;Excl_filt::init_socket27,1017
+  tlm::tlm_target_socket<>    targ_socket;Excl_filt::targ_socket28,1060
+  const char* kind(Excl_filt::kind37,1351
+  std::vector<bool> m_excl;Excl_filt::m_excl53,2011
+  Excl_filt*        m_global{Excl_filt::m_global54,2039
+
+gpio/gpio.hpp,1953
+#define GPIO_MODULE_HPP2,24
+#define SC_INCLUDE_DYNAMIC_PROCESSES16,849
+using sc_core::sc_time;30,1189
+using sc_core::sc_event;31,1213
+using sc_core::sc_vector;32,1238
+using sc_core::sc_export;33,1264
+using sc_core::sc_signal_inout_if;34,1290
+struct Gpio_module:Gpio_module36,1326
+  static constexpr int const PINS Gpio_module::PINS38,1367
+  using tlm_payload_t Gpio_module::tlm_payload_t41,1455
+  using tlm_phase_t Gpio_module::tlm_phase_t42,1505
+  using tlm_peq_t Gpio_module::tlm_peq_t43,1545
+  using Gpio_signal_t Gpio_module::Gpio_signal_t44,1616
+  using Gpio_export_t Gpio_module::Gpio_export_t45,1669
+  using Intrq_port_t Gpio_module::Intrq_port_t46,1741
+  virtual const char* kind(Gpio_module::kind62,2455
+  Configuration        m_configuration;Gpio_module::m_configuration99,4109
+  Depth_t              m_target_size;Gpio_module::m_target_size103,4256
+  uint32_t             m_addr_clocks;Gpio_module::m_addr_clocks104,4294
+  uint32_t             m_read_clocks;Gpio_module::m_read_clocks105,4369
+  uint32_t             m_write_clocks;Gpio_module::m_write_clocks106,4451
+  tlm_peq_t            m_targ_peq;Gpio_module::m_targ_peq107,4526
+  size_t               m_max_burst{Gpio_module::m_max_burst108,4561
+  bool                 m_response_in_progress Gpio_module::m_response_in_progress109,4661
+  tlm_payload_t*       m_transaction_in_progress Gpio_module::m_transaction_in_progress110,4721
+  tlm_payload_t*       m_next_response_pending Gpio_module::m_next_response_pending111,4783
+  tlm_payload_t*       m_end_req_pending Gpio_module::m_end_req_pending112,4845
+  sc_event             m_target_done_event;Gpio_module::m_target_done_event113,4907
+  std::vector<uint8_t> m_register_vec Gpio_module::m_register_vec114,4951
+  Gpio_regs_t          m_reg;Gpio_module::m_reg115,5009
+  sc_dt::sc_lv< PINS > m_out;Gpio_module::m_out116,5039
+  sc_dt::sc_lv< PINS > m_inp;Gpio_module::m_inp117,5069
+
+gpio/rgbled.hpp,257
+#define RGBLED_HPP2,19
+struct RgbLED_module6,59
+  sc_core::sc_in_resolved r,RgbLED_module::r10,114
+  sc_core::sc_in_resolved r, g,RgbLED_module::g10,114
+  sc_core::sc_in_resolved r, g, b;RgbLED_module::b10,114
+private:RgbLED_module::private21,323
+
+interrupt/interrupt.hpp,1274
+#define INTERRUPT_HPP2,22
+struct Interrupt_channel7,89
+  Interrupt_channel(Interrupt_channel::Interrupt_channel20,547
+  void notify(Interrupt_channel::notify33,956
+  void notify(Interrupt_channel::notify39,1096
+  void notify(Interrupt_channel::notify45,1268
+  void notify(Interrupt_channel::notify53,1530
+  void wait_n_get(Interrupt_channel::wait_n_get60,1809
+  void wait(Interrupt_channel::wait68,2038
+  char* get_next(Interrupt_channel::get_next74,2199
+  void clearall Interrupt_channel::clearall95,2727
+  bool has_pending Interrupt_channel::has_pending102,2896
+  size_t pending Interrupt_channel::pending109,3144
+  size_t outstanding Interrupt_channel::outstanding124,3526
+  size_t sent Interrupt_channel::sent130,3690
+  size_t taken Interrupt_channel::taken133,3820
+  const sc_core::sc_event& event(Interrupt_channel::event137,3991
+  const char* originator(Interrupt_channel::originator143,4163
+  using sched_map_t Interrupt_channel::sched_map_t159,4701
+  size_t            m_sent Interrupt_channel::m_sent160,4769
+  size_t            m_taken Interrupt_channel::m_taken161,4805
+  sched_map_t       m_scheduled_events;Interrupt_channel::m_scheduled_events162,4841
+  sc_core::sc_event m_event;Interrupt_channel::m_event163,4881
+
+interrupt/interrupt_if.hpp,126
+#define INTERRUPT_IF_HPP2,25
+struct Interrupt_send_if6,71
+struct Interrupt_recv_if17,494
+struct Interrupt_debug_if36,1235
+
+interrupt/pic.hpp,2125
+#define PIC_MODULE_HPP2,23
+#define SC_INCLUDE_DYNAMIC_PROCESSES17,878
+using sc_core::sc_time;30,1189
+using sc_core::sc_event;31,1213
+struct Pic_module:Pic_module33,1239
+  using tlm_payload_t Pic_module::tlm_payload_t35,1279
+  using tlm_phase_t Pic_module::tlm_phase_t36,1329
+  using tlm_peq_t Pic_module::tlm_peq_t37,1369
+  sc_core::sc_port<Pic_module::sc_core::sc_port42,1617
+  const char* kind(Pic_module::kind56,2145
+  Configuration        m_configuration;Pic_module::m_configuration91,3738
+  Depth_t                     m_target_size;Pic_module::m_target_size95,3885
+  uint32_t                    m_addr_clocks;Pic_module::m_addr_clocks96,3930
+  uint32_t                    m_read_clocks;Pic_module::m_read_clocks97,4012
+  uint32_t                    m_write_clocks;Pic_module::m_write_clocks98,4101
+  std::vector<uint8_t>        m_register_vec Pic_module::m_register_vec99,4183
+  tlm_peq_t                   m_targ_peq;Pic_module::m_targ_peq100,4247
+  Depth_t                     m_max_burst{Pic_module::m_max_burst101,4289
+  bool                        m_response_in_progress Pic_module::m_response_in_progress102,4337
+  tlm_payload_t*              m_transaction_in_progress Pic_module::m_transaction_in_progress103,4404
+  tlm_payload_t*              m_next_response_pending Pic_module::m_next_response_pending104,4473
+  tlm_payload_t*              m_end_req_pending Pic_module::m_end_req_pending105,4542
+  sc_event                    m_target_done_event;Pic_module::m_target_done_event106,4611
+  static constexpr int        M{Pic_module::M107,4662
+  std::vector<Pic_Source_t>   m_source_irq Pic_module::m_source_irq108,4741
+  std::vector<std::bitset<M>> m_source_targets Pic_module::m_source_targets109,4819
+  std::vector<Pic_Target_t>   m_target_irq Pic_module::m_target_irq110,4897
+  std::vector<std::list<int>> m_target_level Pic_module::m_target_level111,4969
+  std::vector<uint32_t>       m_target_select Pic_module::m_target_select112,5041
+  std::map<Pic_module::std::map113,5113
+  std::map<std::string,int>   m_target_id Pic_module::m_target_id113,5113
+
+interrupt/pic_api.hpp,1027
+#define PIC_API_HPP2,20
+struct Pic_api8,108
+  Pic_api(Pic_api::Pic_api11,142
+  void     enable_interface(Pic_api::enable_interface29,568
+  void setup(Pic_api::setup44,1152
+  void enable_interface(Pic_api::enable_interface49,1202
+  void     disable_interface(Pic_api::disable_interface58,1431
+  uint32_t get_source(Pic_api::get_source67,1666
+  void     set_mask(Pic_api::set_mask123,3264
+  uint8_t  get_mask(Pic_api::get_mask133,3548
+  int      get_next(Pic_api::get_next139,3658
+  void     set_done(Pic_api::set_done145,3768
+  void     set_targets(Pic_api::set_targets151,3888
+  uint32_t get_ident(Pic_api::get_ident157,4024
+  uint32_t get_targetid(Pic_api::get_targetid164,4193
+  uint16_t get_source_count(Pic_api::get_source_count172,4391
+  uint16_t get_target_count(Pic_api::get_target_count180,4592
+  void     clearall(Pic_api::clearall188,4793
+  Cpu_module&  m_cpu;Pic_api::m_cpu201,5093
+  const Addr_t m_base;Pic_api::m_base202,5115
+  bool         m_setup{Pic_api::m_setup203,5138
+
+mailbox/mailbox.hpp,1844
+#define MEMORY_MODULE_HPP2,26
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,838
+using sc_core::sc_time;26,1116
+struct Memory_module:Memory_module28,1141
+  using tlm_payload_t Memory_module::tlm_payload_t30,1184
+  using tlm_phase_t Memory_module::tlm_phase_t31,1234
+  using tlm_peq_t Memory_module::tlm_peq_t32,1274
+  const char* kind(Memory_module::kind52,2244
+  Configuration        m_configuration;Memory_module::m_configuration75,3336
+  Depth_t              m_target_size;Memory_module::m_target_size77,3401
+  Feature              m_dmi_allowed;Memory_module::m_dmi_allowed78,3439
+  Access               m_access;Memory_module::m_access79,3477
+  Feature              m_byte_enables;Memory_module::m_byte_enables80,3544
+  size_t               m_alignment;Memory_module::m_alignment81,3583
+  size_t               m_max_burst;Memory_module::m_max_burst82,3653
+  uint32_t             m_addr_clocks;Memory_module::m_addr_clocks83,3753
+  uint32_t             m_read_clocks;Memory_module::m_read_clocks84,3828
+  uint32_t             m_write_clocks;Memory_module::m_write_clocks85,3910
+  tlm_peq_t            m_targ_peq;Memory_module::m_targ_peq86,3985
+  bool                 m_dmi_granted Memory_module::m_dmi_granted87,4020
+  std::vector<uint8_t> m_mem_vec Memory_module::m_mem_vec88,4080
+  std::vector<bool>    m_used_vec Memory_module::m_used_vec89,4136
+  tlm_payload_t*       m_transaction_in_progress Memory_module::m_transaction_in_progress90,4192
+  bool                 m_response_in_progress Memory_module::m_response_in_progress91,4254
+  tlm_payload_t*       m_next_response_pending Memory_module::m_next_response_pending92,4314
+  tlm_payload_t*       m_end_req_pending Memory_module::m_end_req_pending93,4376
+  sc_core::sc_event    m_target_done_event;Memory_module::m_target_done_event94,4438
+
+memory/memory.hpp,1844
+#define MEMORY_MODULE_HPP2,26
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,765
+using sc_core::sc_time;26,1043
+struct Memory_module:Memory_module28,1068
+  using tlm_payload_t Memory_module::tlm_payload_t30,1111
+  using tlm_phase_t Memory_module::tlm_phase_t31,1161
+  using tlm_peq_t Memory_module::tlm_peq_t32,1201
+  const char* kind(Memory_module::kind50,2044
+  Configuration        m_configuration;Memory_module::m_configuration73,3136
+  Depth_t              m_target_size;Memory_module::m_target_size75,3201
+  Feature              m_dmi_allowed;Memory_module::m_dmi_allowed76,3239
+  Access               m_access;Memory_module::m_access77,3277
+  Feature              m_byte_enables;Memory_module::m_byte_enables78,3344
+  size_t               m_alignment;Memory_module::m_alignment79,3383
+  size_t               m_max_burst;Memory_module::m_max_burst80,3453
+  uint32_t             m_addr_clocks;Memory_module::m_addr_clocks81,3553
+  uint32_t             m_read_clocks;Memory_module::m_read_clocks82,3628
+  uint32_t             m_write_clocks;Memory_module::m_write_clocks83,3710
+  tlm_peq_t            m_targ_peq;Memory_module::m_targ_peq84,3785
+  bool                 m_dmi_granted Memory_module::m_dmi_granted85,3820
+  std::vector<uint8_t> m_mem_vec Memory_module::m_mem_vec86,3880
+  std::vector<bool>    m_used_vec Memory_module::m_used_vec87,3936
+  tlm_payload_t*       m_transaction_in_progress Memory_module::m_transaction_in_progress88,3992
+  bool                 m_response_in_progress Memory_module::m_response_in_progress89,4054
+  tlm_payload_t*       m_next_response_pending Memory_module::m_next_response_pending90,4114
+  tlm_payload_t*       m_end_req_pending Memory_module::m_end_req_pending91,4176
+  sc_core::sc_event    m_target_done_event;Memory_module::m_target_done_event92,4238
+
+mmu/mmu.hpp,705
+#define MMU_HPP2,16
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,811
+struct Mmu_module:Mmu_module26,1132
+  using tlm_payload_t Mmu_module::tlm_payload_t28,1172
+  using tlm_accessor_t Mmu_module::tlm_accessor_t29,1222
+  tlm_utils::multi_passthrough_target_socket<Mmu_module>    targ_socket;Mmu_module::targ_socket30,1296
+  tlm_utils::multi_passthrough_initiator_socket<Mmu_module> init_socket;Mmu_module::init_socket31,1369
+  const char* kind(Mmu_module::kind35,1499
+  Memory_manager<>&        m_mm;Mmu_module::m_mm53,2345
+  tlm_accessor_t           m_accessor;Mmu_module::m_accessor54,2410
+  std::map<Mmu_module::std::map55,2449
+  std::map<uint64_t,Mmu_t> m_attr;Mmu_module::m_attr55,2449
+
+mmu/mmu_extn.hpp,668
+#define MMU_EXTN_HPP2,21
+struct Mmu_extn4,43
+  enum class Mmu_op Mmu_extn::Mmu_op8,109
+  enum class Mmu_op { NONE,Mmu_extn::Mmu_op::NONE8,109
+  enum class Mmu_op { NONE, ENABLE,Mmu_extn::Mmu_op::ENABLE8,109
+  enum class Mmu_op { NONE, ENABLE, DISABLE,Mmu_extn::Mmu_op::DISABLE8,109
+  enum class Mmu_op { NONE, ENABLE, DISABLE, INVALIDATE_ALL,Mmu_extn::Mmu_op::INVALIDATE_ALL8,109
+  enum class Mmu_op { NONE, ENABLE, DISABLE, INVALIDATE_ALL, INVALIDATE_ADDR Mmu_extn::Mmu_op::INVALIDATE_ADDR8,109
+  void   set_mmu_op(Mmu_extn::set_mmu_op14,403
+  Mmu_op get_mmu_op(Mmu_extn::get_mmu_op15,452
+  Mmu_op m_op { Mmu_op::NONE Mmu_extn::Mmu_op::NONE17,512
+
+no_clock/no_clock.hpp,3953
+#define NONCLOCK_HPP2,21
+inline sc_core::sc_time operator % operator %44,1950
+inline sc_core::sc_time operator % operator %55,2311
+sc_core::sc_time sc_core_time_diff64,2544
+#define sc_time_diff(90,3159
+using get_time_t 104,4011
+struct no_clock105,4057
+  sc_core::sc_time time_shift no_clock::time_shift153,5999
+  Clock_count_t    frequency_changes no_clock::frequency_changes158,6374
+  bool posedge no_clock::posedge180,8001
+  bool negedge no_clock::negedge182,8126
+  bool event no_clock::event184,8251
+  virtual void write(no_clock::write197,9036
+  get_time_t          m_get_time;no_clock::m_get_time208,9696
+  const char *        m_clock_name;no_clock::m_clock_name209,9767
+  sc_core::sc_time    m_tPERIOD;no_clock::m_tPERIOD210,9816
+  double              m_duty;no_clock::m_duty211,9865
+  sc_core::sc_time    m_tOFFSET;no_clock::m_tOFFSET212,9934
+  sc_core::sc_time    m_tPOSEDGE;no_clock::m_tPOSEDGE213,9991
+  sc_core::sc_time    m_tNEGEDGE;no_clock::m_tNEGEDGE214,10071
+  bool                m_posedge;no_clock::m_posedge215,10152
+  sc_core::sc_time    m_tSAMPLE;no_clock::m_tSAMPLE216,10205
+  sc_core::sc_time    m_tSETEDGE;no_clock::m_tSETEDGE217,10278
+  sc_core::sc_event   m_anyedge_event;no_clock::m_anyedge_event218,10382
+  sc_core::sc_event   m_posedge_event;no_clock::m_posedge_event219,10421
+  sc_core::sc_event   m_negedge_event;no_clock::m_negedge_event220,10460
+  sc_core::sc_event   m_sample_event;no_clock::m_sample_event221,10499
+  sc_core::sc_event   m_setedge_event;no_clock::m_setedge_event222,10537
+  sc_core::sc_time    m_frequency_set;no_clock::m_frequency_set223,10576
+  Clock_count_t       m_freq_count{no_clock::m_freq_count224,10652
+  Clock_count_t       m_base_count{no_clock::m_base_count225,10743
+  sc_core::sc_time    m_tSHIFT{no_clock::m_tSHIFT226,10825
+  using clock_map_t no_clock::clock_map_t227,10899
+  static clock_map_t  s_global;no_clock::s_global228,10954
+inline void no_clock::set_time_shift 246,11906
+inline sc_core::sc_time no_clock::delay 256,12481
+inline Clock_count_t no_clock::clocks270,13092
+inline const char*      no_clock::clock_name 283,13518
+inline sc_core::sc_time no_clock::period 284,13603
+inline double           no_clock::duty 285,13708
+inline double           no_clock::frequency 286,13787
+inline Clock_count_t    no_clock::cycles 291,14092
+inline Clock_count_t    no_clock::cycles 296,14259
+inline sc_core::sc_time  no_clock::until_posedge 302,14483
+inline sc_core::sc_time  no_clock::until_negedge 307,14632
+inline sc_core::sc_time  no_clock::until_anyedge 312,14781
+inline sc_core::sc_time  no_clock::until_sample 317,14940
+inline sc_core::sc_time  no_clock::until_setedge 322,15088
+inline sc_core::sc_time  no_clock::next_posedge 328,15317
+inline sc_core::sc_time  no_clock::next_negedge 334,15531
+inline sc_core::sc_time  no_clock::next_anyedge 340,15745
+inline sc_core::sc_time  no_clock::next_sample 345,15901
+inline sc_core::sc_time  no_clock::next_setedge 351,16114
+inline void no_clock::wait 358,16415
+inline void no_clock::wait_posedge 363,16524
+inline void no_clock::wait_negedge 369,16686
+inline void no_clock::wait_anyedge 375,16848
+inline void no_clock::wait_sample 381,17010
+inline void no_clock::wait_setedge 387,17171
+inline bool no_clock::at_posedge_time 394,17369
+inline bool no_clock::at_negedge_time 399,17479
+inline bool no_clock::at_anyedge_time 404,17589
+inline bool no_clock::at_sample_time 409,17699
+inline bool no_clock::at_setedge_time 414,17808
+inline sc_core::sc_event& no_clock::default_event 420,17965
+inline sc_core::sc_event& no_clock::posedge_event 425,18082
+inline sc_core::sc_event& no_clock::negedge_event 432,18260
+inline sc_core::sc_event& no_clock::sample_event 439,18438
+inline sc_core::sc_event& no_clock::setedge_event 446,18613
+inline sc_core::sc_event& no_clock::value_changed_event 453,18791
+inline bool               no_clock::read 460,18969
+
+no_clock/no_clock_if.hpp,83
+#define NONCLOCK_IF_HPP2,24
+using Clock_count_t 23,848
+struct no_clock_if25,881
+
+power/power.hpp,675
+#define POWER_HPP2,18
+struct PowerSetting8,94
+  enum Level PowerSetting::Level10,116
+  { off=PowerSetting::Level::off11,139
+  , gated=PowerSetting::Level::gated12,149
+  , lowPowerSetting::Level::low13,161
+  , mediumPowerSetting::Level::medium14,169
+  , fullPowerSetting::Level::full15,180
+  sc_core::sc_object* root;PowerSetting::root17,209
+struct PowerDomain20,241
+  using Power_map_t PowerDomain::Power_map_t23,283
+  const sc_core::sc_event& event(PowerDomain::event28,536
+  static clock_map_t  s_level;PowerDomain::s_level33,805
+  std::string         m_domain;PowerDomain::m_domain34,836
+  sc_core::sc_event   m_event;PowerDomain::m_event35,868
+
+sc-platform/ansi.hpp,39
+#define ANSI_HPP2,17
+struct Ansi4,35
+
+sc-platform/bus.hpp,520
+#define BUS_MODULE_HPP2,23
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,598
+struct Bus_module:Bus_module28,967
+  using tlm_payload_t Bus_module::tlm_payload_t31,1024
+  using tlm_accessor_t Bus_module::tlm_accessor_t32,1074
+  const char* kind(Bus_module::kind41,1411
+  Configuration     m_configuration;Bus_module::m_configuration64,2553
+  Address_map       m_addr_map;Bus_module::m_addr_map65,2590
+  Memory_manager<>& m_mm;Bus_module::m_mm66,2649
+  tlm_accessor_t    m_accessor;Bus_module::m_accessor67,2707
+
+sc-platform/cache_extn.hpp,1037
+#define CACHE_EXTN_HPP2,23
+struct Cache_extn4,47
+  using Cache_id_t Cache_extn::Cache_id_t8,117
+  enum class Cache_op Cache_extn::Cache_op9,153
+  enum class Cache_op { NONE,Cache_extn::Cache_op::NONE9,153
+  enum class Cache_op { NONE, INVALIDATE_ALL,Cache_extn::Cache_op::INVALIDATE_ALL9,153
+  enum class Cache_op { NONE, INVALIDATE_ALL, CLEAN_ALL,Cache_extn::Cache_op::CLEAN_ALL9,153
+  enum class Cache_op { NONE, INVALIDATE_ALL, CLEAN_ALL, INVALIDATE_ADDR,Cache_extn::Cache_op::INVALIDATE_ADDR9,153
+  enum class Cache_op { NONE, INVALIDATE_ALL, CLEAN_ALL, INVALIDATE_ADDR, CLEAN_ADDR Cache_extn::Cache_op::CLEAN_ADDR9,153
+  void       reset(Cache_extn::reset16,474
+  void       set_cache_id(Cache_extn::set_cache_id17,554
+  void       set_cache_op(Cache_extn::set_cache_op18,614
+  Cache_id_t get_cache_id(Cache_extn::get_cache_id19,674
+  Cache_op   get_cache_op(Cache_extn::get_cache_op20,734
+  Cache_id_t      m_id Cache_extn::m_id22,803
+  Cache_op m_op { Cache_op::NONE Cache_extn::Cache_op::NONE23,868
+
+sc-platform/common.hpp,1578
+#define COMMON_HPP2,19
+#define REQUIRES_CPP 7,74
+#define KB 12,178
+#define MB 13,205
+#define GB 14,234
+#define MAX_ADDR 15,263
+#define BAD_ADDR 16,298
+#define BAD_DEPTH 17,333
+#define BAD_PORT 18,368
+using Addr_t 20,404
+using Depth_t 21,435
+using Port_t 22,489
+using byte_t 23,544
+enum class Feature 26,611
+enum class Feature { none,Feature::none26,611
+enum class Feature { none, enabled Feature::enabled26,611
+using DMI 27,649
+using Byte_enables 28,670
+enum class Access 29,700
+enum class Access { none,Access::none29,700
+enum class Access { none, RW,Access::RW29,700
+enum class Access { none, RW, RO,Access::RO29,700
+enum class Access { none, RW, RO, WO,Access::WO29,700
+enum class Access { none, RW, RO, WO, RC,Access::RC29,700
+enum class Access { none, RW, RO, WO, RC, RS,Access::RS29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C,Access::W1C29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C,Access::W0C29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S,Access::W1S29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S,Access::W0S29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T,Access::W1T29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T,Access::W0T29,700
+enum class Access { none, RW, RO, WO, RC, RS, W1C, W0C, W1S, W0S, W1T, W0T, RAZ Access::RAZ29,700
+enum class Style30,783
+{ UNKNOWNStyle::UNKNOWN31,800
+, DEFAULTStyle::DEFAULT32,810
+, LT Style::LT33,820
+, AT Style::AT34,842
+, TD Style::TD35,870
+
+sc-platform/config_extn.hpp,118
+#define CONFIG_EXTN_HPP2,24
+struct Config_extn6,79
+  Configuration configuration;Config_extn::configuration13,336
+
+sc-platform/config_proxy.hpp,440
+#define CONFIG_PROXY_HPP2,25
+struct Config_proxy19,851
+  using tlm_payload_t Config_proxy::tlm_payload_t24,952
+  tlm::tlm_initiator_socket<> init_socket;Config_proxy::init_socket27,1014
+  tlm::tlm_target_socket<>    targ_socket;Config_proxy::targ_socket28,1057
+  const char* kind(Config_proxy::kind41,1564
+  Configuration m_configuration;Config_proxy::m_configuration58,2323
+  Config_extn*  m_extn{Config_proxy::m_extn59,2356
+
+sc-platform/configuration.hpp,1354
+#define CONFIGURATION_HPP2,26
+using sc_core::sc_time;15,287
+using sc_core::SC_ZERO_TIME;16,311
+using std::string;17,340
+struct Configuration19,360
+  using Printer_t Configuration::Printer_t30,765
+  using Equal_t Configuration::Equal_t31,842
+  using Assign_t Configuration::Assign_t32,923
+  struct Function_t Configuration::Function_t33,1018
+    Function_tConfiguration::Function_t::Function_t35,1043
+    , equal Configuration::Function_t::equal41,1138
+    Printer_t printer;Configuration::Function_t::printer44,1185
+    Equal_t   equal;Configuration::Function_t::equal45,1208
+    Assign_t  assign;Configuration::Function_t::assign46,1229
+  void set(Configuration::set71,2310
+  void get(Configuration::get87,2829
+  static std::unordered_map<Configuration::std::unordered_map102,3419
+  static std::unordered_map<size_t, std::unique_ptr<Function_t>> s_function;Configuration::s_function102,3419
+  std::unordered_map<Configuration::std::unordered_map107,3523
+  std::unordered_map<string, boost::any>  m_data_map;Configuration::m_data_map107,3523
+  std::unordered_map<Configuration::std::unordered_map108,3577
+  std::unordered_map<string, boost::any>  m_dflt_map;Configuration::m_dflt_map108,3577
+  std::unordered_set<string>              m_reqd_key_set;Configuration::m_reqd_key_set109,3631
+void config_key(116,3877
+
+sc-platform/convert.hpp,90
+#define CONVERT_HPP2,20
+#define REQUIRES_CPP 4,41
+void to_int(12,202
+T to_int(53,1143
+
+sc-platform/cpu.hpp,2071
+#define CPU_MODULE_HPP2,23
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,598
+using sc_core::sc_time;30,1000
+using sc_core::sc_event;31,1024
+using sc_core::sc_signal;32,1049
+struct Cpu_module:Cpu_module34,1076
+  using tlm_payload_t Cpu_module::tlm_payload_t36,1116
+  using tlm_phase_t Cpu_module::tlm_phase_t37,1166
+  using tlm_peq_t Cpu_module::tlm_peq_t38,1206
+  ~Cpu_module(Cpu_module::~Cpu_module50,1730
+  const char* kind(Cpu_module::kind51,1754
+  void write64 Cpu_module::write6494,3070
+  void read64 Cpu_module::read6496,3186
+  void write32 Cpu_module::write3298,3303
+  void read32 Cpu_module::read32100,3419
+  void write16 Cpu_module::write16102,3536
+  void read16 Cpu_module::read16104,3652
+  void write8 Cpu_module::write8106,3769
+  void read8 Cpu_module::read8108,3885
+  void write Cpu_module::write111,4025
+  void read Cpu_module::read114,4194
+  void write Cpu_module::write116,4340
+  void read Cpu_module::read118,4553
+  Style                        m_coding_style{Cpu_module::m_coding_style128,5037
+  tlm_utils::tlm_quantumkeeper m_qk;Cpu_module::m_qk129,5097
+  std::vector<tlm::tlm_dmi>    dmi_table;Cpu_module::dmi_table130,5134
+  Memory_manager<>&            m_mm;Cpu_module::m_mm131,5206
+  tlm_peq_t                    m_init_peq;Cpu_module::m_init_peq132,5275
+  tlm_payload_t*               m_request_in_progress;Cpu_module::m_request_in_progress133,5318
+  sc_event                     m_end_request_event;Cpu_module::m_end_request_event134,5372
+  sc_event                     m_transport_done_event;Cpu_module::m_transport_done_event135,5424
+  Cpuid_extn                   m_cpuid;Cpu_module::m_cpuid136,5479
+  Style                        m_prev_style;Cpu_module::m_prev_style137,5519
+  std::map<Cpu_module::std::map138,5564
+  std::map<std::string,Addr_t> m_stat;Cpu_module::m_stat138,5564
+  sc_core::sc_mutex            m_transport_mutex;Cpu_module::m_transport_mutex139,5617
+  Task_manager                 cpu_task_mgr;Cpu_module::cpu_task_mgr140,5667
+Cpu_module::transport_dbg147,5929
+
+sc-platform/cpu_if.hpp,44
+#define CPU_IF_HPP2,19
+struct Cpu_if 6,80
+
+sc-platform/cpuid_extn.hpp,113
+#define CPUID_EXTN_HPP2,23
+struct Cpuid_extn6,63
+  sc_core::sc_module* m_cpu_ptr;Cpuid_extn::m_cpu_ptr17,452
+
+sc-platform/dma.hpp,155
+#define DMA_HPP2,16
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,811
+struct Dma_module:Dma_module23,1048
+  virtual void write32 Dma_module::write3252,2416
+
+sc-platform/dmi_extn.hpp,47
+#define DMI_EXTN_HPP2,21
+struct Dmi_extn6,59
+
+sc-platform/excl_extn.hpp,141
+#define EXCL_EXTN_HPP2,22
+struct Excl_extn6,61
+  void succeeded(Excl_extn::succeeded14,381
+  bool m_success Excl_extn::m_success16,443
+
+sc-platform/excl_filt.hpp,410
+#define EXCL_FILT_HPP2,22
+struct Excl_filt19,857
+  using tlm_payload_t Excl_filt::tlm_payload_t24,955
+  tlm::tlm_initiator_socket<> init_socket;Excl_filt::init_socket27,1017
+  tlm::tlm_target_socket<>    targ_socket;Excl_filt::targ_socket28,1060
+  const char* kind(Excl_filt::kind37,1351
+  std::vector<bool> m_excl;Excl_filt::m_excl53,2011
+  Excl_filt*        m_global{Excl_filt::m_global54,2039
+
+sc-platform/gpio.hpp,1953
+#define GPIO_MODULE_HPP2,24
+#define SC_INCLUDE_DYNAMIC_PROCESSES16,849
+using sc_core::sc_time;30,1189
+using sc_core::sc_event;31,1213
+using sc_core::sc_vector;32,1238
+using sc_core::sc_export;33,1264
+using sc_core::sc_signal_inout_if;34,1290
+struct Gpio_module:Gpio_module36,1326
+  static constexpr int const PINS Gpio_module::PINS38,1367
+  using tlm_payload_t Gpio_module::tlm_payload_t41,1455
+  using tlm_phase_t Gpio_module::tlm_phase_t42,1505
+  using tlm_peq_t Gpio_module::tlm_peq_t43,1545
+  using Gpio_signal_t Gpio_module::Gpio_signal_t44,1616
+  using Gpio_export_t Gpio_module::Gpio_export_t45,1669
+  using Intrq_port_t Gpio_module::Intrq_port_t46,1741
+  virtual const char* kind(Gpio_module::kind62,2455
+  Configuration        m_configuration;Gpio_module::m_configuration99,4109
+  Depth_t              m_target_size;Gpio_module::m_target_size103,4256
+  uint32_t             m_addr_clocks;Gpio_module::m_addr_clocks104,4294
+  uint32_t             m_read_clocks;Gpio_module::m_read_clocks105,4369
+  uint32_t             m_write_clocks;Gpio_module::m_write_clocks106,4451
+  tlm_peq_t            m_targ_peq;Gpio_module::m_targ_peq107,4526
+  size_t               m_max_burst{Gpio_module::m_max_burst108,4561
+  bool                 m_response_in_progress Gpio_module::m_response_in_progress109,4661
+  tlm_payload_t*       m_transaction_in_progress Gpio_module::m_transaction_in_progress110,4721
+  tlm_payload_t*       m_next_response_pending Gpio_module::m_next_response_pending111,4783
+  tlm_payload_t*       m_end_req_pending Gpio_module::m_end_req_pending112,4845
+  sc_event             m_target_done_event;Gpio_module::m_target_done_event113,4907
+  std::vector<uint8_t> m_register_vec Gpio_module::m_register_vec114,4951
+  Gpio_regs_t          m_reg;Gpio_module::m_reg115,5009
+  sc_dt::sc_lv< PINS > m_out;Gpio_module::m_out116,5039
+  sc_dt::sc_lv< PINS > m_inp;Gpio_module::m_inp117,5069
+
+sc-platform/hexfile.hpp,98
+#define HEXFILE_H2,18
+namespace hexfile 8,125
+void dump(hexfile::dump13,332
+void save(25,818
+
+sc-platform/interrupt.hpp,1274
+#define INTERRUPT_HPP2,22
+struct Interrupt_channel7,89
+  Interrupt_channel(Interrupt_channel::Interrupt_channel20,547
+  void notify(Interrupt_channel::notify33,956
+  void notify(Interrupt_channel::notify39,1096
+  void notify(Interrupt_channel::notify45,1268
+  void notify(Interrupt_channel::notify53,1530
+  void wait_n_get(Interrupt_channel::wait_n_get60,1809
+  void wait(Interrupt_channel::wait68,2038
+  char* get_next(Interrupt_channel::get_next74,2199
+  void clearall Interrupt_channel::clearall95,2727
+  bool has_pending Interrupt_channel::has_pending102,2896
+  size_t pending Interrupt_channel::pending109,3144
+  size_t outstanding Interrupt_channel::outstanding124,3526
+  size_t sent Interrupt_channel::sent130,3690
+  size_t taken Interrupt_channel::taken133,3820
+  const sc_core::sc_event& event(Interrupt_channel::event137,3991
+  const char* originator(Interrupt_channel::originator143,4163
+  using sched_map_t Interrupt_channel::sched_map_t159,4701
+  size_t            m_sent Interrupt_channel::m_sent160,4769
+  size_t            m_taken Interrupt_channel::m_taken161,4805
+  sched_map_t       m_scheduled_events;Interrupt_channel::m_scheduled_events162,4841
+  sc_core::sc_event m_event;Interrupt_channel::m_event163,4881
+
+sc-platform/interrupt_if.hpp,126
+#define INTERRUPT_IF_HPP2,25
+struct Interrupt_send_if6,71
+struct Interrupt_recv_if17,494
+struct Interrupt_debug_if36,1235
+
+sc-platform/log2.hpp,86
+constexpr bool isPowerOfTwo(4,40
+auto log2(10,139
+constexpr int bits(::bits17,224
+
+sc-platform/mailbox.hpp,1844
+#define MEMORY_MODULE_HPP2,26
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,838
+using sc_core::sc_time;26,1116
+struct Memory_module:Memory_module28,1141
+  using tlm_payload_t Memory_module::tlm_payload_t30,1184
+  using tlm_phase_t Memory_module::tlm_phase_t31,1234
+  using tlm_peq_t Memory_module::tlm_peq_t32,1274
+  const char* kind(Memory_module::kind52,2244
+  Configuration        m_configuration;Memory_module::m_configuration75,3336
+  Depth_t              m_target_size;Memory_module::m_target_size77,3401
+  Feature              m_dmi_allowed;Memory_module::m_dmi_allowed78,3439
+  Access               m_access;Memory_module::m_access79,3477
+  Feature              m_byte_enables;Memory_module::m_byte_enables80,3544
+  size_t               m_alignment;Memory_module::m_alignment81,3583
+  size_t               m_max_burst;Memory_module::m_max_burst82,3653
+  uint32_t             m_addr_clocks;Memory_module::m_addr_clocks83,3753
+  uint32_t             m_read_clocks;Memory_module::m_read_clocks84,3828
+  uint32_t             m_write_clocks;Memory_module::m_write_clocks85,3910
+  tlm_peq_t            m_targ_peq;Memory_module::m_targ_peq86,3985
+  bool                 m_dmi_granted Memory_module::m_dmi_granted87,4020
+  std::vector<uint8_t> m_mem_vec Memory_module::m_mem_vec88,4080
+  std::vector<bool>    m_used_vec Memory_module::m_used_vec89,4136
+  tlm_payload_t*       m_transaction_in_progress Memory_module::m_transaction_in_progress90,4192
+  bool                 m_response_in_progress Memory_module::m_response_in_progress91,4254
+  tlm_payload_t*       m_next_response_pending Memory_module::m_next_response_pending92,4314
+  tlm_payload_t*       m_end_req_pending Memory_module::m_end_req_pending93,4376
+  sc_core::sc_event    m_target_done_event;Memory_module::m_target_done_event94,4438
+
+sc-platform/memory.hpp,1844
+#define MEMORY_MODULE_HPP2,26
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,765
+using sc_core::sc_time;26,1043
+struct Memory_module:Memory_module28,1068
+  using tlm_payload_t Memory_module::tlm_payload_t30,1111
+  using tlm_phase_t Memory_module::tlm_phase_t31,1161
+  using tlm_peq_t Memory_module::tlm_peq_t32,1201
+  const char* kind(Memory_module::kind50,2044
+  Configuration        m_configuration;Memory_module::m_configuration73,3136
+  Depth_t              m_target_size;Memory_module::m_target_size75,3201
+  Feature              m_dmi_allowed;Memory_module::m_dmi_allowed76,3239
+  Access               m_access;Memory_module::m_access77,3277
+  Feature              m_byte_enables;Memory_module::m_byte_enables78,3344
+  size_t               m_alignment;Memory_module::m_alignment79,3383
+  size_t               m_max_burst;Memory_module::m_max_burst80,3453
+  uint32_t             m_addr_clocks;Memory_module::m_addr_clocks81,3553
+  uint32_t             m_read_clocks;Memory_module::m_read_clocks82,3628
+  uint32_t             m_write_clocks;Memory_module::m_write_clocks83,3710
+  tlm_peq_t            m_targ_peq;Memory_module::m_targ_peq84,3785
+  bool                 m_dmi_granted Memory_module::m_dmi_granted85,3820
+  std::vector<uint8_t> m_mem_vec Memory_module::m_mem_vec86,3880
+  std::vector<bool>    m_used_vec Memory_module::m_used_vec87,3936
+  tlm_payload_t*       m_transaction_in_progress Memory_module::m_transaction_in_progress88,3992
+  bool                 m_response_in_progress Memory_module::m_response_in_progress89,4054
+  tlm_payload_t*       m_next_response_pending Memory_module::m_next_response_pending90,4114
+  tlm_payload_t*       m_end_req_pending Memory_module::m_end_req_pending91,4176
+  sc_core::sc_event    m_target_done_event;Memory_module::m_target_done_event92,4238
+
+sc-platform/memory_manager.hpp,578
+#define MEMORY_MANAGER_HPP2,27
+#define REQUIRES_CPP 30,814
+template<typename T=36,942
+Memory_manager<T>& Memory_manager<T>::instance(instance94,3380
+Memory_manager<T>::Memory_manager(Memory_manager103,3612
+Memory_manager<T>::~Memory_manager(~Memory_manager120,4255
+T* Memory_manager<T>::allocate_acquire(allocate_acquire131,4532
+void Memory_manager<T>::setset141,4768
+T* Memory_manager<T>::allocate_acquire_and_setallocate_acquire_and_set164,5598
+T* Memory_manager<T>::allocate(allocate180,6123
+void Memory_manager<T>::free(free199,6568
+#undef MSGID205,6758
+
+sc-platform/memory_map.hpp,1792
+#define MEMORY_MAP_HPP2,23
+#define UNASSIGNED 22,905
+#define UNLIMITED 23,926
+struct Target_info 24,947
+  Port_t      port Target_info::port26,1040
+  Addr_t      base Target_info::base27,1094
+  Addr_t      last Target_info::last28,1147
+  Depth_t     size Target_info::size29,1195
+  int         irq Target_info::irq30,1248
+using Address_map 35,1481
+struct Memory_map38,1576
+  using Target_ptr Memory_map::Target_ptr41,1613
+  enum { BAD_TARG Memory_map::BAD_TARG42,1664
+  using Targ_t Memory_map::Targ_t43,1690
+  using Target_map Memory_map::Target_map44,1712
+  using Target_ptr_map Memory_map::Target_ptr_map45,1771
+  enum class Category Memory_map::Category46,1835
+  enum class Category { unknown,Memory_map::Category::unknown46,1835
+  enum class Category { unknown, initiator,Memory_map::Category::initiator46,1835
+  enum class Category { unknown, initiator, interconnect,Memory_map::Category::interconnect46,1835
+  enum class Category { unknown, initiator, interconnect, router,Memory_map::Category::router46,1835
+  enum class Category { unknown, initiator, interconnect, router, target Memory_map::Category::target46,1835
+  struct Origin_info Memory_map::Origin_info47,1911
+    std::string name;Memory_map::Origin_info::name48,1934
+    Category    category;Memory_map::Origin_info::category49,1956
+    Addr_t      base;Memory_map::Origin_info::base50,1982
+    Depth_t     size{Memory_map::Origin_info::size51,2004
+    Target_map  target_map;Memory_map::Origin_info::target_map52,2039
+  using Origin_map Memory_map::Origin_map54,2089
+  static void        set_filename Memory_map::set_filename63,2591
+  Origin_map     m_origin_map;Memory_map::m_origin_map82,3160
+  Target_ptr_map m_target_ptr_map;Memory_map::m_target_ptr_map83,3191
+
+sc-platform/mmu.hpp,705
+#define MMU_HPP2,16
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,811
+struct Mmu_module:Mmu_module26,1132
+  using tlm_payload_t Mmu_module::tlm_payload_t28,1172
+  using tlm_accessor_t Mmu_module::tlm_accessor_t29,1222
+  tlm_utils::multi_passthrough_target_socket<Mmu_module>    targ_socket;Mmu_module::targ_socket30,1296
+  tlm_utils::multi_passthrough_initiator_socket<Mmu_module> init_socket;Mmu_module::init_socket31,1369
+  const char* kind(Mmu_module::kind35,1499
+  Memory_manager<>&        m_mm;Mmu_module::m_mm53,2345
+  tlm_accessor_t           m_accessor;Mmu_module::m_accessor54,2410
+  std::map<Mmu_module::std::map55,2449
+  std::map<uint64_t,Mmu_t> m_attr;Mmu_module::m_attr55,2449
+
+sc-platform/mmu_extn.hpp,668
+#define MMU_EXTN_HPP2,21
+struct Mmu_extn4,43
+  enum class Mmu_op Mmu_extn::Mmu_op8,109
+  enum class Mmu_op { NONE,Mmu_extn::Mmu_op::NONE8,109
+  enum class Mmu_op { NONE, ENABLE,Mmu_extn::Mmu_op::ENABLE8,109
+  enum class Mmu_op { NONE, ENABLE, DISABLE,Mmu_extn::Mmu_op::DISABLE8,109
+  enum class Mmu_op { NONE, ENABLE, DISABLE, INVALIDATE_ALL,Mmu_extn::Mmu_op::INVALIDATE_ALL8,109
+  enum class Mmu_op { NONE, ENABLE, DISABLE, INVALIDATE_ALL, INVALIDATE_ADDR Mmu_extn::Mmu_op::INVALIDATE_ADDR8,109
+  void   set_mmu_op(Mmu_extn::set_mmu_op14,403
+  Mmu_op get_mmu_op(Mmu_extn::get_mmu_op15,452
+  Mmu_op m_op { Mmu_op::NONE Mmu_extn::Mmu_op::NONE17,512
+
+sc-platform/netlist.hpp,45
+#define NETLIST_HPP2,20
+struct Netlist7,97
+
+sc-platform/news.hpp,266
+#define NEWS_HPP2,17
+using sc_core::sc_report;7,87
+using sc_core::sc_actions;8,113
+struct News10,141
+  static bool initialized;News::initialized18,448
+  static std::map<News::std::map19,475
+  static std::map<std::string,size_t> tag_map;News::tag_map19,475
+
+sc-platform/no_clock.hpp,3953
+#define NONCLOCK_HPP2,21
+inline sc_core::sc_time operator % operator %44,1950
+inline sc_core::sc_time operator % operator %55,2311
+sc_core::sc_time sc_core_time_diff64,2544
+#define sc_time_diff(90,3159
+using get_time_t 104,4011
+struct no_clock105,4057
+  sc_core::sc_time time_shift no_clock::time_shift153,5999
+  Clock_count_t    frequency_changes no_clock::frequency_changes158,6374
+  bool posedge no_clock::posedge180,8001
+  bool negedge no_clock::negedge182,8126
+  bool event no_clock::event184,8251
+  virtual void write(no_clock::write197,9036
+  get_time_t          m_get_time;no_clock::m_get_time208,9696
+  const char *        m_clock_name;no_clock::m_clock_name209,9767
+  sc_core::sc_time    m_tPERIOD;no_clock::m_tPERIOD210,9816
+  double              m_duty;no_clock::m_duty211,9865
+  sc_core::sc_time    m_tOFFSET;no_clock::m_tOFFSET212,9934
+  sc_core::sc_time    m_tPOSEDGE;no_clock::m_tPOSEDGE213,9991
+  sc_core::sc_time    m_tNEGEDGE;no_clock::m_tNEGEDGE214,10071
+  bool                m_posedge;no_clock::m_posedge215,10152
+  sc_core::sc_time    m_tSAMPLE;no_clock::m_tSAMPLE216,10205
+  sc_core::sc_time    m_tSETEDGE;no_clock::m_tSETEDGE217,10278
+  sc_core::sc_event   m_anyedge_event;no_clock::m_anyedge_event218,10382
+  sc_core::sc_event   m_posedge_event;no_clock::m_posedge_event219,10421
+  sc_core::sc_event   m_negedge_event;no_clock::m_negedge_event220,10460
+  sc_core::sc_event   m_sample_event;no_clock::m_sample_event221,10499
+  sc_core::sc_event   m_setedge_event;no_clock::m_setedge_event222,10537
+  sc_core::sc_time    m_frequency_set;no_clock::m_frequency_set223,10576
+  Clock_count_t       m_freq_count{no_clock::m_freq_count224,10652
+  Clock_count_t       m_base_count{no_clock::m_base_count225,10743
+  sc_core::sc_time    m_tSHIFT{no_clock::m_tSHIFT226,10825
+  using clock_map_t no_clock::clock_map_t227,10899
+  static clock_map_t  s_global;no_clock::s_global228,10954
+inline void no_clock::set_time_shift 246,11906
+inline sc_core::sc_time no_clock::delay 256,12481
+inline Clock_count_t no_clock::clocks270,13092
+inline const char*      no_clock::clock_name 283,13518
+inline sc_core::sc_time no_clock::period 284,13603
+inline double           no_clock::duty 285,13708
+inline double           no_clock::frequency 286,13787
+inline Clock_count_t    no_clock::cycles 291,14092
+inline Clock_count_t    no_clock::cycles 296,14259
+inline sc_core::sc_time  no_clock::until_posedge 302,14483
+inline sc_core::sc_time  no_clock::until_negedge 307,14632
+inline sc_core::sc_time  no_clock::until_anyedge 312,14781
+inline sc_core::sc_time  no_clock::until_sample 317,14940
+inline sc_core::sc_time  no_clock::until_setedge 322,15088
+inline sc_core::sc_time  no_clock::next_posedge 328,15317
+inline sc_core::sc_time  no_clock::next_negedge 334,15531
+inline sc_core::sc_time  no_clock::next_anyedge 340,15745
+inline sc_core::sc_time  no_clock::next_sample 345,15901
+inline sc_core::sc_time  no_clock::next_setedge 351,16114
+inline void no_clock::wait 358,16415
+inline void no_clock::wait_posedge 363,16524
+inline void no_clock::wait_negedge 369,16686
+inline void no_clock::wait_anyedge 375,16848
+inline void no_clock::wait_sample 381,17010
+inline void no_clock::wait_setedge 387,17171
+inline bool no_clock::at_posedge_time 394,17369
+inline bool no_clock::at_negedge_time 399,17479
+inline bool no_clock::at_anyedge_time 404,17589
+inline bool no_clock::at_sample_time 409,17699
+inline bool no_clock::at_setedge_time 414,17808
+inline sc_core::sc_event& no_clock::default_event 420,17965
+inline sc_core::sc_event& no_clock::posedge_event 425,18082
+inline sc_core::sc_event& no_clock::negedge_event 432,18260
+inline sc_core::sc_event& no_clock::sample_event 439,18438
+inline sc_core::sc_event& no_clock::setedge_event 446,18613
+inline sc_core::sc_event& no_clock::value_changed_event 453,18791
+inline bool               no_clock::read 460,18969
+
+sc-platform/no_clock_if.hpp,83
+#define NONCLOCK_IF_HPP2,24
+using Clock_count_t 23,848
+struct no_clock_if25,881
+
+sc-platform/options.hpp,507
+#define OPTIONS_HPP2,20
+struct Options22,934
+  Platform get_configuration(Options::get_configuration25,993
+  const std::set<PlatformTest>& get_test_set(Options::get_test_set26,1064
+  using flag_map_t Options::flag_map_t34,1341
+  Platform               m_configuration;Options::m_configuration35,1398
+  flag_map_t             m_flag_map;Options::m_flag_map36,1440
+  std::set<PlatformTest> m_test_set;Options::m_test_set37,1477
+  Signal                 m_interrupt{Options::m_interrupt38,1514
+
+sc-platform/parity.hpp,73
+#define PARITY_HPP2,19
+inline bool even(9,158
+inline bool even(10,221
+
+sc-platform/pic.hpp,2125
+#define PIC_MODULE_HPP2,23
+#define SC_INCLUDE_DYNAMIC_PROCESSES17,878
+using sc_core::sc_time;30,1189
+using sc_core::sc_event;31,1213
+struct Pic_module:Pic_module33,1239
+  using tlm_payload_t Pic_module::tlm_payload_t35,1279
+  using tlm_phase_t Pic_module::tlm_phase_t36,1329
+  using tlm_peq_t Pic_module::tlm_peq_t37,1369
+  sc_core::sc_port<Pic_module::sc_core::sc_port42,1617
+  const char* kind(Pic_module::kind56,2145
+  Configuration        m_configuration;Pic_module::m_configuration91,3738
+  Depth_t                     m_target_size;Pic_module::m_target_size95,3885
+  uint32_t                    m_addr_clocks;Pic_module::m_addr_clocks96,3930
+  uint32_t                    m_read_clocks;Pic_module::m_read_clocks97,4012
+  uint32_t                    m_write_clocks;Pic_module::m_write_clocks98,4101
+  std::vector<uint8_t>        m_register_vec Pic_module::m_register_vec99,4183
+  tlm_peq_t                   m_targ_peq;Pic_module::m_targ_peq100,4247
+  Depth_t                     m_max_burst{Pic_module::m_max_burst101,4289
+  bool                        m_response_in_progress Pic_module::m_response_in_progress102,4337
+  tlm_payload_t*              m_transaction_in_progress Pic_module::m_transaction_in_progress103,4404
+  tlm_payload_t*              m_next_response_pending Pic_module::m_next_response_pending104,4473
+  tlm_payload_t*              m_end_req_pending Pic_module::m_end_req_pending105,4542
+  sc_event                    m_target_done_event;Pic_module::m_target_done_event106,4611
+  static constexpr int        M{Pic_module::M107,4662
+  std::vector<Pic_Source_t>   m_source_irq Pic_module::m_source_irq108,4741
+  std::vector<std::bitset<M>> m_source_targets Pic_module::m_source_targets109,4819
+  std::vector<Pic_Target_t>   m_target_irq Pic_module::m_target_irq110,4897
+  std::vector<std::list<int>> m_target_level Pic_module::m_target_level111,4969
+  std::vector<uint32_t>       m_target_select Pic_module::m_target_select112,5041
+  std::map<Pic_module::std::map113,5113
+  std::map<std::string,int>   m_target_id Pic_module::m_target_id113,5113
+
+sc-platform/pic_api.hpp,1027
+#define PIC_API_HPP2,20
+struct Pic_api8,108
+  Pic_api(Pic_api::Pic_api11,142
+  void     enable_interface(Pic_api::enable_interface29,568
+  void setup(Pic_api::setup44,1152
+  void enable_interface(Pic_api::enable_interface49,1202
+  void     disable_interface(Pic_api::disable_interface58,1431
+  uint32_t get_source(Pic_api::get_source67,1666
+  void     set_mask(Pic_api::set_mask123,3264
+  uint8_t  get_mask(Pic_api::get_mask133,3548
+  int      get_next(Pic_api::get_next139,3658
+  void     set_done(Pic_api::set_done145,3768
+  void     set_targets(Pic_api::set_targets151,3888
+  uint32_t get_ident(Pic_api::get_ident157,4024
+  uint32_t get_targetid(Pic_api::get_targetid164,4193
+  uint16_t get_source_count(Pic_api::get_source_count172,4391
+  uint16_t get_target_count(Pic_api::get_target_count180,4592
+  void     clearall(Pic_api::clearall188,4793
+  Cpu_module&  m_cpu;Pic_api::m_cpu201,5093
+  const Addr_t m_base;Pic_api::m_base202,5115
+  bool         m_setup{Pic_api::m_setup203,5138
+
+sc-platform/platform_enum.hpp,388
+#define PLATFORM_ENUM_HPP2,26
+#define PLATFORM_ENUMS(13,254
+#define PLATFORM_KEY(29,596
+enum class Platform 30,625
+  PLATFORM_ENUMS(Platform::PLATFORM_ENUMS31,653
+  PLATFORM_ENUMS(PLATFORM_KEY)Platform::PLATFORM_KEY31,653
+#undef PLATFORM_KEY33,689
+inline Platform operator++(40,1008
+inline Platform operator*(43,1123
+inline Platform begin(46,1177
+inline Platform end(49,1275
+
+sc-platform/power.hpp,675
+#define POWER_HPP2,18
+struct PowerSetting8,94
+  enum Level PowerSetting::Level10,116
+  { off=PowerSetting::Level::off11,139
+  , gated=PowerSetting::Level::gated12,149
+  , lowPowerSetting::Level::low13,161
+  , mediumPowerSetting::Level::medium14,169
+  , fullPowerSetting::Level::full15,180
+  sc_core::sc_object* root;PowerSetting::root17,209
+struct PowerDomain20,241
+  using Power_map_t PowerDomain::Power_map_t23,283
+  const sc_core::sc_event& event(PowerDomain::event28,536
+  static clock_map_t  s_level;PowerDomain::s_level33,805
+  std::string         m_domain;PowerDomain::m_domain34,836
+  sc_core::sc_event   m_event;PowerDomain::m_event35,868
+
+sc-platform/report.hpp,449
+#define REPORT_HPP2,19
+#define HEX 23,1057
+#define DEC 24,1095
+#define REPORT(26,1157
+#define ASSERT(36,1599
+#define ASSERT(40,1732
+#define SC_ALWAYS 43,1761
+#define SC_NEVER 44,1787
+#define SC_HYPER 45,1811
+#define DEVID 46,1834
+#define NOINFO(47,1886
+#define INFO(48,1915
+#define MESSAGE(64,3132
+#define MEND(65,3188
+#define RULER(72,3716
+#define TODO(74,3774
+#define NOT_YET_IMPLEMENTED(75,3833
+std::ostream& operator<<(86,4300
+
+sc-platform/require_cxx_version.hpp,233
+#      define CPP_VERSION 15,438
+#      define CPP_VERSION 19,561
+#      define CPP_VERSION 23,684
+#      define CPP_VERSION 27,807
+#      define CPP_VERSION 31,881
+#  undef REQUIRES_CPP39,1151
+#    define CPP_VERSION 42,1201
+
+sc-platform/rgbled.hpp,257
+#define RGBLED_HPP2,19
+struct RgbLED_module6,59
+  sc_core::sc_in_resolved r,RgbLED_module::r10,114
+  sc_core::sc_in_resolved r, g,RgbLED_module::g10,114
+  sc_core::sc_in_resolved r, g, b;RgbLED_module::b10,114
+private:RgbLED_module::private21,323
+
+sc-platform/route_extn.hpp,82
+#define ROUTE_EXTN_HPP2,23
+struct Route_extn4,47
+  int id;Route_extn::id7,120
+
+sc-platform/sc_cxx11.hpp,55
+#define SC_CXX11_HPP2,21
+#define SC_MAX_NBITS 12,238
+
+sc-platform/secure_extn.hpp,92
+#define SECURE_EXTN_HPP2,24
+struct Secure_extn4,49
+  int level Secure_extn::level11,306
+
+sc-platform/signal.hpp,498
+#define SIGNAL_HPP2,19
+struct Signal 17,832
+  enum { STOP=Signal::STOP18,848
+  enum { STOP=-1, ABORT=Signal::ABORT18,848
+  enum { STOP=-1, ABORT=-2, INTERRUPT=Signal::INTERRUPT18,848
+  using Handler_t Signal::Handler_t19,892
+  int                    m_sig;Signal::m_sig27,1125
+  Handler_t              m_sighandler{ nullptr Signal::nullptr28,1157
+  std::forward_list<int> m_siglist;Signal::m_siglist29,1207
+  static std::forward_list<Signal*> s_handlers;Signal::s_handlers30,1243
+
+sc-platform/stub.hpp,1660
+#define STUB_MODULE_HPP2,24
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,827
+using sc_core::sc_time;24,1069
+struct Stub_module:Stub_module26,1094
+  using tlm_payload_t Stub_module::tlm_payload_t28,1135
+  using tlm_phase_t Stub_module::tlm_phase_t29,1185
+  using tlm_peq_t Stub_module::tlm_peq_t30,1225
+  const char* kind(Stub_module::kind48,2054
+  Configuration        m_configuration;Stub_module::m_configuration70,3089
+  Depth_t              m_target_size;Stub_module::m_target_size72,3154
+  Feature              m_dmi_allowed;Stub_module::m_dmi_allowed73,3192
+  Access               m_access;Stub_module::m_access74,3230
+  Feature              m_byte_enables;Stub_module::m_byte_enables75,3297
+  size_t               m_alignment;Stub_module::m_alignment76,3336
+  size_t               m_max_burst;Stub_module::m_max_burst77,3406
+  uint32_t             m_addr_clocks;Stub_module::m_addr_clocks78,3506
+  uint32_t             m_read_clocks;Stub_module::m_read_clocks79,3581
+  uint32_t             m_write_clocks;Stub_module::m_write_clocks80,3663
+  tlm_peq_t            m_targ_peq;Stub_module::m_targ_peq81,3738
+  bool                 m_dmi_granted Stub_module::m_dmi_granted82,3773
+  tlm_payload_t*       m_transaction_in_progress Stub_module::m_transaction_in_progress83,3833
+  bool                 m_response_in_progress Stub_module::m_response_in_progress84,3895
+  tlm_payload_t*       m_next_response_pending Stub_module::m_next_response_pending85,3955
+  tlm_payload_t*       m_end_req_pending Stub_module::m_end_req_pending86,4017
+  sc_core::sc_event    m_target_done_event;Stub_module::m_target_done_event87,4079
+
+sc-platform/summary.hpp,497
+#define SUMMARY_HPP2,20
+struct Summary 4,41
+  static void increment_errors(Summary::increment_errors8,185
+  static void increment_warnings(Summary::increment_warnings9,240
+  static double s_elaboration_time;Summary::s_elaboration_time15,472
+  static double s_starting_time;Summary::s_starting_time16,508
+  static double s_finished_time;Summary::s_finished_time17,541
+  static unsigned int s_errors;Summary::s_errors18,574
+  static unsigned int s_warnings;Summary::s_warnings19,606
+
+sc-platform/task.hpp,629
+#define TASK_HPP2,17
+struct Task_manager8,88
+  using Task_body_t Task_manager::Task_body_t10,110
+  using Task_obj_t Task_manager::Task_obj_t11,148
+  using Task_map_t Task_manager::Task_map_t12,190
+  struct Task_listTask_manager::Task_list14,248
+    Task_obj_t* boss_ptr{Task_manager::Task_list::boss_ptr16,271
+    Task_map_t  task;Task_manager::Task_list::task17,306
+  std::string m_boss_name;Task_manager::m_boss_name28,606
+  std::string m_task_name;Task_manager::m_task_name29,633
+  static std::map<Task_manager::std::map30,660
+  static std::map<std::string,Task_list> s_tasks;Task_manager::s_tasks30,660
+
+sc-platform/test_enum.hpp,377
+#define TEST_ENUM_HPP2,22
+#define TEST_ENUMS(12,171
+#define TEST_KEY(23,362
+enum class PlatformTest 24,387
+  TEST_ENUMS(PlatformTest::TEST_ENUMS25,419
+  TEST_ENUMS(TEST_KEY)PlatformTest::TEST_KEY25,419
+#undef TEST_KEY27,447
+inline PlatformTest operator++(34,763
+inline PlatformTest operator*(37,894
+inline PlatformTest begin(40,956
+inline PlatformTest end(43,1070
+
+sc-platform/timer.hpp,1975
+#define TIMER_MODULE_H2,23
+#define SC_INCLUDE_DYNAMIC_PROCESSES18,901
+using sc_core::sc_time;29,1179
+using sc_core::sc_event;30,1203
+struct Timer_module:Timer_module32,1229
+  using tlm_payload_t Timer_module::tlm_payload_t37,1364
+  using tlm_phase_t Timer_module::tlm_phase_t38,1414
+  using tlm_peq_t Timer_module::tlm_peq_t39,1454
+  sc_core::sc_port<Timer_module::sc_core::sc_port44,1725
+  sc_core::sc_port<Timer_module::sc_core::sc_port45,1831
+  const char* kind(Timer_module::kind59,2441
+  uint32_t scale(Timer_module::scale91,3836
+  bool irq_enabled(Timer_module::irq_enabled95,3947
+  Configuration             m_configuration;Timer_module::m_configuration106,4558
+  Depth_t                   m_target_size;Timer_module::m_target_size110,4710
+  size_t                    m_timer_quantity;Timer_module::m_timer_quantity111,4753
+  uint32_t                  m_addr_clocks;Timer_module::m_addr_clocks112,4799
+  uint32_t                  m_read_clocks;Timer_module::m_read_clocks113,4879
+  uint32_t                  m_write_clocks;Timer_module::m_write_clocks114,4966
+  std::vector<uint8_t>      m_register_vec;Timer_module::m_register_vec115,5046
+  sc_core::sc_vector<Timer> m_timer_vec;Timer_module::m_timer_vec116,5111
+  tlm_peq_t                 m_targ_peq;Timer_module::m_targ_peq117,5152
+  Depth_t                   m_max_burst Timer_module::m_max_burst118,5192
+  bool                      m_response_in_progress Timer_module::m_response_in_progress119,5253
+  tlm_payload_t*            m_transaction_in_progress Timer_module::m_transaction_in_progress120,5318
+  tlm_payload_t*            m_next_response_pending Timer_module::m_next_response_pending121,5385
+  tlm_payload_t*            m_end_req_pending Timer_module::m_end_req_pending122,5452
+  sc_event                  m_target_done_event;Timer_module::m_target_done_event123,5519
+  std::vector<sc_event>     m_timeout_event;Timer_module::m_timeout_event124,5568
+
+sc-platform/timer_api.hpp,623
+#define TIMER_API_HPP2,22
+struct Timer_api8,114
+  Timer_api(Timer_api::Timer_api11,150
+  int timer(Timer_api::timer22,395
+  void setup(Timer_api::setup23,441
+  void start(Timer_api::start33,946
+  bool is_running(Timer_api::is_running40,1123
+  void stop(Timer_api::stop49,1463
+  uint64_t status(Timer_api::status55,1616
+  uint64_t value(Timer_api::value63,1838
+  static int nTimer(Timer_api::nTimer79,2446
+  Cpu_module&  m_cpu;Timer_api::m_cpu88,2637
+  const Addr_t m_base;Timer_api::m_base89,2659
+  const int    m_timer;Timer_api::m_timer90,2682
+  bool         m_setup{Timer_api::m_setup91,2706
+
+sc-platform/timer_beh.hpp,1770
+#define TIMER_BEH_HPP2,22
+struct Timer7,83
+  using sc_module_name Timer::sc_module_name10,119
+  using sc_time Timer::sc_time11,169
+  using sc_event Timer::sc_event12,212
+  void    set_load_delay Timer::set_load_delay21,431
+  void    set_pulse_delay Timer::set_pulse_delay23,567
+  sc_time get_load_delay Timer::get_load_delay25,703
+  sc_time get_start_time Timer::get_start_time26,771
+  sc_time get_pulse_delay Timer::get_pulse_delay27,839
+  sc_time get_trigger_time(Timer::get_trigger_time28,907
+  void    set_triggered Timer::set_triggered29,975
+  void    clr_triggered Timer::clr_triggered30,1043
+  void    set_reload Timer::set_reload31,1111
+  void    set_continuous Timer::set_continuous32,1179
+  void    set_one_shot Timer::set_one_shot33,1247
+  bool    get_triggered Timer::get_triggered34,1315
+  bool    get_reload Timer::get_reload35,1383
+  bool    get_continuous Timer::get_continuous36,1451
+  bool    is_paused Timer::is_paused37,1519
+  const sc_event& trigger_event(Timer::trigger_event45,2000
+  const sc_event& pulse_event(Timer::pulse_event49,2116
+  bool test_and_clear_triggered(Timer::test_and_clear_triggered60,2568
+  sc_time   m_load_delay Timer::m_load_delay73,2858
+  sc_time   m_start_time Timer::m_start_time74,2942
+  sc_time   m_pulse_delay Timer::m_pulse_delay75,3019
+  sc_time   m_resume_delay Timer::m_resume_delay76,3130
+  sc_time   m_trigger_time Timer::m_trigger_time77,3219
+  bool      m_triggered Timer::m_triggered78,3356
+  bool      m_reload Timer::m_reload79,3428
+  bool      m_continuous Timer::m_continuous80,3526
+  bool      m_paused Timer::m_paused81,3606
+  sc_event  m_trigger_event;Timer::m_trigger_event82,3668
+  sc_event  m_pulse_event;Timer::m_pulse_event83,3697
+
+sc-platform/top.hpp,147
+#define TOP_H2,14
+struct Top_module30,1225
+  const char* kind(Top_module::kind36,1371
+  std::unique_ptr<Impl> pImpl;Top_module::pImpl41,1585
+
+sc-platform/uart.hpp,3217
+#define UART_MODULE_HPP2,24
+#define SC_INCLUDE_DYNAMIC_PROCESSES16,856
+using sc_core::sc_time;30,1199
+using sc_core::sc_event;31,1223
+using sc_core::sc_port;32,1248
+using sc_core::SC_ZERO_OR_MORE_BOUND;33,1272
+struct Uart_module:Uart_module35,1311
+  using tlm_payload_t Uart_module::tlm_payload_t38,1397
+  using tlm_phase_t Uart_module::tlm_phase_t39,1447
+  using tlm_peq_t Uart_module::tlm_peq_t40,1487
+  using Uart_txslow_port_t Uart_module::Uart_txslow_port_t41,1558
+  using Uart_rxslow_port_t Uart_module::Uart_rxslow_port_t42,1654
+  using Uart_txfast_port_t Uart_module::Uart_txfast_port_t43,1750
+  using Uart_rxfast_port_t Uart_module::Uart_rxfast_port_t44,1846
+  using Intrq_port_t Uart_module::Intrq_port_t45,1942
+  enum class Speed Uart_module::Speed47,2019
+  enum class Speed { VIRTUAL,Uart_module::Speed::VIRTUAL47,2019
+  enum class Speed { VIRTUAL, FAST,Uart_module::Speed::FAST47,2019
+  enum class Speed { VIRTUAL, FAST, SLOW Uart_module::Speed::SLOW47,2019
+  virtual const char* kind(Uart_module::kind66,2911
+  Configuration        m_configuration;Uart_module::m_configuration104,4566
+  Depth_t              m_target_size;Uart_module::m_target_size108,4713
+  uint32_t             m_addr_clocks;Uart_module::m_addr_clocks109,4751
+  uint32_t             m_read_clocks;Uart_module::m_read_clocks110,4826
+  uint32_t             m_write_clocks;Uart_module::m_write_clocks111,4908
+  tlm_peq_t            m_targ_peq;Uart_module::m_targ_peq112,4983
+  size_t               m_max_burst{Uart_module::m_max_burst113,5018
+  bool                 m_response_in_progress    { false Uart_module::false114,5118
+  tlm_payload_t*       m_transaction_in_progress { nullptr Uart_module::nullptr115,5178
+  tlm_payload_t*       m_next_response_pending   { nullptr Uart_module::nullptr116,5240
+  tlm_payload_t*       m_end_req_pending         { nullptr Uart_module::nullptr117,5302
+  sc_event             m_target_done_event;Uart_module::m_target_done_event118,5364
+  Uart_regs_t          m_uart;Uart_module::m_uart120,5471
+  Speed                m_txspeed;Uart_module::m_txspeed121,5502
+  Speed                m_rxspeed;Uart_module::m_rxspeed122,5536
+  std::deque<uint8_t>  m_txfifo;Uart_module::m_txfifo123,5570
+  std::deque<uint8_t>  m_rxfifo;Uart_module::m_rxfifo124,5603
+  int                  m_txfifo_capacity{Uart_module::m_txfifo_capacity125,5636
+  int                  m_rxfifo_capacity{Uart_module::m_rxfifo_capacity126,5706
+  Uart_ctrl_t          m_txctrl;Uart_module::m_txctrl127,5776
+  Uart_ctrl_t          m_rxctrl;Uart_module::m_rxctrl128,5809
+  sc_event             m_txevent;Uart_module::m_txevent129,5842
+  sc_event             m_rxevent;Uart_module::m_rxevent130,5876
+  uint32_t             m_txbits Uart_module::m_txbits131,5910
+  uint32_t             m_rxbits Uart_module::m_rxbits132,5952
+  uint32_t             m_txcount Uart_module::m_txcount133,5994
+  uint32_t             m_rxcount Uart_module::m_rxcount134,6036
+  uint32_t             m_txdropped Uart_module::m_txdropped135,6078
+  uint32_t             m_rxdropped Uart_module::m_rxdropped136,6120
+  uint32_t             m_baud[Uart_module::m_baud137,6162
+
+sc-platform/wallclock.hpp,27
+#define WALLCLOCK_HPP2,22
+
+scx/sc_cxx11.hpp,55
+#define SC_CXX11_HPP2,21
+#define SC_MAX_NBITS 12,238
+
+secure/secure_extn.hpp,92
+#define SECURE_EXTN_HPP2,24
+struct Secure_extn4,49
+  int level Secure_extn::level11,306
+
+tcpip/tcpip_if.hpp,58
+#define TCPIP_IF_HPP2,21
+struct Tcpip_if:Tcpip_if8,115
+
+tcpip/tcpip_rx.hpp,569
+#define TCPIP_RX_HPP2,21
+struct Tcpip_rx_channel9,129
+  Tcpip_rx_channel(Tcpip_rx_channel::Tcpip_rx_channel14,208
+  virtual ~Tcpip_rx_channel(Tcpip_rx_channel::~Tcpip_rx_channel19,293
+  void start_of_simulation(Tcpip_rx_channel::start_of_simulation23,338
+  void rx_osthread(Tcpip_rx_channel::rx_osthread29,412
+  void end_of_simulation(Tcpip_rx_channel::end_of_simulation45,782
+  Async_rx_channel tx;Tcpip_rx_channel::tx55,938
+  uint32_t    m_rx_port;Tcpip_rx_channel::m_rx_port58,978
+  std::thread m_rx_osthread;Tcpip_rx_channel::m_rx_osthread59,1003
+
+tcpip/tcpip_rx_if.hpp,53
+#define TCPIP_RX_IF_HPP2,24
+struct Tcpip_rx_if7,98
+
+tcpip/tcpip_tx.hpp,815
+#define TCPIP_TX_HPP2,21
+struct Tcpip_tx_channel9,129
+  Tcpip_tx_channel(Tcpip_tx_channel::Tcpip_tx_channel14,208
+  virtual ~Tcpip_tx_channel(Tcpip_tx_channel::~Tcpip_tx_channel19,293
+  void start_of_simulation(Tcpip_tx_channel::start_of_simulation23,338
+  void tx_osthread(Tcpip_tx_channel::tx_osthread29,412
+  void end_of_simulation(Tcpip_tx_channel::end_of_simulation45,785
+  virtual bool can_put(Tcpip_tx_channel::can_put52,898
+  virtual const sc_core::sc_event& ok_to_put(Tcpip_tx_channel::ok_to_put56,953
+  virtual void put(Tcpip_tx_channel::put60,1030
+  virtual bool nb_put(Tcpip_tx_channel::nb_put64,1097
+  Async_tx_channel tx;Tcpip_tx_channel::tx72,1223
+  uint32_t    m_tx_port;Tcpip_tx_channel::m_tx_port75,1263
+  std::thread m_tx_osthread;Tcpip_tx_channel::m_tx_osthread76,1288
+
+tcpip/tcpip_tx_if.hpp,53
+#define TCPIP_TX_IF_HPP2,24
+struct Tcpip_tx_if7,98
+
+timer/timer.hpp,1975
+#define TIMER_MODULE_H2,23
+#define SC_INCLUDE_DYNAMIC_PROCESSES18,901
+using sc_core::sc_time;29,1179
+using sc_core::sc_event;30,1203
+struct Timer_module:Timer_module32,1229
+  using tlm_payload_t Timer_module::tlm_payload_t37,1364
+  using tlm_phase_t Timer_module::tlm_phase_t38,1414
+  using tlm_peq_t Timer_module::tlm_peq_t39,1454
+  sc_core::sc_port<Timer_module::sc_core::sc_port44,1725
+  sc_core::sc_port<Timer_module::sc_core::sc_port45,1831
+  const char* kind(Timer_module::kind59,2441
+  uint32_t scale(Timer_module::scale91,3836
+  bool irq_enabled(Timer_module::irq_enabled95,3947
+  Configuration             m_configuration;Timer_module::m_configuration106,4558
+  Depth_t                   m_target_size;Timer_module::m_target_size110,4710
+  size_t                    m_timer_quantity;Timer_module::m_timer_quantity111,4753
+  uint32_t                  m_addr_clocks;Timer_module::m_addr_clocks112,4799
+  uint32_t                  m_read_clocks;Timer_module::m_read_clocks113,4879
+  uint32_t                  m_write_clocks;Timer_module::m_write_clocks114,4966
+  std::vector<uint8_t>      m_register_vec;Timer_module::m_register_vec115,5046
+  sc_core::sc_vector<Timer> m_timer_vec;Timer_module::m_timer_vec116,5111
+  tlm_peq_t                 m_targ_peq;Timer_module::m_targ_peq117,5152
+  Depth_t                   m_max_burst Timer_module::m_max_burst118,5192
+  bool                      m_response_in_progress Timer_module::m_response_in_progress119,5253
+  tlm_payload_t*            m_transaction_in_progress Timer_module::m_transaction_in_progress120,5318
+  tlm_payload_t*            m_next_response_pending Timer_module::m_next_response_pending121,5385
+  tlm_payload_t*            m_end_req_pending Timer_module::m_end_req_pending122,5452
+  sc_event                  m_target_done_event;Timer_module::m_target_done_event123,5519
+  std::vector<sc_event>     m_timeout_event;Timer_module::m_timeout_event124,5568
+
+timer/timer_api.hpp,623
+#define TIMER_API_HPP2,22
+struct Timer_api8,114
+  Timer_api(Timer_api::Timer_api11,150
+  int timer(Timer_api::timer22,395
+  void setup(Timer_api::setup23,441
+  void start(Timer_api::start33,946
+  bool is_running(Timer_api::is_running40,1123
+  void stop(Timer_api::stop49,1463
+  uint64_t status(Timer_api::status55,1616
+  uint64_t value(Timer_api::value63,1838
+  static int nTimer(Timer_api::nTimer79,2446
+  Cpu_module&  m_cpu;Timer_api::m_cpu88,2637
+  const Addr_t m_base;Timer_api::m_base89,2659
+  const int    m_timer;Timer_api::m_timer90,2682
+  bool         m_setup{Timer_api::m_setup91,2706
+
+timer/timer_beh.hpp,1770
+#define TIMER_BEH_HPP2,22
+struct Timer7,83
+  using sc_module_name Timer::sc_module_name10,119
+  using sc_time Timer::sc_time11,169
+  using sc_event Timer::sc_event12,212
+  void    set_load_delay Timer::set_load_delay21,431
+  void    set_pulse_delay Timer::set_pulse_delay23,567
+  sc_time get_load_delay Timer::get_load_delay25,703
+  sc_time get_start_time Timer::get_start_time26,771
+  sc_time get_pulse_delay Timer::get_pulse_delay27,839
+  sc_time get_trigger_time(Timer::get_trigger_time28,907
+  void    set_triggered Timer::set_triggered29,975
+  void    clr_triggered Timer::clr_triggered30,1043
+  void    set_reload Timer::set_reload31,1111
+  void    set_continuous Timer::set_continuous32,1179
+  void    set_one_shot Timer::set_one_shot33,1247
+  bool    get_triggered Timer::get_triggered34,1315
+  bool    get_reload Timer::get_reload35,1383
+  bool    get_continuous Timer::get_continuous36,1451
+  bool    is_paused Timer::is_paused37,1519
+  const sc_event& trigger_event(Timer::trigger_event45,2000
+  const sc_event& pulse_event(Timer::pulse_event49,2116
+  bool test_and_clear_triggered(Timer::test_and_clear_triggered60,2568
+  sc_time   m_load_delay Timer::m_load_delay73,2858
+  sc_time   m_start_time Timer::m_start_time74,2942
+  sc_time   m_pulse_delay Timer::m_pulse_delay75,3019
+  sc_time   m_resume_delay Timer::m_resume_delay76,3130
+  sc_time   m_trigger_time Timer::m_trigger_time77,3219
+  bool      m_triggered Timer::m_triggered78,3356
+  bool      m_reload Timer::m_reload79,3428
+  bool      m_continuous Timer::m_continuous80,3526
+  bool      m_paused Timer::m_paused81,3606
+  sc_event  m_trigger_event;Timer::m_trigger_event82,3668
+  sc_event  m_pulse_event;Timer::m_pulse_event83,3697
+
+top/netlist.hpp,45
+#define NETLIST_HPP2,20
+struct Netlist7,97
+
+top/news.hpp,266
+#define NEWS_HPP2,17
+using sc_core::sc_report;7,87
+using sc_core::sc_actions;8,113
+struct News10,141
+  static bool initialized;News::initialized18,448
+  static std::map<News::std::map19,475
+  static std::map<std::string,size_t> tag_map;News::tag_map19,475
+
+top/options.hpp,507
+#define OPTIONS_HPP2,20
+struct Options22,934
+  Platform get_configuration(Options::get_configuration25,993
+  const std::set<PlatformTest>& get_test_set(Options::get_test_set26,1064
+  using flag_map_t Options::flag_map_t34,1341
+  Platform               m_configuration;Options::m_configuration35,1398
+  flag_map_t             m_flag_map;Options::m_flag_map36,1440
+  std::set<PlatformTest> m_test_set;Options::m_test_set37,1477
+  Signal                 m_interrupt{Options::m_interrupt38,1514
+
+top/platform_enum.hpp,388
+#define PLATFORM_ENUM_HPP2,26
+#define PLATFORM_ENUMS(13,254
+#define PLATFORM_KEY(29,596
+enum class Platform 30,625
+  PLATFORM_ENUMS(Platform::PLATFORM_ENUMS31,653
+  PLATFORM_ENUMS(PLATFORM_KEY)Platform::PLATFORM_KEY31,653
+#undef PLATFORM_KEY33,689
+inline Platform operator++(40,1009
+inline Platform operator*(43,1124
+inline Platform begin(46,1178
+inline Platform end(49,1276
+
+top/stub.hpp,1660
+#define STUB_MODULE_HPP2,24
+#define SC_INCLUDE_DYNAMIC_PROCESSES15,827
+using sc_core::sc_time;24,1069
+struct Stub_module:Stub_module26,1094
+  using tlm_payload_t Stub_module::tlm_payload_t28,1135
+  using tlm_phase_t Stub_module::tlm_phase_t29,1185
+  using tlm_peq_t Stub_module::tlm_peq_t30,1225
+  const char* kind(Stub_module::kind48,2054
+  Configuration        m_configuration;Stub_module::m_configuration70,3089
+  Depth_t              m_target_size;Stub_module::m_target_size72,3154
+  Feature              m_dmi_allowed;Stub_module::m_dmi_allowed73,3192
+  Access               m_access;Stub_module::m_access74,3230
+  Feature              m_byte_enables;Stub_module::m_byte_enables75,3297
+  size_t               m_alignment;Stub_module::m_alignment76,3336
+  size_t               m_max_burst;Stub_module::m_max_burst77,3406
+  uint32_t             m_addr_clocks;Stub_module::m_addr_clocks78,3506
+  uint32_t             m_read_clocks;Stub_module::m_read_clocks79,3581
+  uint32_t             m_write_clocks;Stub_module::m_write_clocks80,3663
+  tlm_peq_t            m_targ_peq;Stub_module::m_targ_peq81,3738
+  bool                 m_dmi_granted Stub_module::m_dmi_granted82,3773
+  tlm_payload_t*       m_transaction_in_progress Stub_module::m_transaction_in_progress83,3833
+  bool                 m_response_in_progress Stub_module::m_response_in_progress84,3895
+  tlm_payload_t*       m_next_response_pending Stub_module::m_next_response_pending85,3955
+  tlm_payload_t*       m_end_req_pending Stub_module::m_end_req_pending86,4017
+  sc_core::sc_event    m_target_done_event;Stub_module::m_target_done_event87,4079
+
+top/summary.hpp,497
+#define SUMMARY_HPP2,20
+struct Summary 4,41
+  static void increment_errors(Summary::increment_errors8,185
+  static void increment_warnings(Summary::increment_warnings9,240
+  static double s_elaboration_time;Summary::s_elaboration_time15,472
+  static double s_starting_time;Summary::s_starting_time16,508
+  static double s_finished_time;Summary::s_finished_time17,541
+  static unsigned int s_errors;Summary::s_errors18,574
+  static unsigned int s_warnings;Summary::s_warnings19,606
+
+top/top.hpp,147
+#define TOP_H2,14
+struct Top_module30,1225
+  const char* kind(Top_module::kind36,1371
+  std::unique_ptr<Impl> pImpl;Top_module::pImpl41,1585
+
+top/wallclock.hpp,27
+#define WALLCLOCK_HPP2,22
+
+uart/parity.hpp,73
+#define PARITY_HPP2,19
+inline bool even(9,164
+inline bool even(10,227
+
+uart/uart.hpp,3217
+#define UART_MODULE_HPP2,24
+#define SC_INCLUDE_DYNAMIC_PROCESSES16,856
+using sc_core::sc_time;30,1199
+using sc_core::sc_event;31,1223
+using sc_core::sc_port;32,1248
+using sc_core::SC_ZERO_OR_MORE_BOUND;33,1272
+struct Uart_module:Uart_module35,1311
+  using tlm_payload_t Uart_module::tlm_payload_t38,1397
+  using tlm_phase_t Uart_module::tlm_phase_t39,1447
+  using tlm_peq_t Uart_module::tlm_peq_t40,1487
+  using Uart_txslow_port_t Uart_module::Uart_txslow_port_t41,1558
+  using Uart_rxslow_port_t Uart_module::Uart_rxslow_port_t42,1654
+  using Uart_txfast_port_t Uart_module::Uart_txfast_port_t43,1750
+  using Uart_rxfast_port_t Uart_module::Uart_rxfast_port_t44,1846
+  using Intrq_port_t Uart_module::Intrq_port_t45,1942
+  enum class Speed Uart_module::Speed47,2019
+  enum class Speed { VIRTUAL,Uart_module::Speed::VIRTUAL47,2019
+  enum class Speed { VIRTUAL, FAST,Uart_module::Speed::FAST47,2019
+  enum class Speed { VIRTUAL, FAST, SLOW Uart_module::Speed::SLOW47,2019
+  virtual const char* kind(Uart_module::kind66,2911
+  Configuration        m_configuration;Uart_module::m_configuration104,4566
+  Depth_t              m_target_size;Uart_module::m_target_size108,4713
+  uint32_t             m_addr_clocks;Uart_module::m_addr_clocks109,4751
+  uint32_t             m_read_clocks;Uart_module::m_read_clocks110,4826
+  uint32_t             m_write_clocks;Uart_module::m_write_clocks111,4908
+  tlm_peq_t            m_targ_peq;Uart_module::m_targ_peq112,4983
+  size_t               m_max_burst{Uart_module::m_max_burst113,5018
+  bool                 m_response_in_progress    { false Uart_module::false114,5118
+  tlm_payload_t*       m_transaction_in_progress { nullptr Uart_module::nullptr115,5178
+  tlm_payload_t*       m_next_response_pending   { nullptr Uart_module::nullptr116,5240
+  tlm_payload_t*       m_end_req_pending         { nullptr Uart_module::nullptr117,5302
+  sc_event             m_target_done_event;Uart_module::m_target_done_event118,5364
+  Uart_regs_t          m_uart;Uart_module::m_uart120,5471
+  Speed                m_txspeed;Uart_module::m_txspeed121,5502
+  Speed                m_rxspeed;Uart_module::m_rxspeed122,5536
+  std::deque<uint8_t>  m_txfifo;Uart_module::m_txfifo123,5570
+  std::deque<uint8_t>  m_rxfifo;Uart_module::m_rxfifo124,5603
+  int                  m_txfifo_capacity{Uart_module::m_txfifo_capacity125,5636
+  int                  m_rxfifo_capacity{Uart_module::m_rxfifo_capacity126,5706
+  Uart_ctrl_t          m_txctrl;Uart_module::m_txctrl127,5776
+  Uart_ctrl_t          m_rxctrl;Uart_module::m_rxctrl128,5809
+  sc_event             m_txevent;Uart_module::m_txevent129,5842
+  sc_event             m_rxevent;Uart_module::m_rxevent130,5876
+  uint32_t             m_txbits Uart_module::m_txbits131,5910
+  uint32_t             m_rxbits Uart_module::m_rxbits132,5952
+  uint32_t             m_txcount Uart_module::m_txcount133,5994
+  uint32_t             m_rxcount Uart_module::m_rxcount134,6036
+  uint32_t             m_txdropped Uart_module::m_txdropped135,6078
+  uint32_t             m_rxdropped Uart_module::m_rxdropped136,6120
+  uint32_t             m_baud[Uart_module::m_baud137,6162
+
+unit_test/test_enum.hpp,377
+#define TEST_ENUM_HPP2,22
+#define TEST_ENUMS(12,171
+#define TEST_KEY(23,362
+enum class PlatformTest 24,387
+  TEST_ENUMS(PlatformTest::TEST_ENUMS25,419
+  TEST_ENUMS(TEST_KEY)PlatformTest::TEST_KEY25,419
+#undef TEST_KEY27,447
+inline PlatformTest operator++(34,770
+inline PlatformTest operator*(37,901
+inline PlatformTest begin(40,963
+inline PlatformTest end(43,1077
+
+utility/ansi.hpp,39
+#define ANSI_HPP2,17
+struct Ansi4,35
+
+utility/convert.hpp,90
+#define CONVERT_HPP2,20
+#define REQUIRES_CPP 4,41
+void to_int(19,426
+T to_int(60,1367
+
+utility/fanout.hpp,648
+#define FANOUT_HPP2,19
+template<typename T1,19,856
+struct Fanout20,891
+  using ZERO_OR_MORE Fanout::ZERO_OR_MORE24,962
+  sc_core::sc_export< sc_signal_inout_if<T1> > xport;Fanout::xport27,1029
+  sc_core::sc_vector<Fanout::sc_core::sc_vector28,1083
+  void write(Fanout::write53,1605
+  const T1& read(Fanout::read61,1776
+  void update(Fanout::update67,1858
+  const T& get_data_ref(Fanout::get_data_ref75,2011
+  const sc_core::sc_event& value_changed_event(Fanout::value_changed_event80,2071
+  bool event(Fanout::event84,2144
+  T1                m_read;Fanout::m_read94,2390
+  sc_core::sc_event m_event;Fanout::m_event95,2418
+
+utility/hexfile.hpp,98
+#define HEXFILE_H2,18
+namespace hexfile 8,125
+void dump(hexfile::dump13,332
+void save(25,818
+
+utility/memory_manager.hpp,578
+#define MEMORY_MANAGER_HPP2,27
+#define REQUIRES_CPP 30,814
+template<typename T=36,942
+Memory_manager<T>& Memory_manager<T>::instance(instance94,3380
+Memory_manager<T>::Memory_manager(Memory_manager103,3612
+Memory_manager<T>::~Memory_manager(~Memory_manager120,4255
+T* Memory_manager<T>::allocate_acquire(allocate_acquire131,4532
+void Memory_manager<T>::setset141,4768
+T* Memory_manager<T>::allocate_acquire_and_setallocate_acquire_and_set164,5598
+T* Memory_manager<T>::allocate(allocate180,6123
+void Memory_manager<T>::free(free199,6568
+#undef MSGID205,6758
+
+utility/report.hpp,449
+#define REPORT_HPP2,19
+#define HEX 23,1057
+#define DEC 24,1095
+#define REPORT(26,1157
+#define ASSERT(36,1599
+#define ASSERT(40,1732
+#define SC_ALWAYS 43,1761
+#define SC_NEVER 44,1787
+#define SC_HYPER 45,1811
+#define DEVID 46,1834
+#define NOINFO(47,1886
+#define INFO(48,1915
+#define MESSAGE(64,3132
+#define MEND(65,3188
+#define RULER(72,3716
+#define TODO(74,3774
+#define NOT_YET_IMPLEMENTED(75,3833
+std::ostream& operator<<(86,4300
+
+utility/signal.hpp,498
+#define SIGNAL_HPP2,19
+struct Signal 17,832
+  enum { STOP=Signal::STOP18,848
+  enum { STOP=-1, ABORT=Signal::ABORT18,848
+  enum { STOP=-1, ABORT=-2, INTERRUPT=Signal::INTERRUPT18,848
+  using Handler_t Signal::Handler_t19,892
+  int                    m_sig;Signal::m_sig27,1125
+  Handler_t              m_sighandler{ nullptr Signal::nullptr28,1157
+  std::forward_list<int> m_siglist;Signal::m_siglist29,1207
+  static std::forward_list<Signal*> s_handlers;Signal::s_handlers30,1243
+
+tmr/mm.cpp,0
+
+sc-platform/log2.cpp,0
+
+ht/c++11.cpp,0
+
+common/log2.cpp,0
