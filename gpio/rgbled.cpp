@@ -66,7 +66,7 @@ void RgbLED_module::rgbled_method( void ) {
 // This serves both as an example and a simple unit test
 #include "gpio/rgbled.hpp"
 #include "report/report.hpp"
-#include "report/report.hpp"
+#include "report/summary.hpp"
 #include "no_clock/no_clock.hpp"
 #include <chrono>
 #include <thread>

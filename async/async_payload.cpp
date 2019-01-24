@@ -23,7 +23,7 @@ using namespace sc_core;
 
 #define SHOW(V) std::cout << #V << " = " << V << std::endl
 
-int main( int argc, const char* argv[] )
+int sc_main( int argc, char* argv[] )
 {
   int status{ 0 };
 

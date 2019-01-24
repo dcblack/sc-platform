@@ -312,7 +312,7 @@ std::ostream& operator<<( std::ostream& os, const Configuration& rhs )
 // This serves both as an example and a simple unit test
 #include "config/configuration.hpp"
 #include "report/report.hpp"
-#include "report/report.hpp"
+#include "report/summary.hpp"
 #include <iostream>
 using namespace std;
 // Helper

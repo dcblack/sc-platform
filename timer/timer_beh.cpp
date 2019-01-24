@@ -217,7 +217,7 @@ void Timer::reset( void ) {
 // This serves both as an example and a simple unit test
 #include "timer/timer_beh.hpp"
 #include "report/report.hpp"
-#include "report/report.hpp"
+#include "report/summary.hpp"
 #include "common/common.hpp"
 #include "no_clock/no_clock.hpp"
 #include <queue>
