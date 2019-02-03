@@ -395,6 +395,9 @@ SC_MODULE( Top_module )
 //------------------------------------------------------------------------------
 int sc_main( int argc, char* argv[] )
 {
+  //----------------------------------------------------------------------------
+  // Scan command-line arguments
+  //----------------------------------------------------------------------------
   for(int i=1; i<sc_core::sc_argc(); ++i) {
     std::string arg(sc_core::sc_argv()[i]);
     if (arg == "-debug") {
@@ -402,6 +405,7 @@ int sc_main( int argc, char* argv[] )
       SC_REPORT_INFO( "/Doulos/Example/config_example", "Verbosity level set to DEBUG" );
     }
   }
+  //----------------------------------------------------------------------------
   Summary::starting_elaboration();
   Top_module top( "top" );
   sc_start();
