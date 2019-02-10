@@ -62,15 +62,26 @@ function findbin() {
 }
 
 #-------------------------------------------------------------------------------
+# Determine build directory (may be overridden later)
+#-------------------------------------------------------------------------------
+ROOT_DIR=$(dirname $(realpath $(firstreal $(add_suffix /CMakeLists.txt . .. ../.. ../../..))))
+BUILD_DIR=$(realpath $(firstreal $(add_suffix /$BUILD_DIRNAME . .. ../.. ../../..) .))
+CMAKELIST="$ROOT_DIR/CMakeLists.txt"
+
+#-------------------------------------------------------------------------------
 # Check for proper environment variables
 #-------------------------------------------------------------------------------
+USE_SYSC=$(perl -lne 'BEGIN{$u=0;} $u=1 if m/SystemC.cmake/; END{print $u;}' $CMAKELIST)
 for var in SYSTEMC PROJ_ROOT CXX CC ; do
+  if [[ $var == SYSTEMC && $USE_SYSC == 0 ]]; then continue; fi
   perl -e 'exit (not exists $ENV{"$ARGV[0]"})' $var ||\
     Error "Missing definition of \$$var."
 done
-sc_ver_file="$SYSTEMC/include/sysc/kernel/sc_ver.h"
-if [[ ! -r $sc_ver_file ]]; then
-  Error "SYSTEMC does not refer to a proper installation."
+if [[ $var == SYSTEMC && $USE_SYSC == 1 ]]; then
+  sc_ver_file="$SYSTEMC/include/sysc/kernel/sc_ver.h"
+  if [[ ! -r $sc_ver_file ]]; then
+    Error "SYSTEMC does not refer to a proper installation."
+  fi
 fi
 
 #-------------------------------------------------------------------------------
@@ -94,13 +105,6 @@ NAH=0
 if [[ $0 =~ .*run ]]; then
   RUN_FLAG=1
 fi
-
-#-------------------------------------------------------------------------------
-# Determine build directory (may be overridden later)
-#-------------------------------------------------------------------------------
-ROOT_DIR=$(dirname $(realpath $(firstreal $(add_suffix /CMakeLists.txt . .. ../.. ../../..))))
-BUILD_DIR=$(realpath $(firstreal $(add_suffix /$BUILD_DIRNAME . .. ../.. ../../..) .))
-CMAKELIST="$ROOT_DIR/CMakeLists.txt"
 
 #-------------------------------------------------------------------------------
 # Scan command-line for option overrides
