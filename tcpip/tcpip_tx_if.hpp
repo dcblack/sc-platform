@@ -2,15 +2,11 @@
 #define TCPIP_TX_IF_HPP
 
 #include "async/async_payload.hpp"
-#include <systemc>
+#include <tlm>
 
 struct Tcpip_tx_if
-: virtual sc_core::sc_interface
+: tlm::tlm_put_if<Async_payload>
 {
-  virtual bool can_put( void ) const = 0;
-  virtual const sc_core::sc_event& ok_to_put( void ) const = 0;
-  virtual void put( Async_payload& the_payload ) = 0;
-  virtual bool nb_put( Async_payload& the_payload ) = 0;
 };
 
 #endif/*TCPIP_TX_IF_HPP
