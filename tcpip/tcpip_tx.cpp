@@ -1,50 +1,92 @@
 #include "tcpip/tcpip_tx.hpp"
-#include "report/report.hpp"
+
+// Nothing here except syntax check and self-test/example
+
+#ifdef TCPIP_EXAMPLE
+
+using namespace std;
 using namespace sc_core;
+#include "tcpip/tcpip_tx.hpp"
+#include "report/report.hpp"
+#include "report/summary.hpp"
+#include <iostream>
 
-//------------------------------------------------------------------------------
-// Constructor
-Tcpip_tx_channel::Tcpip_tx_channel(sc_module_name instance_name)
-: sc_channel(instance_name)
-//, {:OBJECT_CONSTRUCTION:}
+SC_MODULE( Top_module )
 {
-  // Connectivity - NONE
-  // Register processes
-  SC_HAS_PROCESS(Tcpip_tx_channel);
-  SC_THREAD(tcpip_tx_thread);
-}//endconstructor
+  char const * const MSGID{ "/Doulos/Example/Config_example" };
 
-//------------------------------------------------------------------------------
-// Destructor
-Tcpip_tx_channel::~Tcpip_tx_channel( void ) {
+  //----------------------------------------------------------------------------
+  SC_CTOR( Top_module ) {
+    SC_THREAD( test_thread );
+  }
+
+  //----------------------------------------------------------------------------
+  void test_thread( void ) {
+    string text = "Hello\nworld\n!\n";
+    Async_payload<string> msg{ Asynk_kind::stream, text };
+    tx.put( msg );
+    msg.set_data( string("Goodbye!") );
+    tx.put( msg );
+    sc_stop();
+  }
+
+  // Local channels
+  Tcpip_tx_channel tx{ "Tx", 0xE5C0ul };
+
+  // Attributes
+};
+
+int sc_main( int argc, char* argv[] )
+{
+  for(int i=1; i<sc_core::sc_argc(); ++i) {
+    std::string arg(sc_core::sc_argv()[i]);
+    if (arg == "-debug") {
+      sc_core::sc_report_handler::set_verbosity_level(SC_DEBUG);
+      SC_REPORT_INFO( "/Doulos/Example/config_example", "Verbosity level set to DEBUG" );
+    }
+  }
+
+  //----------------------------------------------------------------------------
+  // Elaborate
+  //----------------------------------------------------------------------------
+  Summary::starting_elaboration();
+  Top_module top( "top" );
+  if( Summary::errors() != 0 )
+  {
+    return Summary::report();
+  }
+
+  //----------------------------------------------------------------------------
+  // Begin simulator
+  //----------------------------------------------------------------------------
+  sc_start();
+
+  //----------------------------------------------------------------------------
+  // Clean up
+  //----------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
+  if ( not sc_end_of_simulation_invoked() )
+  {
+    REPORT( INFO, "\nError: Simulation stopped without explicit sc_stop()" );
+    Summary::increment_errors();
+
+    try {
+      sc_stop(); //< this will invoke end_of_simulation() callbacks
+      Summary::finished_simulation(); // update
+    }
+    catch ( sc_exception& e )
+    {
+      REPORT( WARNING, "Caught exception while stopping.\n" << e.what() );
+    }
+    catch(...) {
+      REPORT( WARNING, "Error: Caught unknown exception while stopping." );
+      Summary::increment_errors();
+    }
+  }//endif
+}//endif
+  return Summary::report();
 }
-
-//------------------------------------------------------------------------------
-// Processes
-void Tcpip_tx_channel::tcpip_tx_thread( void ) {
-
-  //(/* - vim users place cursor on this line and type 0wd%
-{:*/  SC_REPORT_ERROR(MSGID,"REPLACE_HERE_BELOW\n\n\n"                 //:}*/
-{:*/                                                                   //:}*/
-{:*/      "########################################################\n" //:}*/
-{:*/      "########################################################\n" //:}*/
-{:*/      "##                                                    ##\n" //:}*/
-{:*/      "##   REPLACE THIS ERROR MESSAGE AND ANY OTHER         ##\n" //:}*/
-{:*/      "##   PLACEHOLDERS SURROUNDED BY CURLY BRACKET-COLON   ##\n" //:}*/
-{:*/      "##   PAIRS SUCH AS YOU SEE ON THESE LINES OF SOURCE   ##\n" //:}*/
-{:*/      "##   CODE. DELETE UNUSED PLACEHOLDERS ENGTIRELY.      ##\n" //:}*/
-{:*/      "##                                                    ##\n" //:}*/
-{:*/      "########################################################\n" //:}*/
-{:*/      "########################################################\n" //:}*/
-{:*/                                                                   //:}*/
-{:*/  "\n\nREPLACE_HERE_ABOVE\n\n" );                                  //:}*/
-//)
-
-}//end Tcpip_tx_channel::tcpip_tx_thread
-
-//------------------------------------------------------------------------------
-// Other methods
-// -none-
+#endif
 
 //------------------------------------------------------------------------------
 // Copyright 2019 by Doulos. All rights reserved.
