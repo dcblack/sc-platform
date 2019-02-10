@@ -11,7 +11,6 @@ using namespace sc_core;
 #include <iomanip>
 #include <string>
 #include <vector>
-#include <array>
 
 #define SHOWVEC(VEC) do {        \
   std::cout << #VEC << std::hex << "\n";   \

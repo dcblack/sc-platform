@@ -17,16 +17,15 @@ About this class
 ----------------
 
 This class adds a wrapper around data to be sent/received from/to
-SystemC and an external process. Some of the fields are left to
-the imagination/use of the implementer. For example, if attempting
-to synchronize time between two systems, some work will need to be
-done thinking about how much and what type of time is represented
-by the 64-bit m_time member. The intent is that the time be set by
-the originator. Similarly, the m_orig and m_dest members represent
-"addresses" for the originator and final destination; however, the
-designer will need to settle on definitions on how these should be
-setup. Possibly an external mapping would need to be imposed. They
-have use in debugging as information is examined during run-time.
+SystemC and an OS external process.
+
+Some of the fields are left to the imagination/use of the implementer. 
+For more information, see `ABOUT_ASYNC.md`.
+
+To do
+-----
+Add callback attributes to pack/unpack data differently. Currently assumes
+streaming output will provide a suitable format.
 
 */
 
@@ -37,10 +36,10 @@ struct Async_payload
   // Constructor
   Async_payload
   ( Async_kind kind
-  , Data_t&    data
-  , uint64_t   dest=UNDEFINED
-  , uint64_t   orig=UNDEFINED
-  , uint64_t   time=UNDEFINED
+  , const Data_t& data
+  , uint64_t      dest=UNDEFINED
+  , uint64_t      orig=UNDEFINED
+  , uint64_t      time=UNDEFINED
   )
   : m_id   ( next() )
   , m_orig ( orig   )
@@ -52,11 +51,30 @@ struct Async_payload
   , m_has_kind( true )
   {
   }
+  // Constructor
+  Async_payload
+  ( Async_kind kind
+  , uint32_t   attr
+  , uint64_t   dest=UNDEFINED
+  , uint64_t   orig=UNDEFINED
+  , uint64_t   time=UNDEFINED
+  )
+  : m_id   ( next() )
+  , m_orig ( orig   )
+  , m_dest ( dest   )
+  , m_time ( time   )
+  , m_kind ( kind   )
+  , m_attr ( attr   )
+  , m_has_data( false )
+  , m_has_kind( true )
+  {
+  }
   void clear( void )
   {
     m_orig = UNDEFINED;
     m_dest = UNDEFINED;
     m_time = UNDEFINED;
+    m_attr = UNDEFINED;
     m_has_kind = false;
     m_has_data = false;
   }
@@ -82,6 +100,7 @@ struct Async_payload
       m_dest     = rhs.m_dest;
       m_time     = rhs.m_time;
       m_kind     = rhs.m_kind;
+      m_attr     = rhs.m_attr;
       m_data     = rhs.m_data;
       m_has_data = rhs.m_has_data;
       m_has_kind = rhs.m_has_kind;
@@ -97,6 +116,7 @@ struct Async_payload
   void       set_dest ( uint64_t   dest ) { m_dest = dest; }
   void       set_time ( uint64_t   time ) { m_time = time; }
   void       set_kind ( Async_kind kind ) { m_kind = kind; m_has_kind = true; }
+  void       set_attr ( uint32_t   attr ) { m_attr = attr; }
   void       set_data ( const Data_t& data ) { m_data = data; m_has_data = true; }
   void       set_data ( Data_t&&   data ) { m_data = std::move(data); m_has_data = true; }
 
@@ -107,6 +127,7 @@ struct Async_payload
   uint64_t   get_dest ( void ) const { return m_dest; }
   uint64_t   get_time ( void ) const { return m_time; }
   Async_kind get_kind ( void ) const { return m_kind; }
+  uint32_t   get_attr ( void ) const { return m_attr; }
   Data_t     get_data ( void ) const { return m_data; }
   bool       has_kind ( void ) const { return m_has_kind; }
   bool       has_data ( void ) const { return m_has_data; }
@@ -129,6 +150,7 @@ struct Async_payload
     out << YAML::Key << "orig" << YAML::Value << m_orig;
     out << YAML::Key << "dest" << YAML::Value << m_dest;
     out << YAML::Key << "time" << YAML::Value << m_time;
+    out << YAML::Key << "attr" << YAML::Value << m_attr;
     if ( m_has_kind ) 
       out << YAML::Key << "kind" << YAML::Value << async_kind_str( m_kind );
     if ( m_has_data )
@@ -162,6 +184,8 @@ struct Async_payload
         m_dest = elt.second.as<uint64_t>();
       } else if ( field == "time" ) {
         m_time = elt.second.as<uint64_t>();
+      } else if ( field == "attr" ) {
+        m_attr = elt.second.as<uint32_t>();
       } else if ( field == "kind" ) {
         m_kind = to_Async_kind(elt.second.as<std::string>());
       } else if ( field == "data" ) {
@@ -186,6 +210,7 @@ private:
   uint64_t    m_dest;     
   uint64_t    m_time;
   Async_kind  m_kind;
+  uint32_t    m_attr{ 0 };
   Data_t      m_data;
   bool        m_has_data{ false };
   bool        m_has_kind{ false };
@@ -197,6 +222,7 @@ std::ostream& operator<<( std::ostream& os, const Async_payload<Data_t>& rhs )
   os << "{"  << std::hex << std::showbase
      << " i:" << rhs.get_id() 
      << " v:" << rhs.get_vers()
+     << " a:" << rhs.get_attr()
   ;
   if( rhs.get_orig() == Async_payload<Data_t>::UNDEFINED ) {
     os << " o:UNDEF";
@@ -224,6 +250,5 @@ std::ostream& operator<<( std::ostream& os, const Async_payload<Data_t>& rhs )
   os << " }";
   return os;
 }
-
 
 #endif /*ASYNC_PAYLOAD_HPP*/
