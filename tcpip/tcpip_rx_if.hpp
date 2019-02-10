@@ -2,15 +2,11 @@
 #define TCPIP_RX_IF_HPP
 
 #include "async/async_payload.hpp"
-#include <systemc>
+#include <tlm>
 
 struct Tcpip_rx_if
-: virtual sc_core::sc_interface
+: tlm::tlm_get_if<Async_payload>
 {
-  virtual bool can_get() = 0;
-  virtual const sc_core::sc_event& ok_to_get() = 0;
-  virtual void get( Async_payload& the_payload ) = 0;
-  virtual bool nb_get( Async_payload& the_payload ) = 0;
 };
 
 #endif/*TCPIP_RX_IF_HPP
