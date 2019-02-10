@@ -10,10 +10,12 @@
 #include <iostream>
 
 #define ASYNC_KIND_ENUMS(ENUM)\
+  ENUM( command  )\
   ENUM( stream   )\
   ENUM( parallel )\
   ENUM( packet   )\
   ENUM( graphic  )\
+  ENUM( audio    )\
   ENUM( debug    )\
   ENUM( shutdown )\
   ENUM( end      ) //< required
