@@ -18,27 +18,42 @@ void error( char* msg )
 
 int main( int argc, char* argv[] )
 {
-  unsigned int sockfd, newsockfd, portno, clilen;
+  int sockfd = -1;
+  int newsockfd = -1;
+  unsigned int portno = 28000;
+  unsigned int clilen;
   char recv_buffer[256];
   struct sockaddr_in serv_addr, cli_addr;
   int n;
   if ( argc < 2 ) {
-    fprintf( stderr, "ERROR, no port provided\n" );
-    exit( 1 );
+    fprintf( stderr, "Using default port number %d\n", portno );
+  } else {
+    portno = atoi( argv[1] );
   }
+  //--------------------------------------------------------------------------
+  // Create TCP/IP socket
+  //--------------------------------------------------------------------------
   sockfd = socket( AF_INET, SOCK_STREAM, 0 );
   if ( sockfd < 0 ) {
     error( "ERROR opening socket" );
   }
+  //--------------------------------------------------------------------------
+  // Prepare the server address sockaddr_in structure
+  //--------------------------------------------------------------------------
   bzero( ( char* ) &serv_addr, sizeof( serv_addr ) );
-  portno = atoi( argv[1] );
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = INADDR_ANY;
-  serv_addr.sin_port = htons( portno );
+  serv_addr.sin_port = htons( portno ); // Host to Network -- big-endian conversion
+  //--------------------------------------------------------------------------
+  // Bind to incoming address in preparation to listening
+  //--------------------------------------------------------------------------
   if ( bind( sockfd, ( struct sockaddr* ) &serv_addr,
              sizeof( serv_addr ) ) < 0 ) {
     error( "ERROR on binding" );
   }
+  //--------------------------------------------------------------------------
+  // Listen for a connection
+  //--------------------------------------------------------------------------
   listen( sockfd, 5 );
   clilen = sizeof( cli_addr );
   newsockfd = accept( sockfd, ( struct sockaddr* ) &cli_addr, &clilen );

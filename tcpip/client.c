@@ -11,7 +11,7 @@
 #include <netdb.h> 
 #include <unistd.h>
 
-void error(char *msg)
+void error( char *msg )
 {
     perror( msg );
     exit( 0 );
@@ -64,7 +64,7 @@ int main( int argc, char* argv[] )
     if ( strncmp( recv_buffer, "Got it", 6 ) != 0 ) {
       printf( "%s", recv_buffer );
       if ( n && recv_buffer[n-1] != '\n' ) {
-        puts("");
+        puts( "" );
       }
     }
   } while ( strncmp( send_buffer, "quit", 4 ) != 0 );
