@@ -23,7 +23,7 @@ If errors are detected, main exists with a non-zero status.
 
 This project has several goals:
 
-1. Provide an example of a complete TLM-2 virtual platform for study using modern C++.
+1. Provide an example of a complete TLM-2 virtual platform for study using Modern C++.
 2. Should be able to demonstrate Blinky and Hello-world tests.
 3. Provide examples of different techniques of modeling.
   1. Loosely-timed and Approximately-timed models of initiators, interconnect and targets
@@ -38,6 +38,19 @@ not expected to be complete. Various authors may contribute to this effort, and
 as such, coding guidelines have bee provided here-in. It is important that this
 code be *model code* and meet high levels of documentation and formatting to
 make it easy to understand. Comment blocks are highly encouraged.
+
+Definition: Modern C++ means use of features introduced in the C++ standards
+from 2011, 2014 and 2017. Of course, we do not mean to be completely
+indiscriminate in this. Features should be used when they provide some
+advantage. Any one of the following may be deemed an advantage.
+
+1. Simplify the code and make it easier to understand
+2. Provide coding safety against mistakes
+3. Improve performance or functionality
+
+Of course there may occasionally be some disagreement in which case there
+should proceed some discussion and perhaps even more comments in the code to
+help the reader.
 
 # <a name="GrandDesign"/>The Grand Design
 
