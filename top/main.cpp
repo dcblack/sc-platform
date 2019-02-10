@@ -39,46 +39,49 @@ int sc_main(int argc, char *argv[])
     return Summary::report();
   }//endtry
 
-  if( Summary::errors() == 0 )
+  if( Summary::errors() != 0 )
   {
-    // Simulate
+    return Summary::report();
+  }
+
+  // Simulate
+  try {
+    REPORT( INFO, "Starting kernel" );
+    Summary::starting_simulation(); //< best we can do
+    sc_start();
+    REPORT( INFO, "Exited kernel at " << sc_time_stamp() );
+    Summary::finished_simulation();
+  }
+  catch ( sc_exception& e )
+  {
+    REPORT( WARNING, "Caught exception during active simulation.\n" << e.what() );
+  }
+  catch ( ... )
+  {
+    REPORT( WARNING, "Error: Caught unknown exception during active simulation." );
+    Summary::increment_errors();
+  }//endtry
+
+  //--------------------------------------------------------------------------
+  // Clean up
+  //--------------------------------------------------------------------------
+  if ( not sc_end_of_simulation_invoked() )
+  {
+    REPORT( INFO, "\nError: Simulation stopped without explicit sc_stop()" );
+    Summary::increment_errors();
+
     try {
-      REPORT( INFO, "Starting kernel" );
-      Summary::starting_simulation(); //< best we can do
-      sc_start();
-      REPORT( INFO, "Exited kernel at " << sc_time_stamp() );
-      Summary::finished_simulation();
+      sc_stop(); //< this will invoke end_of_simulation() callbacks
+      Summary::finished_simulation(); // update
     }
     catch ( sc_exception& e )
     {
-      REPORT( WARNING, "Caught exception during active simulation.\n" << e.what() );
+      REPORT( WARNING, "Caught exception while stopping.\n" << e.what() );
     }
-    catch ( ... )
-    {
-      REPORT( WARNING, "Error: Caught unknown exception during active simulation." );
+    catch(...) {
+      REPORT( WARNING, "Error: Caught unknown exception while stopping." );
       Summary::increment_errors();
-    }//endtry
-
-    // Clean up
-
-    if ( ! sc_end_of_simulation_invoked() )
-    {
-      REPORT( INFO, "\nError: Simulation stopped without explicit sc_stop()" );
-      Summary::increment_errors();
-
-      try {
-        sc_stop(); //< this will invoke end_of_simulation() callbacks
-        Summary::finished_simulation(); // update
-      }
-      catch ( sc_exception& e )
-      {
-        REPORT( WARNING, "Caught exception while stopping.\n" << e.what() );
-      }
-      catch(...) {
-        REPORT( WARNING, "Error: Caught unknown exception while stopping." );
-        Summary::increment_errors();
-      }
-    }//endif
+    }
   }//endif
 
   return Summary::report();
