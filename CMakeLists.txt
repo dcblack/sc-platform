@@ -8,7 +8,7 @@
 cmake_minimum_required(VERSION 3.11)
 set(TARGET_EXECUTABLE $<TARGET_FILE_NAME:platform>)
 set(TARGET_NAME platform)
-project(platform CXX)
+project(platform LANGUAGES CXX C)
 
 include(cmake/BuildTypes.cmake)
 include(cmake/SystemC.cmake)
@@ -79,7 +79,7 @@ add_executable( platform
 target_link_libraries( platform yaml-cpp Boost::filesystem)
 
 ################################################################################
-add_executable( config
+add_executable( config EXCLUDE_FROM_ALL
   common/common.cpp
   config/configuration.cpp
   report/report.cpp
@@ -90,7 +90,7 @@ add_executable( config
 target_compile_definitions( config PRIVATE CONFIG_EXAMPLE )
 
 ################################################################################
-add_executable( signal
+add_executable( signal EXCLUDE_FROM_ALL
   utility/signal.cpp
   report/report.cpp
   top/wallclock.cpp
@@ -100,7 +100,7 @@ add_executable( signal
 target_compile_definitions( signal PRIVATE SIGNAL_EXAMPLE )
 
 ################################################################################
-add_executable( payload
+add_executable( payload EXCLUDE_FROM_ALL
   async/async_kind.cpp
   async/async_payload.cpp
 )
@@ -109,7 +109,7 @@ target_link_libraries( payload yaml-cpp )
 target_compile_definitions( payload PRIVATE ASYNC_PAYLOAD_EXAMPLE )
 
 ################################################################################
-add_executable( rgbled
+add_executable( rgbled EXCLUDE_FROM_ALL
   gpio/rgbled.cpp
   report/report.cpp
   top/wallclock.cpp
@@ -119,7 +119,7 @@ add_executable( rgbled
 target_compile_definitions( rgbled PRIVATE RGBLED_EXAMPLE )
 
 ################################################################################
-add_executable( timer
+add_executable( timer EXCLUDE_FROM_ALL
   timer/timer_beh.cpp
   common/common.cpp
   scx/sc_freq.cpp
@@ -131,7 +131,7 @@ add_executable( timer
 target_compile_definitions( timer PRIVATE TIMER_EXAMPLE )
 
 ################################################################################
-add_executable( xyaml
+add_executable( xyaml EXCLUDE_FROM_ALL
   unit_test/xyaml.cpp
   report/report.cpp
   top/wallclock.cpp
@@ -141,6 +141,14 @@ add_executable( xyaml
 )
 target_compile_definitions( xyaml PRIVATE YAML_EXAMPLE )
 target_link_libraries( xyaml yaml-cpp )
+
+################################################################################
+add_executable( server EXCLUDE_FROM_ALL
+  tcpip/server.c
+)
+add_executable( client EXCLUDE_FROM_ALL
+  tcpip/client.c
+)
 
 ################################################################################
 # add_executable( map_test
@@ -155,7 +163,7 @@ target_link_libraries( xyaml yaml-cpp )
 # target_link_libraries( map_test yaml-cpp )
 
 ################################################################################
-add_executable( freq_test
+add_executable( freq_test EXCLUDE_FROM_ALL
   scx/freq_test.cpp
   scx/sc_freq.cpp
 )
