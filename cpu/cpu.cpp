@@ -346,7 +346,7 @@ Cpu_module::transport
 
   record_transaction( command, address, data_len, coding_style );
 
-  sc_time delay;
+  sc_time delay{ SC_ZERO_TIME };
 
   //////////////////////////////////////////////////////////////////////////////
   //
@@ -397,7 +397,7 @@ Cpu_module::transport
       if ( command == TLM_WRITE_COMMAND ) {
         memcpy( dmi_pointer + address - dmi_start_address, data_ptr, data_len );
       }
-      else if ( command == TLM_WRITE_COMMAND ) {
+      else if ( command == TLM_READ_COMMAND ) {
         memcpy( data_ptr, dmi_pointer + address - dmi_start_address, data_len );
       }
 
@@ -465,7 +465,7 @@ Cpu_module::transport
     }
 
     Cpu_module::tlm_phase_t phase;
-    sc_time delay{ SC_ZERO_TIME };
+    delay = SC_ZERO_TIME;
     // Grab a new transaction from the memory manager
     tlm_payload_t& trans
     { *m_mm.allocate_acquire_and_set
