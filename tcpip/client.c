@@ -19,7 +19,7 @@ void error( char *msg )
 
 int main( int argc, char* argv[] )
 {
-  int sockfd, portno, n;
+  int sockfd, portno;
   struct sockaddr_in serv_addr;
   struct hostent* server;
   char send_buffer[256];
@@ -52,7 +52,7 @@ int main( int argc, char* argv[] )
     printf( ": " );
     bzero( send_buffer, 256 );
     fgets( send_buffer, 255, stdin );
-    n = write( sockfd, send_buffer, strlen( send_buffer ) );
+    int n = write( sockfd, send_buffer, strlen( send_buffer ) );
     if ( n < 0 ) {
       error( "ERROR writing to socket" );
     }
