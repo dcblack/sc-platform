@@ -170,6 +170,7 @@ add_executable( freq_test EXCLUDE_FROM_ALL
 
 ################################################################################
 # Syntax reminders
+#-------------------------------------------------------------------------------
 #target_compile_features(platform PUBLIC cxx_std_11)
 #target_include_directories(platform $includes)
 #target_link_libraries(platform ${CMAKE_SOURCE_DIR}/lib{:YOUR_STATIC_LIB:}.a)
