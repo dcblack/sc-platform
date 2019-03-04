@@ -54,7 +54,7 @@ namespace {
 
 //------------------------------------------------------------------------------
 void
-dump( Addr_t address, uint8_t* data_ptr, Depth_t data_len, string name )
+dump( Addr_t address, uint8_t* data_ptr, Depth_t data_len, const string& name )
 {
   MESSAGE("\n");
   RULER('-');
@@ -111,7 +111,6 @@ load(const string& vhex_filename, vector<uint8_t>& mem )
 {
   Addr_t address{0};
   Addr_t offset{MAX_ADDR};
-  uint32_t d;
   ifstream ifile{ vhex_filename };
 
   if ( not ifile ) {

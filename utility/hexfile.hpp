@@ -8,7 +8,7 @@
 namespace hexfile {
 
 // Display a vector as memory space with the specified starting address
-void dump( Addr_t address, uint8_t* data_ptr, Depth_t data_len, const std::string name="" );
+void dump( Addr_t address, uint8_t* data_ptr, Depth_t data_len, const std::string& name="" );
 template<typename T>
 void dump( Addr_t address, std::vector<T>& mem, const std::string& name="" )
 {
