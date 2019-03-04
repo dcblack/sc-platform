@@ -4,6 +4,6 @@
 
 $root = $ENV{'PROJ_ROOT'};
 
-if( s{^$root/}{} ) {
+if( s{$root/}{} ) {
   s{: }{:\n};
 }
