@@ -13,6 +13,7 @@
 #include "report/report.hpp"
 #include <cstdint>
 #include <vector>
+#include <algorithm>
 
 using namespace sc_core;
 using namespace sc_dt;
@@ -268,11 +269,8 @@ std::ostream& operator<<( std::ostream& os, const Configuration& rhs )
     if( max_width < v.first.length() ) {
       max_width = v.first.length();
     }
-    bool is_special{ false };
-    for( auto f : special ) {
-      is_special |= ( v.first == f );
-    }
-    if( not is_special ) fields.push_back( v.first );
+    bool not_special = std::none_of( special.begin(), special.end(), [](auto f){ return v.first == f;} );
+    if( not_special ) fields.push_back( v.first );
   }
   std::sort( fields.begin(), fields.end() );
   max_width += 2; // account for ": "
