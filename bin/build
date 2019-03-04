@@ -18,6 +18,7 @@ Options
 
 + -- ............ pass remaining arguments to executable (implies -run)
 + -B _dir_ ...... specify build directory
++ -check ........ run cppcheck
 + -clean ........ make clean before building
 + -d ............ debug mode
 + --help ........ display this help text and exit
@@ -99,6 +100,7 @@ BUILD_LOGNAME='build.log'
 RUN_LOGNAME='run.log'
 RUN_FLAG=0
 CLEAN_FLAG=0
+CHECK_FLAG=0
 GDBP=""
 NAH=0
 # If name of script is run...
@@ -129,6 +131,14 @@ while [[ "$1" =~ -.* ]]; do
     shift
   elif [[ "$1" == '-run' ]]; then
     RUN_FLAG=1
+    shift
+  elif [[ "$1" == '-check' ]]; then
+    CHECK_FLAG=1
+    if [[ "$(findbin cppcheck)" == '' ]]; then
+      Error "Unable to find 'cppcheck' tool"
+    else
+    CPPCHECK_VERSION="$(cppcheck --version | perl -lane 'chomp; print $F[1];')"
+    fi
     shift
   elif [[ "$1" == '-clean' ]]; then
     CLEAN_FLAG=1
@@ -243,6 +253,10 @@ rm -f $BUILD_LOGNAME $RUN_LOGNAME $ROOT_DIR/$BUILD_LOGNAME $ROOT_DIR/$RUN_LOGNAM
 if [[ -r $CMAKELIST ]]; then
   echo "cmake -G "$GENERATOR" ${CMAKE_OPTS} $ROOT_DIR 2>&1 | tee -a $BUILD_LOGNAME"
   cmake -G "$GENERATOR" "${CMAKE_OPTS}" -S $ROOT_DIR
+fi
+if [[ $CHECK_FLAG == 1 ]]; then
+  cmake -G "$GENERATOR" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "${CMAKE_OPTS}" -S $ROOT_DIR
+  cppcheck --enable=all -D__cppcheck__=$CPPCHECK_VERSION >$CHECK_LOGNAME
 fi
 if [[ $CLEAN_FLAG == 1 ]]; then
   echo "$MAKER clean 2>&1 | tee -a $ROOT_DIR/$BUILD_LOGNAME"
