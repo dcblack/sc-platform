@@ -1,7 +1,8 @@
 About Asynchronous Channels
 ===========================
 
-SystemC as a whole is not OS thread-safe. This document describes thread-safe mechanisms to address this problem.
+SystemC as a whole is not OS thread-safe. This document describes some
+thread-safe channels to address this problem.
 
 Note: **WORK-IN-PROGRESS**
 
@@ -44,18 +45,61 @@ Both channels implement queues, which may be fixed maximum depth or infinite if 
 Briefly, the data portions are roughly equivalent to:
 
 ```cpp
+template<typename Data_t>
 typedef struct
 {
   uint64_t  id;   //< serial number incremented for every send from the originator
+  uint32_t  kind; //< enumerated values
   uint64_t  orig; //< identifier
   uint64_t  dest; //< identifier
   uint64_t  time; //< senders time
-  uint32_t  kind; //< enumerated values
   Data_t    data; //< payload data if any
 } Async_payload_t;
 ```
 
-For C++, appropriate constructors, and access methods will be created.
+While there are no rules about these fields, there are definitely some ideas about their
+original intent and thought on how they could be used.
+
+The `id` attribute uniquely identifies each transaction to aid debug if nothing else.
+
+The `kind` attribute enumeration has the following values and respective intents:
+
+* `command` is used for simple actions/directives. The `attr` would probably be a simple enumeration.
+* `stream` something like UART serial I/O. Data likely to be character strings.
+* `parallel` probably just a bit vector representing parallel GPIO
+* `packet` indicates `data` contains an internet packet
+* `graphic` used with video frames. `attr` may be used to qualify types.
+* `audio` used with sound probably with high priority QOS
+* `debug` used for various debug purposes probably modified by `attr`
+* `shutdown` causes the connection to be terminated
+
+The `orig` (origin) and `dest` (destination) attribute simply provide
+"addresses".  It is possible for these to be more complex if cast to pointers.
+
+The `time` attribute represents local time at the location where the payload
+originated. Whether this is used, how it is synchronized and what units are
+represented is up to the application to decide. This is not simple to resolve.
+
+When simulating, there are two meaningful types of time of the four available.
+For completeness I present all four:
+
+1. Compile and elaboration time -- not meaningful
+2. CPU processor time -- not meaninful
+3. Simulated time -- explicitly supported by SystemC and used within the simulation
+4. Wall-clock time -- real time of the experienced world
+
+Synchronizing simulated and wall-clock time is tricky because they do not proceed at
+the same rate. SystemC may be slower (typical) or faster (possible) than the real
+world. It is an choice as to how accomplish this. Here is one thought:
+
+At the beginning of simulation, exchange data to establish a zero-point. The realworld
+may need to slip time in order to slow down for SystemC since we do not yet have a
+working Tardis. SystemC will have an easier time slowing down.
+
+The `attr` attribute provides a simple 32-bit modifier or may indeed be the real
+data of a transfer.
+
+For C++, appropriate constructors, and access methods are available.
 
 
 `Asynchronous Interfaces`
@@ -165,6 +209,8 @@ struct Tcpip_rx_channel
 UML Sequence Diagrams
 ---------------------
 
+The following illustrates low-level interactions of these channels.
+
 ```
 +----------------------------------------------+  +----------------------+
 |                                              |  |                      |
@@ -179,8 +225,8 @@ UML Sequence Diagrams
 |                create OS_TX thread           |  |                      |
 |                      |         |             |  |                      |
 |                     ---        v             |  |                      |
-|          SC_TX               OS_TX           |  |    NetRX             |
-|          =====               =====           |  |    =====             |
+|      SC_TX_thread        OS_TX_thread        |  | NetRX_thread         |
+|      ============        ============        |  | ============         |
 |            |                   |             |  |      |               |
 |            |                   |             |  |      |               |
 |            |                   |             |  |      |               |
@@ -203,8 +249,8 @@ UML Sequence Diagrams
 |            |                   |             |  |      |               |
 |            -                   -             |  |      -               |
 |                                              |  |                      |
-|          SC_RX               OS_RX           |  |    NetRX             |
-|          =====               =====           |  |    =====             |
+|      SC_RX_thread        OS_RX_thread        |  | NetTX_thread         |
+|      ============        ============        |  | ============         |
 |            |                   |             |  |      |               |
 |            |                   |             |  |      |               |
 |  rx.get(data)                  |             |  |  "Input event"       |
