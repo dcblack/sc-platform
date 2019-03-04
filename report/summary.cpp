@@ -81,6 +81,8 @@ int Summary::report( void )
     MESSAGE( "  Compiled  using: Portland Group PGCC/PGCPP version " << __PGIC__ << "." << __PGIC_MINOR__ << "." << __PGIC_PATCHLEVEL__ << "\n" );
     #elif defined(__SUNPRO_C) || defined(__SUNPRO_CC)
     MESSAGE( "  Compiled  using: Oracle Solaris Studio version " << std::hex << __SUNPRO_CC << "\n" );
+    #elif defined(__cppcheck__)
+    MESSAGE( "  Cppcheck version " << __cppcheck__ << "\n " );
     #else
     MESSAGE( "  Unknown compiler?" << "\n" );
     ++s_warnings;
