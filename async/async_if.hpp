@@ -30,7 +30,7 @@ struct Async_rx_if
   virtual bool nb_read( Async_payload<T>& the_payload ) = 0;
   // Blocking call -- waits for data. Sets data_len to 0 if no data. Removes entry from queue.
   virtual void read( Async_payload<T>& the_payload ) = 0;
-  // Get point to data -- returns false if queue empty. Does NOT complete transaction.
+  // Get reference to data -- returns false if queue empty. Does NOT complete transaction.
   virtual bool nb_peek( Async_payload<T>*& payload_ptr ) const = 0;
   // Blocking call to get pointer to data -- waits for data. Does NOT complete transaction.
   virtual void peek( Async_payload<T>*& payload_ptr ) const = 0;
