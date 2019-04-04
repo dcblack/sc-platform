@@ -269,7 +269,7 @@ std::ostream& operator<<( std::ostream& os, const Configuration& rhs )
     if( max_width < value.first.length() ) {
       max_width = value.first.length();
     }
-    bool not_special = std::none_of( special.begin(), special.end(), [value](auto field){ return value.first == field;} );
+    bool not_special = std::none_of( special.begin(), special.end(), [&value](auto field){ return value.first == field;} );
     if( not_special ) fields.push_back( value.first );
   }
   std::sort( fields.begin(), fields.end() );
