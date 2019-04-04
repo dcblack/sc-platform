@@ -20,12 +20,14 @@ Options
 + -B _dir_ ...... specify build directory
 + -check ........ run cppcheck
 + -clean ........ make clean before building
++ -clear ........ clear out cmake intermediary files for rebuild
 + -d ............ debug mode
 + --help ........ display this help text and exit
 + -gdb .......... invoke with gdb
 + --list ........ list executable targets and exit
 + -M _maker_ .... specify a maker from: make, gmake, ninja
 + -n ............ not really -- just parse arguments
++ -rel .......... release
 + -run .......... execute after compile
 + -v ............ verbose compile
 
@@ -65,6 +67,9 @@ function findbin() {
 #-------------------------------------------------------------------------------
 # Determine build directory (may be overridden later)
 #-------------------------------------------------------------------------------
+BUILD_DIRNAME='build'
+BUILD_LOGNAME='build.log'
+RUN_LOGNAME='run.log'
 ROOT_DIR=$(dirname $(realpath $(firstreal $(add_suffix /CMakeLists.txt . .. ../.. ../../..))))
 BUILD_DIR=$(realpath $(firstreal $(add_suffix /$BUILD_DIRNAME . .. ../.. ../../..) .))
 CMAKELIST="$ROOT_DIR/CMakeLists.txt"
@@ -91,14 +96,13 @@ fi
 HERE=$(/bin/pwd)
 TARGET="" # default
 MAKER=""
+BUILD_TYPE=""
 CMAKE_OPTS=""
 MAKE_OPTS=""
 RUN_OPTS=""
 ARGS=""
-BUILD_DIRNAME='build'
-BUILD_LOGNAME='build.log'
-RUN_LOGNAME='run.log'
 RUN_FLAG=0
+CLEAR_FLAG=0
 CLEAN_FLAG=0
 CHECK_FLAG=0
 GDBP=""
@@ -106,6 +110,18 @@ NAH=0
 # If name of script is run...
 if [[ $0 =~ .*run ]]; then
   RUN_FLAG=1
+fi
+
+if [[ -d "$BUILD_DIRNAME" ]]; then
+  if [[ -r "$BUILD_DIRNAME/Makefile" ]]; then
+    for MAKER in gmake make; do
+      if [[ "$(findbin $MAKER)" != '' ]]; then
+        break
+      fi
+    done
+  elif [[ -r "$BUILD_DIRNAME/build.ninja" ]]; then
+    MAKER=ninja
+  fi
 fi
 
 #-------------------------------------------------------------------------------
@@ -129,6 +145,13 @@ while [[ "$1" =~ -.* ]]; do
   elif [[ "$1" == '-norun' ]]; then
     RUN_FLAG=0
     shift
+  elif [[ "$1" == '-rel' ]]; then
+    if [[ "$BUILD_TYPE" != '' ]]; then
+      Error "Conflicting build types"
+    fi
+    BUILD_TYPE=Release
+    CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
+    shift
   elif [[ "$1" == '-run' ]]; then
     RUN_FLAG=1
     shift
@@ -142,6 +165,9 @@ while [[ "$1" =~ -.* ]]; do
     shift
   elif [[ "$1" == '-clean' ]]; then
     CLEAN_FLAG=1
+    shift
+  elif [[ "$1" == '-clear' ]]; then
+    CLEAR_FLAG=1
     shift
   elif [[ "$1" == '-gdb' ]]; then
     RUN_FLAG=1
@@ -164,7 +190,11 @@ while [[ "$1" =~ -.* ]]; do
     fi
     shift
   elif [[ "$1" == '-debug' ]]; then
-    CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Debug"
+    if [[ "$BUILD_TYPE" != '' ]]; then
+      Error "Conflicting build types"
+    fi
+    BUILD_TYPE=Debug
+    CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
     RUN_OPTS="${RUN_OPTS} -debug"
     shift
   elif [[ "$1" == '--' ]]; then
@@ -251,6 +281,9 @@ fi
 #-------------------------------------------------------------------------------
 rm -f $BUILD_LOGNAME $RUN_LOGNAME $ROOT_DIR/$BUILD_LOGNAME $ROOT_DIR/$RUN_LOGNAME
 if [[ -r $CMAKELIST ]]; then
+  if [[ $CLEAR_FLAG == 1 && -r CMakeCache.txt ]]; then
+    rm -fr CMakeCache.txt CMakeFiles Makefile *.ninja cmake_install.cmake
+  fi
   echo "cmake -G "$GENERATOR" ${CMAKE_OPTS} $ROOT_DIR 2>&1 | tee -a $BUILD_LOGNAME"
   cmake -G "$GENERATOR" "${CMAKE_OPTS}" -S $ROOT_DIR
 fi
