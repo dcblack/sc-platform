@@ -265,12 +265,12 @@ std::ostream& operator<<( std::ostream& os, const Configuration& rhs )
 
   size_t n = rhs.m_data_map.size();
   fields.reserve( rhs.m_data_map.size() );
-  for( auto v : rhs.m_data_map ) {
-    if( max_width < v.first.length() ) {
-      max_width = v.first.length();
+  for( auto value : rhs.m_data_map ) {
+    if( max_width < value.first.length() ) {
+      max_width = value.first.length();
     }
-    bool not_special = std::none_of( special.begin(), special.end(), [](auto f){ return v.first == f;} );
-    if( not_special ) fields.push_back( v.first );
+    bool not_special = std::none_of( special.begin(), special.end(), [value](auto field){ return value.first == field;} );
+    if( not_special ) fields.push_back( value.first );
   }
   std::sort( fields.begin(), fields.end() );
   max_width += 2; // account for ": "
