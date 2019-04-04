@@ -45,7 +45,7 @@ Both channels implement queues, which may be fixed maximum depth or infinite if 
 Briefly, the data portions are roughly equivalent to:
 
 ```cpp
-template<typename Data_t>
+template<typename Data_t=::std::array<uint8_t,64>>
 typedef struct
 {
   uint64_t  id;   //< serial number incremented for every send from the originator
@@ -90,7 +90,7 @@ For completeness I present all four:
 
 Synchronizing simulated and wall-clock time is tricky because they do not proceed at
 the same rate. SystemC may be slower (typical) or faster (possible) than the real
-world. It is an choice as to how accomplish this. Here is one thought:
+world. It is a choice as to how accomplish this. Here is one thought:
 
 At the beginning of simulation, exchange data to establish a zero-point. The realworld
 may need to slip time in order to slow down for SystemC since we do not yet have a
