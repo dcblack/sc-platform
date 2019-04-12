@@ -31,9 +31,9 @@ which in turn provide connectivity via TCP/IP sockets to/from external processes
 - `Async_payload` provides a common data structure for exchanges.
 - `Async_tx_if` provides a common interface for transmission.
 - `Async_rx_if` provides a common interface for receipt.
-- `Async_if` combined interface.
-- `Async_rx_channel` SystemC receives notifications and data from OS. Implements `Async_if`.
-- `Async_tx_channel` SystemC transmits data with notifications to OS. Implements `Async_if`.
+- `Async_if<T>` combined interface.
+- `Async_rx_channel<T>` SystemC receives notifications and data from OS. Implements `Async_if<T>`.
+- `Async_tx_channel<T>` SystemC transmits data with notifications to OS. Implements `Async_if<T>`.
 - `Tcpip_rx` provides an OS client thread to connect with an incoming TCP/IP socket.
 - `Tcpip_tx` provides an OS client thread to connect with an outgoing TCP/IP socket.
 
@@ -69,7 +69,7 @@ The `kind` attribute enumeration has the following values and respective intents
 * `parallel` probably just a bit vector representing parallel GPIO
 * `packet` indicates `data` contains an internet packet
 * `graphic` used with video frames. `attr` may be used to qualify types.
-* `audio` used with sound probably with high priority QOS
+* `audio` used with sound probably with high priority OS
 * `debug` used for various debug purposes probably modified by `attr`
 * `shutdown` causes the connection to be terminated
 
@@ -84,7 +84,7 @@ When simulating, there are two meaningful types of time of the four available.
 For completeness I present all four:
 
 1. Compile and elaboration time -- not meaningful
-2. CPU processor time -- not meaninful
+2. CPU processor time -- not meaningful
 3. Simulated time -- explicitly supported by SystemC and used within the simulation
 4. Wall-clock time -- real time of the experienced world
 
@@ -92,9 +92,9 @@ Synchronizing simulated and wall-clock time is tricky because they do not procee
 the same rate. SystemC may be slower (typical) or faster (possible) than the real
 world. It is a choice as to how accomplish this. Here is one thought:
 
-At the beginning of simulation, exchange data to establish a zero-point. The realworld
+At the beginning of simulation, exchange data to establish a zero-point. The real world
 may need to slip time in order to slow down for SystemC since we do not yet have a
-working Tardis. SystemC will have an easier time slowing down.
+working TARDIS. SystemC will have an easier time slowing down.
 
 The `attr` attribute provides a simple 32-bit modifier or may indeed be the real
 data of a transfer.
@@ -209,71 +209,71 @@ struct Tcpip_rx_channel
 UML Sequence Diagrams
 ---------------------
 
-The following illustrates low-level interactions of these channels.
+The following illustrates low-level interactions of these channels. `Platform` and `mterm` are separate executable operating system (e.g. Linux or Windows) processes possibly even running on different hosts. `OS_tX_Thread` and `OS_RX_thread` represent operating system level threads within the `Platform` process. The main thread of Platform is running the SystemC threads `SC_TX_thread ` and `SC_RX_thread`.
 
 ```
-+----------------------------------------------+  +----------------------+
-|                                              |  |                      |
-|                   Platform                   |  |    xterm             |
-|          =========================           |  |    =====             |
-|                      |                       |  |                      |
-|                create tcp socket             |  |                      |
-|                bind to address               |  |                      |
-|                listen for connect            |  |                      |
-|                      |                       |  |                      |
-|                create OS_RX thread           |  |                      |
-|                create OS_TX thread           |  |                      |
-|                      |         |             |  |                      |
-|                     ---        v             |  |                      |
-|      SC_TX_thread        OS_TX_thread        |  | NetRX_thread         |
-|      ============        ============        |  | ============         |
-|            |                   |             |  |      |               |
-|            |                   |             |  |      |               |
-|            |                   |             |  |      |               |
-|            |             txque.read(v)       |  |      |               |
-|  tx.put(data)                  :             |  |      |               |
-|    v = new value(...)          :             |  |      |               |
-|    txque.notify(v)             :             |  |      |               |
-|      m_mtx.lock()              :             |  |      |               |
-|      m_que.push_back(v)        :             |  |      |               |
-|      m_mtx.unlock()            :             |  |      |               |
-|      m_barrier.notify()------->|             |  |      |               |
-|            |               m_mtx.lock();     |  |      |               |
-|            |               v = m_que.front() |  |      |               |
-|            |               m_que.pop_front() |  |      |               |
-|            |               m_mtx.unlock();   |  |      |               |
-|            |               p = packetize(v)  |  |      |               |
-|            |                send(p)----------|~>|--receive(p)          |
-|            |                   |             |  |  v=unpack(p)         |
-|            |                   |             |  |  txaction(v)         |
-|            |                   |             |  |      |               |
-|            -                   -             |  |      -               |
-|                                              |  |                      |
-|      SC_RX_thread        OS_RX_thread        |  | NetTX_thread         |
-|      ============        ============        |  | ============         |
-|            |                   |             |  |      |               |
-|            |                   |             |  |      |               |
-|  rx.get(data)                  |             |  |  "Input event"       |
-|            :                   |             |  |  v = new value(...)  |
-|            :                   |             |  |  p = packetize(v)    |
-|            :             receive(p)<---------|<~|----send(p)           |
-|            :             v = unpack(p)       |  |      |               |
-|            :                   |             |  |      |               |
-|            :             rxque.notify(v)     |  |      |               |
-|            :               rxque.lock()      |  |      |               |
-|            :               rxque.push_back(v)|  |      |               |
-|            :               rxque.unlock()    |  |      |               |
-|            :<--------------async_request_upda|  |te()  |               |
-|            :                   |             |  |      |               |
-|      rxque.lock()              :             |  |      |               |
-|      v = rxque.front()         :             |  |      |               |
-|      rxque.pop_front()         :             |  |      |               |
-|      rxque.lock()              :             |  |      |               |
-|      rxaction(v)               |             |  |      |               |
-|            |                   |             |  |      |               |
-|            -                   -             |  |      -               |
-|                                              |  |                      |
-+----------------------------------------------+  +----------------------+
++----------------------------------------------+   +----------------------+
+|                                              |   |                      |
+|                   Platform                   |   |    myterm            |
+|          =========================           |   |    ======            |
+|                      |                       |   |                      |
+|                create tcp socket             |   |                      |
+|                bind to address               |   |                      |
+|                listen for connect            |   |                      |
+|                      |                       |   |                      |
+|                create OS_RX thread           |   |                      |
+|                create OS_TX thread           |   |                      |
+|                      |         |             |   |                      |
+|                     ---        v             |   |                      |
+|      SC_TX_thread        OS_TX_thread        |   | NetRX_thread         |
+|      ============        ============        |   | ============         |
+|            |                   |             |   |      |               |
+|            |                   |             |   |      |               |
+|            |                   |             |   |      |               |
+|            |             txque.read(v)       |   |      |               |
+|  tx.put(data)                  :             |   |      |               |
+|    v = new value(...)          :             |   |      |               |
+|    txque.notify(v)             :             |   |      |               |
+|      m_mtx.lock()              :             |   |      |               |
+|      m_que.push_back(v)        :             |   |      |               |
+|      m_mtx.unlock()            :             |   |      |               |
+|      m_cv.notify()------------>|             |   |      |               |
+|            |               m_mtx.lock();     |   |      |               |
+|            |               v = m_que.front() |   |      |               |
+|            |               m_que.pop_front() |   |      |               |
+|            |               m_mtx.unlock();   |   |      |               |
+|            |               p = packetize(v)  |TCP|      |               |
+|            |                send(p)----------|~~>|--receive(p)          |
+|            |                   |             |pkt|  v=unpack(p)         |
+|            |                   |             |   |  txaction(v)         |
+|            |                   |             |   |      |               |
+|            -                   -             |   |      -               |
+|                                              |   |                      |
+|      SC_RX_thread        OS_RX_thread        |   | NetTX_thread         |
+|      ============        ============        |   | ============         |
+|            |                   |             |   |      |               |
+|            |                   |             |   |      |               |
+|  rx.get(data)                  |             |   |  "Input event"       |
+|            :                   |             |   |  v = new value(...)  |
+|            :                   |             |TCP|  p = packetize(v)    |
+|            :             receive(p)<---------|<~~|----send(p)           |
+|            :             v = unpack(p)       |pkt|      |               |
+|            :                   |             |   |      |               |
+|            :             rxque.notify(v)     |   |      |               |
+|            :               rxque.lock()      |   |      |               |
+|            :               rxque.push_back(v)|   |      |               |
+|            :               rxque.unlock()    |   |      |               |
+|            :<----------async_request_update()|   |      |               |
+|            :                   |             |   |      |               |
+|      rxque.lock()              :             |   |      |               |
+|      v = rxque.front()         :             |   |      |               |
+|      rxque.pop_front()         :             |   |      |               |
+|      rxque.lock()              :             |   |      |               |
+|      rxaction(v)               |             |   |      |               |
+|            |                   |             |   |      |               |
+|            -                   -             |   |      -               |
+|                                              |   |                      |
++----------------------------------------------+   +----------------------+
 ```
 
 Syntax
@@ -337,17 +337,23 @@ Testing
 
 {:***TO BE SUPPLIED*** -- POSSIBLY AS FOLLOWS -- DELETE THIS LINE WHEN CORRECT:}
 ```sh
-g++ -std=c++14 -DASYNC_EXAMPLE -o async.exe async.cpp && ./async.exe
+$CXX -std=c++14 -DASYNC_EXAMPLE -o async.exe async.cpp && ./async.exe
 ```
 
 Files
 -----
 
-  Filename                 | Purpose                  
-  ------------------------ | -------------------------
-  `ABOUT_ASYNC.md`   | Documentation in markdown
-  `async.hpp`        | {:COMMENT1:}             
-  `async.cpp`        | {:COMMENT1:}             
+  Filename            | Purpose                  
+  ------------------- | -------------------------
+  `ABOUT_ASYNC.md`    | This file
+  `async.cpp`         | Stand-alone example and basic unit test
+  `async_if.hpp`      | Interfaces for send/receive
+  `async_kind.hpp`    | Declares `Async_kind` enumeration
+  `async_kind.cpp`    | Supports `Async_kind` enumeration
+  `async_payload.hpp` | Declares `Async_payload<T>` container
+  `async_payload.cpp` | Supports `Async_payload<T>` container
+  `async_rx.hpp`      | Declares and implements `Async_rx_channel<T>`
+  `async_tx.hpp`      | Declares and implements `Async_tx_channel<T>`
 
 Implementation Details
 ----------------------
@@ -356,6 +362,8 @@ Implementation Details
 
 See Also
 --------
+
+{:OTHER_DOCUMENTS_TO_CONSIDER:}
 
 ### The end
 <!-- vim:tw=78

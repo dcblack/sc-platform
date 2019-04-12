@@ -18,11 +18,13 @@ struct Async_tx_channel
   Async_tx_channel( const std::string& instance_name )
   : sc_core::sc_prim_channel( instance_name.c_str() )
   {
+    REPORT_INFO( "Constructed outgoing " << name() );
   }
 
   // Destructor
   ~Async_tx_channel( void )
   {
+    REPORT_INFO( "Destroyed outgoing " << name() );
   }
 
   // Safely add entry to queue and return success status (in case queue full)
