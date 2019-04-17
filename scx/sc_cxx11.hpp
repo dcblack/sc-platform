@@ -2,8 +2,8 @@
 #define SC_CXX11_HPP
 
 #include <systemc>
-#include "scx/sc_time_literal.h"
-#include "scx/sc_freq.h"
+#include "scx/sc_time_literal.hpp"
+#include "scx/sc_freq.hpp"
 
 #if __cplusplus >= 201103L
 
@@ -11,8 +11,12 @@
 #ifndef SC_MAX_NBITS
 #define SC_MAX_NBITS 17*30
 #endif
-sc_dt::sc_bigint<SC_MAX_NBITS> operator "" _BIGINT(const char* literal_string);
-sc_dt::sc_bigint<SC_MAX_NBITS> operator "" _BIGUINT(const char* literal_string);
+inline sc_dt::sc_bigint<SC_MAX_NBITS> operator "" _BIGINT( const char* literal_string ) {
+  return sc_bigint<SC_MAX_NBITS>( literal_string );
+}
+inline sc_dt::sc_bigint<SC_MAX_NBITS> operator "" _BIGUINT( const char* literal_string ) {
+  return sc_bigint<SC_MAX_NBITS>( literal_string );
+}
 #endif
 
 #endif

@@ -1,4 +1,4 @@
-#include "scx/sc_freq.h"
+#include "scx/sc_freq.hpp"
 
 namespace sc_core {
 
@@ -31,6 +31,11 @@ double operator*( const sc_time& lhs, const sc_freq& rhs ) {
 //------------------------------------------------------------------------------
 double operator*( const sc_freq& lhs, const sc_time& rhs ) {
   return lhs.value(SC_HZ) * rhs.to_seconds();
+}
+
+//------------------------------------------------------------------------------
+sc_freq operator/( const double& lhs, const sc_time& rhs ) {
+  return  sc_freq( lhs / rhs.to_seconds() );
 }
 
 //------------------------------------------------------------------------------
