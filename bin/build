@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # $Info: Invoke cmake/make in build directory if present and generate logfile. $
+version=1.2
 function Do_Help() {
 cat >/dev/null <<HELP_TEXT
 Purpose
@@ -21,6 +22,7 @@ Options
 + -check ........ run cppcheck
 + -clean ........ make clean before building
 + -clear ........ clear out cmake intermediary files for rebuild
++ -clearup ...... clear and exit
 + -d ............ debug mode
 + --help ........ display this help text and exit
 + -gdb .......... invoke with gdb
@@ -30,6 +32,22 @@ Options
 + -rel .......... release
 + -run .......... execute after compile
 + -v ............ verbose compile
++ --version ..... report version
+
+Requires
+--------
+
++ bash
++ perl
++ cmake
++ gdb
++ ninja or make
++ cppcheck
++ filter-mlog
++ filter-sclog
++ realpath
++ header
++ ruler
 
 HELP_TEXT
 perl -ne 'if(m{^cat.*<<HELP} .. m{^HELP}){print unless m/HELP_TEXT/;}' $0
@@ -70,14 +88,14 @@ function findbin() {
 BUILD_DIRNAME='build'
 BUILD_LOGNAME='build.log'
 RUN_LOGNAME='run.log'
-ROOT_DIR=$(dirname $(realpath $(firstreal $(add_suffix /CMakeLists.txt . .. ../.. ../../..))))
-BUILD_DIR=$(realpath $(firstreal $(add_suffix /$BUILD_DIRNAME . .. ../.. ../../..) .))
-CMAKELIST="$ROOT_DIR/CMakeLists.txt"
+CMAKELIST="$(realpath $(firstreal $(add_suffix /CMakeLists.txt . .. ../.. ../../..)))"
+ROOT_DIR=$(dirname "$CMAKELIST")
+BUILD_DIR="$(realpath $(firstreal $(add_suffix /$BUILD_DIRNAME . .. ../.. ../../..) .))"
 
 #-------------------------------------------------------------------------------
 # Check for proper environment variables
 #-------------------------------------------------------------------------------
-USE_SYSC=$(perl -lne 'BEGIN{$u=0;} $u=1 if m/SystemC.cmake/; END{print $u;}' $CMAKELIST)
+USE_SYSC=$(perl -lne 'BEGIN{$u=0;} $u=1 if m/SystemC.cmake/; END{print $u;}' "$CMAKELIST")
 for var in SYSTEMC PROJ_ROOT CXX CC ; do
   if [[ $var == SYSTEMC && $USE_SYSC == 0 ]]; then continue; fi
   perl -e 'exit (not exists $ENV{"$ARGV[0]"})' $var ||\
@@ -102,8 +120,8 @@ MAKE_OPTS=""
 RUN_OPTS=""
 ARGS=""
 RUN_FLAG=0
-CLEAR_FLAG=0
 CLEAN_FLAG=0
+CLEAR_FLAG=0
 CHECK_FLAG=0
 GDBP=""
 NAH=0
@@ -137,7 +155,7 @@ while [[ "$1" =~ -.* ]]; do
     Do_Help
   elif [[ "$1" == '--list' ]]; then
     printf "Targets\n  all\n  clean\n"
-    perl -lne 'print "  $1" if m{add_executable[(]\s*(\w+)}' $CMAKELIST | sort
+    perl -lne 'print "  $1" if m{add_executable[(]\s*(\w+)}' "$CMAKELIST" | sort
     exit 0
   elif [[ "$1" == '-n' ]]; then
     NAH=1
@@ -165,6 +183,9 @@ while [[ "$1" =~ -.* ]]; do
     shift
   elif [[ "$1" == '-clean' ]]; then
     CLEAN_FLAG=1
+    shift
+  elif [[ "$1" == '-clearup' ]]; then
+    CLEAR_FLAG=2
     shift
   elif [[ "$1" == '-clear' ]]; then
     CLEAR_FLAG=1
@@ -197,17 +218,23 @@ while [[ "$1" =~ -.* ]]; do
     CMAKE_OPTS="${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
     RUN_OPTS="${RUN_OPTS} -debug"
     shift
+  elif [[ "$1" == '--version' ]]; then
+    echo "INFO: 'build' tool version $version"
+    shift
   elif [[ "$1" == '--' ]]; then
     RUN_FLAG=1
     shift
     ARGS="$@"
+    # Remove remaining arguments
+    while [[ $# != 0 ]]; do
     shift
+    done
   else
     break
   fi
 done
-if [[ -r $CMAKELIST ]]; then
-  TARGET=$(perl -lane 'if(m{add_executable[\(] *([^[:space:]]+)}){print $1; exit 0;}' $CMAKELIST)
+if [[ -r "$CMAKELIST" ]]; then
+  TARGET=$(perl -lane 'if(m{add_executable[\(] *([^[:space:]]+)}){print $1; exit 0;}' "$CMAKELIST")
 fi
 if [[ $# > 0 ]]; then
   TARGET="$1"
@@ -222,9 +249,6 @@ sleep 2
 #-------------------------------------------------------------------------------
 # Put up a big banner
 #-------------------------------------------------------------------------------
-if [[ $error_count == 0 ]]; then
-clear;
-fi
 if [[ $NAH == 0 ]]; then
   ruler '*'
 fi
@@ -261,9 +285,9 @@ fi
 if [[ $NAH == 1 ]]; then
   echo "MAKER=$MAKER"
   echo "TARGET=$TARGET"
-  echo "CMAKELIST=$CMAKELIST"
-  echo "ROOT_DIR=$ROOT_DIR"
-  echo "BUILD_DIR=$BUILD_DIR"
+  echo "CMAKELIST='$CMAKELIST'"
+  echo "ROOT_DIR='$ROOT_DIR'"
+  echo "BUILD_DIR='$BUILD_DIR'"
   exit 0
 fi
 
@@ -273,56 +297,66 @@ fi
 if [[ "$BUILD_DIR" != '.' ]]; then
   mkdir -p "$BUILD_DIR"
   echo "cd $BUILD_DIR"
-  cd $BUILD_DIR 1>/dev/null
+  cd "$BUILD_DIR" 1>/dev/null
 fi
 
 #-------------------------------------------------------------------------------
 # Build
 #-------------------------------------------------------------------------------
-rm -f $BUILD_LOGNAME $RUN_LOGNAME $ROOT_DIR/$BUILD_LOGNAME $ROOT_DIR/$RUN_LOGNAME
+rm -f "$BUILD_LOGNAME" $RUN_LOGNAME "$ROOT_DIR/$BUILD_LOGNAME" "$ROOT_DIR/$RUN_LOGNAME"
 if [[ -r $CMAKELIST ]]; then
-  if [[ $CLEAR_FLAG == 1 && -r CMakeCache.txt ]]; then
-    rm -fr CMakeCache.txt CMakeFiles Makefile *.ninja cmake_install.cmake
+  if [[ $CLEAR_FLAG != 0 && -r CMakeCache.txt ]]; then
+    for f in .??* *; do
+      if [[ "$(git ls-files $f)" == "" ]]; then
+        rm -fr "$f";
+      fi
+    done
   fi
-  echo "cmake -G "$GENERATOR" ${CMAKE_OPTS} $ROOT_DIR 2>&1 | tee -a $BUILD_LOGNAME"
-  cmake -G "$GENERATOR" "${CMAKE_OPTS}" -S $ROOT_DIR
+  if [[ $CLEAR_FLAG == 2 ]]; then
+    exit 0;
+  fi
+  echo "cmake -G '$GENERATOR' ${CMAKE_OPTS} '$ROOT_DIR' 2>&1 | tee -a $BUILD_LOGNAME"
+  cmake -G "$GENERATOR" "${CMAKE_OPTS}" -S "$ROOT_DIR"
 fi
 if [[ $CHECK_FLAG == 1 ]]; then
-  cmake -G "$GENERATOR" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "${CMAKE_OPTS}" -S $ROOT_DIR
+  cmake -G "$GENERATOR" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "${CMAKE_OPTS}" -S "$ROOT_DIR"
   cppcheck --enable=all -D__cppcheck__=$CPPCHECK_VERSION >$CHECK_LOGNAME
 fi
 if [[ $CLEAN_FLAG == 1 ]]; then
-  echo "$MAKER clean 2>&1 | tee -a $ROOT_DIR/$BUILD_LOGNAME"
-  $MAKER clean 2>&1 | tee -a $ROOT_DIR/$BUILD_LOGNAME
+  echo "$MAKER clean 2>&1 | tee -a '$ROOT_DIR/$BUILD_LOGNAME'"
+  $MAKER clean 2>&1 | tee -a "$ROOT_DIR/$BUILD_LOGNAME"
 fi
 if [[ "$TARGET" == "" ]]; then
   TARGET=$($MAKER help | perl -lane '/^\.\.\. .*\.x$/ && print $F[1]')
   header -uc "$TARGET"
 fi
 if [[ -x $TARGET ]]; then rm $TARGET; fi
-echo "$MAKER $TARGET ${MAKE_OPTS} 2>&1 | tee -a $ROOT_DIR/$BUILD_LOGNAME"
-$MAKER $TARGET ${MAKE_OPTS} 2>&1 | c++filt |tee -a $ROOT_DIR/$BUILD_LOGNAME
-filter-mlog $ROOT_DIR/$BUILD_LOGNAME
+echo "$MAKER $TARGET ${MAKE_OPTS} 2>&1 | tee -a '$ROOT_DIR/$BUILD_LOGNAME'"
+$MAKER $TARGET ${MAKE_OPTS} 2>&1 | c++filt |tee -a "$ROOT_DIR/$BUILD_LOGNAME"
+filter-mlog "$ROOT_DIR/$BUILD_LOGNAME"
 
 #-------------------------------------------------------------------------------
 # Run
 #-------------------------------------------------------------------------------
 if [[ $RUN_FLAG == 1 ]]; then
-  cd $ROOT_DIR;
+  date '+Timestamp: %D %T' > "$BUILD_DIR/$RUN_LOGNAME"
+  echo "% cd $ROOT_DIR" | tee -a "$BUILD_DIR/$RUN_LOGNAME"
+  cd "$ROOT_DIR";
+  echo "% export DEBUG=1" | tee -a "$BUILD_DIR/$RUN_LOGNAME"
+  echo "% export LD_LIBRARY_PATH=$SYSTEMC/lib" | tee -a "$BUILD_DIR/$RUN_LOGNAME"
+  echo "% $GDBP '$BUILD_DIR/$TARGET' -- $RUN_OPTS $ARGS 2>&1" | tee -a "$BUILD_DIR/$RUN_LOGNAME"
   env DEBUG=1\
     LD_LIBRARY_PATH=$SYSTEMC/lib \
     DYLD_LIBRARY_PATH=$SYSTEMC/lib \
-  $GDBP $BUILD_DIR/$TARGET -- $RUN_OPTS $ARGS 2>&1 \
-  | tee $BUILD_DIR/$RUN_LOGNAME;
+  $GDBP "$BUILD_DIR/$TARGET" -- $RUN_OPTS $ARGS 2>&1 \
+  | tee -a "$BUILD_DIR/$RUN_LOGNAME";
 
   if [[ "$ROOT_DIR" != "$BUILD_DIR" ]]; then
-    #filter-sclog $BUILD_DIR/$RUN_LOGNAME | c++filt >$RUN_LOGNAME;
-    c++filt < $BUILD_DIR/$RUN_LOGNAME >$RUN_LOGNAME;
+    filter-sclog < "$BUILD_DIR/$RUN_LOGNAME" >$RUN_LOGNAME;
   else
-    # filter-sclog $BUILD_DIR/$RUN_LOGNAME | c++filt >$BUILD_DIR/run2.log;
-    c++filt < $BUILD_DIR/$RUN_LOGNAME >$BUILD_DIR/run2.log;
-    rm $BUILD_DIR/$RUN_LOGNAME
-    mv $BUILD_DIR/run2.log $RUN_LOGNAME
+    filter-sclog < "$BUILD_DIR/$RUN_LOGNAME" >"$BUILD_DIR/run2.log";
+    rm "$BUILD_DIR/$RUN_LOGNAME"
+    mv "$BUILD_DIR/run2.log $RUN_LOGNAME"
   fi
 fi
 if [[ -r $BUILD_LOGNAME ]]; then
