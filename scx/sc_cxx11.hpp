@@ -12,10 +12,10 @@
 #define SC_MAX_NBITS 17*30
 #endif
 inline sc_dt::sc_bigint<SC_MAX_NBITS> operator "" _BIGINT( const char* literal_string ) {
-  return sc_bigint<SC_MAX_NBITS>( literal_string );
+  return sc_dt::sc_bigint<SC_MAX_NBITS>( literal_string );
 }
 inline sc_dt::sc_bigint<SC_MAX_NBITS> operator "" _BIGUINT( const char* literal_string ) {
-  return sc_bigint<SC_MAX_NBITS>( literal_string );
+  return sc_dt::sc_bigint<SC_MAX_NBITS>( literal_string );
 }
 #endif
 
