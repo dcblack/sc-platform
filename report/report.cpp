@@ -8,6 +8,9 @@ using namespace tlm;
 
 std::ostringstream mout;
 
+/**
+ * @func convert tlm_command enum to string
+ */
 string to_string( tlm_command command )
 {
   switch( command )
@@ -19,6 +22,9 @@ string to_string( tlm_command command )
   }
 }
 
+/**
+ * @func output an array of bytes
+ */
 string to_string( uint8_t const * const data, uint32_t len )
 {
   static char const * const hexdigit = "0123456789ABCDEF";
@@ -33,6 +39,9 @@ string to_string( uint8_t const * const data, uint32_t len )
   return result;
 }
 
+/**
+ * @func Convert verbosity to string
+ */
 std::string verbosity2str(const int & level)
 {
   std::ostringstream os;

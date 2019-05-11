@@ -11,10 +11,13 @@
 //  #    # ##### #       ####  #    #    #                                        
 //
 ////////////////////////////////////////////////////////////////////////////////
-// Improve reporting with macros, more overloads on `operator<<`,
-// and other enhancements to `sc_report_handler`.
-//
-// See `ABOUT_REPORT.md` for more information.
+/**
+ * @file report.hpp
+ * @brief Improve reporting with macros, more overloads on `operator<<`,
+ *        and other enhancements to `sc_report_handler`.
+ *
+ * See `ABOUT_REPORT.md` for more information.
+ */
 #include <systemc>
 #include <tlm>
 #include <sstream>
@@ -73,6 +76,16 @@ do {                                                                            
 
 #define TODO(stream) REPORT( WARNING, "TODO: " << stream )
 #define NOT_YET_IMPLEMENTED() REPORT( WARNING, __func__ << " is not yet implemented." )
+
+struct DELETE_THIS
+{
+  DELETE_THIS( char const * const filename, int lineno, char const * const message )
+  {
+    ::sc_core::sc_report_handler::report(  \
+            ::sc_core::SC_WARNING, "Code incomplete", message, filename, lineno );
+  }
+};
+#define DELETE_THIS_LINE(lno,message) const DELETE_THIS lno{ __FILE__, __LINE__, #message }
 
 std::string to_string( tlm::tlm_command command );
 std::string to_string( uint8_t const * const data, uint32_t len );
