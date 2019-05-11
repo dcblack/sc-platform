@@ -25,7 +25,7 @@ auto extension.
 Some modules may require its presence in order to work properly. For example,
 the `Pic_module` uses this to identify interrupt targets.
 
-Note that once the Cpu
+Note that once the Cpu ... TBS
 
 Usage Example
 -------------
@@ -61,7 +61,7 @@ Implementation Details
 ----------------------
 
 Copy from silently does not copy if destination is set. This allows
-proper use of this extension in bridges and adaptors.
+proper use of this extension in bridges and adapters.
 
 See Also
 --------
