@@ -14,11 +14,11 @@ Functional Description
 ----------------------
 
 `Bus_module` is an implementation of a generic TLM bus interconnect component.
-A memory map is constructed from a combbination of `Config_extn` probes in the
+A memory map is constructed from a combination of `Config_extn` probes in the
 targets combined with a YAML memory map file.  Efforts are also made to
 validate the map including checks for:
 
-- No missing port information (lack of Config_extn data update)
+- No missing port information (lack of `Config_extn` data update)
 - No overlapping address regions
 - No loops
 
@@ -110,4 +110,4 @@ Implementation Details
 
 ### The end
 <!-- vim:tw=78
--->
+-->w
