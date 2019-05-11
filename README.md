@@ -1,6 +1,10 @@
-Table of Contents
-=================
+<!-- For doxygen -->
+\mainpage
+
 <a name="ToC"></a>
+
+Table of Contents
+-----------------
 
 + [About the Project](#AbtMe)
 + [The Grand Design](#GrandDesign)
@@ -8,13 +12,19 @@ Table of Contents
   - [Memory Map](#MemMap)
   - [Design Notes](#DNotes)
   - [Module Status](#Stats)
-  - [To Do List, Wishlist and Issues](#ToDo)(#IssuesNideas)
+  - [To Do List, Wishlist](#ToDo) and [Issues](#IssuesNideas)
 + [Rules, Conventions, and Guidelines](#CRules)
 + [Instructions for Building](#HowTo)
 + [About **THIS document** and Markdown](#Mrkdown)
 
-<a name="AbtMe">About the Project</a>
--------------------------------------
+<br/>
+__________________________________________________________________________________
+<a name="AbtMe"></a>
+
+About the Platform Project
+==========================
+
+[Back to Table of Contents](#ToC)
 
 This directory contains a basic SystemC design using TLM-2.0 with a single
 top-level module and a practical main implementation that validates each step,
@@ -52,9 +62,16 @@ Of course there may occasionally be some disagreement in which case there
 should proceed some discussion and perhaps even more comments in the code to
 help the reader.
 
-# <a name="GrandDesign"/>The Grand Design
+<br/>
+__________________________________________________________________________________
+<a name="GrandDesign"></a>
 
-## <a name="BlkDiag"/a>Block Diagram
+# The Grand Design
+
+<a name="BlkDiag"></a>
+
+## Block Diagram
+
 [Back to Table of Contents](#ToC)
 
 - Names inside the boxes are instance names.
@@ -62,6 +79,7 @@ help the reader.
 - Blocks with an exclamation mark (`!`), either generate or receive interrupts.
 - Dotted boxes indicate a power or reset domain
 
+![Platform](Platform.jpg)
 
 ```
 Top
@@ -116,12 +134,17 @@ Top
 
 ```
 
-<a name="MemMap">Memory Map</a>
+<br/>
+__________________________________________________________________________________
+<a name="MemMap"></a>
+
+Memory Map
 ----------------------------------
+
 [Back to Table of Contents](#ToC)
 
 | Block | Base Address | Bus | Size | Irq | Module     |
-| ----- | :----------- | --- | ---: | --: | :-----     |
+| ----- | -----------: | --- | ---: | --: | :-----     |
 | cpu   | 0xF000'0000  |  -  |  128 |  -  | Cpu        |
 | rom   | 0x0000'0000  | NTH |  96M |  -  | Memory     |
 | ram   | 0x1000'0000  | NTH | 128K |  -  | Memory     |
@@ -155,8 +178,13 @@ Top
 | mcu2  | n/a          |  -  |    - |  -  | Mcu        |
 | sys   | n/a          |  -  |    - |  -  | SystemMgr  |
 
-<a name="DNotes">Design Notes</a>
----------------------------------
+<br/>
+__________________________________________________________________________________
+<a name="DNotes"></a>
+
+Design Notes
+------------
+
 [Back to Table of Contents](#ToC)
 
 - Main buses are designated as North (nth), and South (sth)
@@ -186,8 +214,13 @@ Top
 - One hierarchical boundary in the `Proc_module` represented by r1
 - SystemManager manages clocks/power/resets
 
-<a name="Stats">Module Status</a>
----------------------------------
+<br/>
+__________________________________________________________________________________
+<a name="Stats"></a>
+
+Module Status
+-------------
+
 [Back to Table of Contents](#ToC)
 
 Each module will its status noted here. The following states are allowed:
@@ -255,36 +288,46 @@ Each module will its status noted here. The following states are allowed:
 | `Fanout`            | Expands from `sc_bv[N]` to `sc_bit[N]`       |  TBS  | Basic   |
 | {:TBS:}             | {:TBS:}                                      |  TBS  | {:TBS:} |
 
-<a name="ToDo">To Do List</a>
------------------------------
+<br/>
+__________________________________________________________________________________
+<a name="ToDo"></a>
+
+To Do List
+----------
+
 [Back to Table of Contents](#ToC)
 
 In order of priority:
 
-1. Finish `pic_api.h` and add `pic_test.cpp`.
-1. Add `gpio_api.h` and add `gpio_test.cpp`.
-1. Finish `Uart_module`
-1. Add `Dma_module`
-1. Add `dma_api.h` and `dma_test.cpp`
-1. Add power-down capability (?use CCI?) with reset
-1. Add timing to AT mode of `Bus_module` with analysis port support
-1. Add YAML or JASON support for configuration of top itself
-1. Implement filter interconnect
-1. Implement a CPU emulation (e.g. armv6m or Mini32)
+ 1. Finish `pic_api.h` and add `pic_test.cpp`.
+ 2. Add `gpio_api.h` and add `gpio_test.cpp`.
+ 3. Finish `Uart_module`
+ 4. Add `Dma_module`
+ 5. Add `dma_api.h` and `dma_test.cpp`
+ 6. Add power-down capability (?use CCI?) with reset
+ 7. Add timing to AT mode of `Bus_module` with analysis port support
+ 8. Implement filter interconnect
+ 9. Implement a CPU emulation (e.g. armv6m or Mini32)
+10. Modify configuration to support CCI parameters
+11. Update licensing/copyright info (Doulos Inc.)
+12. Update doxygen
+13. Add static checking (?cccc)
 
-Optional:
+### Optional
 
 1. Add fancy report handler with XML option and expectations for error injection
-1. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
-1. Consider refactor `Memory_module` to use PIMPL
-1. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
-1. Add a `Stack_module` (LIFO).
-1. Add `Global` class to replace `g_` variables and provide better control/observation. Or use CCI.
-1. `Apb2tlm_adapter` and `Tlm2apb_adapter`
-1. `Axi2tlm_adapter` and `Tlm2axi_adapter`
+2. Consider refactor `Cpu_module` to use PIMPL and separate API and tests.
+3. Consider refactor `Memory_module` to use PIMPL
+4. Add a shell interface and a scripting language for use in a CPU thread. LUA, Python or TCL.
+5. Add a `Stack_module` (LIFO).
+6. Add `Global` class to replace `g_` variables and provide better control/observation. Or use CCI.
+7. `Apb2tlm_adapter` and `Tlm2apb_adapter`
+8. `Axi2tlm_adapter` and `Tlm2axi_adapter`
 
-<a name="IssuesNideas">Issues</a>
----------------------------------
+<a name="IssuesNideas"></a>
+
+Issues and ideas
+----------------
 
 Add liberally here if you have contribution permissions; otherwise, use GitHub issues.
 
@@ -296,8 +339,13 @@ Add liberally here if you have contribution permissions; otherwise, use GitHub i
 
 - Related project <https://github.com/dcblack/sc-templates>
 
-# <a name="CRules">Rules, Conventions, and Guidelines</a>
----------------------------------------------------------
+<br/>
+__________________________________________________________________________________
+<a name="CRules"></a>
+
+Rules, Conventions, and Guidelines
+------------------------------------
+
 [Back to Table of Contents](#ToC)
 
 - Documentation will be maintained in GitHub style Markdown
@@ -361,8 +409,13 @@ Numerous extras have been added including:
 - `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `Configuration`
   built in.
 
-<a name="HowTo">Instructions for Building</a>
+<br/>
+__________________________________________________________________________________
+<a name="HowTo"></a>
+
+Instructions for Building
 ---------------------------------------------
+
 [Back to Table of Contents](#ToC)
 
 Dependencies
@@ -378,8 +431,7 @@ If you would like to contribute, you should also have:
 + git
 + astyle
 
-Linux/OSX
----------
+### Linux/OSX
 
 1. Open a terminal and navigate into the `build/` directory located where this file is located.
 2. Configure by typing `cmake ..`
@@ -393,13 +445,17 @@ A `setup.profile` bash script should be sourced to set environment variables; ho
 need some tweaking. For one thing, it uses `modulecmd` to setup C++ (clang), SystemC and
 Boost environment.
 
-Windows
--------
+### Windows
 
 *To be determined*
 
-<a name="Mrkdown">About Markdown</a>
-====================================
+<br/>
+__________________________________________________________________________________
+<a name="Mrkdown"></a>
+
+About Markdown
+--------------
+
 [Back to Table of Contents](#ToC)
 
 This document is maintained with the rest of the project on GitHub at <https://github.com/dcblack/sc-platform>.
@@ -430,5 +486,7 @@ Reasons for GitHub Markdown include:
 - Small files
 - VERY portable
 
---------------------------------------------------------------------------------
+<br/>
+__________________________________________________________________________________
+
 ### The end
