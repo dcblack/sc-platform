@@ -68,7 +68,7 @@ function has_path() {
 
 function prepend_path() { # only if 2nd arg does not exist in first
   # USAGE: prepend_path VAR PATH
-  arg="$(realpath '$2')"
+  arg="$(realpath $2)"
   has_path "$1" "$2" || \
     eval $(perl -le 'print qq{$ARGV[0]="$ARGV[1]:$ENV{$ARGV[0]}"; export $ARGV[0]}' "$1" "$arg")
 }
@@ -76,7 +76,7 @@ function prepend_path() { # only if 2nd arg does not exist in first
 function append_path() { # only if 2nd arg does not exist in first
   # USAGE: append_path VAR PATH
   var="$1"
-  arg="$(realpath '$2')"; shift
+  arg="$(realpath $2)"; shift
   has_path "$1" "$2" || \
     eval $(perl -le 'print qq{$ARGV[0]="$ENV{$ARGV[0]}:$ARGV[1]"; export $ARGV[0]}' "$var" "$arg")
 }
