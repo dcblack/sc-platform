@@ -82,8 +82,7 @@ private:
   sc_core::sc_event              m_event; // indicates a write event
   bool                           m_peeked{ false };
 
-  static constexpr const char* const MSGID
-  { "/Doulos/Async_rx_channel" };
+  static constexpr const char* const MSGID { "/Doulos/Example/Async_rx_channel" };
 };//end Async_rx_channel
 
 // Implementation

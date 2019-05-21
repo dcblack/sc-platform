@@ -69,7 +69,7 @@ sc_core::sc_time sc_core_time_diff
 )
 {
   if (lhs >= rhs) return (lhs - rhs);
-  static char const * const MSGID{ "/Doulos/time_diff" };
+  static char const * const MSGID { "/Doulos/Example/time_diff" };
 #ifdef INVERT_NEGATIVE
   sc_core::sc_report_handler::report
     ( sc_core::SC_WARNING

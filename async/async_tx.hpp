@@ -129,8 +129,7 @@ private:
   sc_core::sc_event              m_event;
   bool                           m_peeked{ false };
 
-  static constexpr const char* const MSGID
-  { "/Doulos/Async_tx_channel" };
+  static constexpr const char* const MSGID { "/Doulos/Example/Async_tx_channel" };
 };//end Async_tx_channel
 
 #endif/*ASYNC_TX_HPP*/

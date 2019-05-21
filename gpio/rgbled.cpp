@@ -5,7 +5,7 @@
 using namespace sc_core;
 using namespace sc_dt;
 namespace {
-  const char* const MSGID{ "/Doulos/Example/RgbLED" };
+  const char* const MSGID { "/Doulos/Example/RgbLED" };
 }
 
 //------------------------------------------------------------------------------

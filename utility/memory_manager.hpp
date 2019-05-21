@@ -83,7 +83,7 @@ private:
   int     m_count_allocated; //< debug aid
   int     m_count_created;   //< debug aid
   std::forward_list<T*> free_list;
-  static constexpr char const * const MSGID{ "/Doulos/Example/Memory_manager" };
+  static constexpr char const * const MSGID { "/Doulos/Example/Memory_manager" };
 };
 
 #include <string>

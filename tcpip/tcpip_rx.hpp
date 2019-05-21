@@ -58,8 +58,7 @@ private:
   uint32_t    m_rx_port;
   std::thread m_rx_osthread;
 
-  static constexpr const char* const MSGID
-  { "/Doulos/{:$PROJECT:}/Tcpip_rx" };
+  static constexpr const char* const MSGID { "/Doulos/Example/Tcpip_rx" };
 };//end Tcpip_rx_channel
 
 #endif/*TCPIP_RX_HPP*/

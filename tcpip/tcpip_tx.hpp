@@ -204,7 +204,7 @@ private:
   bool        m_ready{ false };
 
   static constexpr const std::string SECRET { "Mellon a minno" };// Speak "Friend and enter"
-  static constexpr const char* const MSGID  { "/Doulos/{:$PROJECT:}/Tcpip_tx" };
+  static constexpr const char* const MSGID  { "/Doulos/Example/Tcpip_tx" };
 };//end Tcpip_tx_channel
 
 #endif/*TCPIP_TX_HPP*/

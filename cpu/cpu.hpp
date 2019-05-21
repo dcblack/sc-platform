@@ -138,7 +138,7 @@ private:
   std::map<std::string,Addr_t> m_stat; // Statistics
   sc_core::sc_mutex            m_transport_mutex;
   Task_manager                 cpu_task_mgr; // allow multiple thread access
-  static constexpr char const * const MSGID{ "/Doulos/cpu" };
+  static constexpr char const * const MSGID { "/Doulos/Example/cpu" };
 };
 
 //------------------------------------------------------------------------------
