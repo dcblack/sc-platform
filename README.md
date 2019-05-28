@@ -354,7 +354,7 @@ Rules, Conventions, and Guidelines
 - Header filenames have suffix `.hpp` unless purely C11 compatible.
 - Compiled C++ filenames have suffix `.cpp` unless purely C11 compatible.
 - Raw pointers and arrays will be avoided. Instead use `std::unique_ptr<>`,
-  `std::unique_ptr<>`, `std::vector<>`, etc. when possible. References are
+  `std::shared_ptr<>`, `std::vector<>`, etc. when possible. References are
   better than pointers of any type.
 - `cstdint` will be preferred over built-in types.
 - Destructors will be defined. `default` is allowed if no allocations need to be
