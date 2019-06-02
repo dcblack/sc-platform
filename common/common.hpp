@@ -4,8 +4,9 @@
 #include <tlm>
 #include <cstdint>
 
+#define REQUIRES_SYSTEMC 233
 #define REQUIRES_CPP 14
-#include "common/require_cxx_version.hpp"
+#include "common/require_version.hpp"
 #include "scx/sc_cxx11.hpp"
 
 // Useful constants
