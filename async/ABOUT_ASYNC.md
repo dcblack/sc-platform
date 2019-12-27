@@ -10,6 +10,7 @@ Features
 --------
 - C++11 condition variables to synchronize outgoing events
 - IEEE 1666-2011 `async_request_update` - to synchronize incoming events
+- SystemC 2.3.3 `async_attach_suspending()/async_dettach_suspending()`-- to avoid starvation
 - C++11 `mutex` to secure modification of payloads
 - C++11 `thread` to communicate outside the application
 - C++11 `chrono` for wall clock time
@@ -49,15 +50,21 @@ template<typename Data_t=::std::array<uint8_t,64>>
 typedef struct
 {
   uint64_t  id;   //< serial number incremented for every send from the originator
-  uint32_t  kind; //< enumerated values
+  uint64_t  vers; //< version of protocol
   uint64_t  orig; //< identifier
   uint64_t  dest; //< identifier
   uint64_t  time; //< senders time
-  Data_t    data; //< payload data if any
+  uint32_t  kind; //< enumerated values
+  uint32_t  attr; //< attributes (user defined)
+  uint32_t  size; //< TLM 2 data length
+  uint32_t  strw; //< TLM 2 streaming width
+  uint32_t  pwid; //< TLM 2 port/socket width
+  uint32_t  lane; //< TLM 2 byte lane count
+  Data_t    data; //< payload data if any (fixed maximum size)
 } Async_payload_t;
 ```
 
-While there are no rules about these fields, there are definitely some ideas about their
+While there are no hard rules about these fields, there are definitely some ideas about their
 original intent and thought on how they could be used.
 
 The `id` attribute uniquely identifies each transaction to aid debug if nothing else.
@@ -66,6 +73,7 @@ The `kind` attribute enumeration has the following values and respective intents
 
 * `command` is used for simple actions/directives. The `attr` would probably be a simple enumeration.
 * `stream` something like UART serial I/O. Data likely to be character strings.
+* `tlm2` is used to carry TLM 2.0 style information with special mappings
 * `parallel` probably just a bit vector representing parallel GPIO
 * `packet` indicates `data` contains an internet packet
 * `graphic` used with video frames. `attr` may be used to qualify types.
@@ -79,6 +87,7 @@ The `orig` (origin) and `dest` (destination) attribute simply provide
 The `time` attribute represents local time at the location where the payload
 originated. Whether this is used, how it is synchronized and what units are
 represented is up to the application to decide. This is not simple to resolve.
+It is suggested that clock cycles or nanoseconds may be the easiest to use.
 
 When simulating, there are two meaningful types of time of the four available.
 For completeness I present all four:
@@ -101,6 +110,41 @@ data of a transfer.
 
 For C++, appropriate constructors, and access methods are available.
 
+TLM 2.0
+-------
+Provisions are made for TLM 2.0, but are a bit different than normal TLM 2.0.
+First, data is copied across the interface since it may not be assumed to be
+on the same host.
+
+The following mappings are provided:
+
+Async field | TLM field
+----------- | ---------
+kind        | Async_kind::COMMAND
+pwid        | socket width
+attr&&255   | response
+attr>>24    | command
+dest        | address
+size        | data length
+data (1)    | data
+strw        | streaming width
+lane        | byte enable length
+data (1)    | byte enables
+data (1)    | extensions
+
+Data_t will defined as a fixed size array where
+
+```cpp
+sizeof(Data_t) == max(data_length) + max(byte_enable_length) + max(extension_size);
+```
+Those elements will be located at the respective offsets:
+
+- data_ptr = &data[0]
+- byte_ptr = &data[max(data_length)]
+- extn_ptr = &data[max(data_length)+max(byte_enables)]
+
+How extensions are stored is user defined.
+
 
 `Asynchronous Interfaces`
 -------------------------
@@ -117,9 +161,23 @@ Async_rx_base_if
   void drop();
 
 Async_rx_if<T>
-  // Copy out data -- returns false if queue empty. Sets data_len to 0 if no data. Removes entry from queue if successful.
+  /**
+   * @method nb_read
+   * @brief Copy out data 
+   *
+   * - Sets data_len to 0 if no data. 
+   * - Removes entry from queue if successful.
+   * @return false if queue empty.
+   */
   bool nb_read( Async_payload<T>& the_payload );
-  // Blocking call -- waits for data. Sets data_len to 0 if no data. Removes entry from queue.
+  /**
+   * @method read
+   * @brief Retreive data
+   *
+   * - Blocking call -- waits for data.
+   * - Sets data_len to 0 if no data.
+   * - Removes entry from queue.
+   */
   void read( Async_payload<T>& the_payload );
   // Get point to data -- returns false if queue empty. Does NOT complete transaction.
   bool nb_peek( Async_payload<T>*& payload_ptr ) const;
@@ -211,9 +269,11 @@ UML Sequence Diagrams
 
 The following illustrates low-level interactions of these channels. `Platform` and `mterm` are separate executable operating system (e.g. Linux or Windows) processes possibly even running on different hosts. `OS_tX_Thread` and `OS_RX_thread` represent operating system level threads within the `Platform` process. The main thread of Platform is running the SystemC threads `SC_TX_thread ` and `SC_RX_thread`.
 
+Sending from SystemC to outside process:
+
 ```
+SystemC Process                                    Other Process
 +----------------------------------------------+   +----------------------+
-|                                              |   |                      |
 |                   Platform                   |   |    myterm            |
 |          =========================           |   |    ======            |
 |                      |                       |   |                      |
@@ -248,7 +308,14 @@ The following illustrates low-level interactions of these channels. `Platform` a
 |            |                   |             |   |  txaction(v)         |
 |            |                   |             |   |      |               |
 |            -                   -             |   |      -               |
-|                                              |   |                      |
++----------------------------------------------+   +----------------------+
+```
+
+Receiving into SystemC from outside OS process:
+
+```
+SystemC Process                                    Other Process
++----------------------------------------------+   +----------------------+
 |      SC_RX_thread        OS_RX_thread        |   | NetTX_thread         |
 |      ============        ============        |   | ============         |
 |            |                   |             |   |      |               |
@@ -272,7 +339,6 @@ The following illustrates low-level interactions of these channels. `Platform` a
 |      rxaction(v)               |             |   |      |               |
 |            |                   |             |   |      |               |
 |            -                   -             |   |      -               |
-|                                              |   |                      |
 +----------------------------------------------+   +----------------------+
 ```
 

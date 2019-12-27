@@ -17,6 +17,7 @@
 // limitations under the License.
 
 #include <systemc>
+#include <cstdint>
 
 // This interface allows the use of no_clock with SystemC ports - see no_clock.h for more information
 
@@ -39,13 +40,13 @@ struct no_clock_if
   virtual Clock_count_t      cycles              ( void ) const = 0; // Number of clock cycles since start
   virtual Clock_count_t      cycles              ( sc_core::sc_time t ) const = 0;
   virtual Clock_count_t      frequency_changes   ( void ) const = 0; // Number of times frequency was changed
-  // Calculate the delay till... (use for temporal offset)...may return SC_ZERO_TIME if already on the edge
+  // Calculate the delay till... (use for temporal offset)...MAY return SC_ZERO_TIME if already on the edge
   virtual sc_core::sc_time   until_posedge       ( Clock_count_t cycles = 0U ) const = 0;
   virtual sc_core::sc_time   until_negedge       ( Clock_count_t cycles = 0U ) const = 0;
   virtual sc_core::sc_time   until_anyedge       ( Clock_count_t cycles = 0U ) const = 0;
   virtual sc_core::sc_time   until_sample        ( Clock_count_t cycles = 0U ) const = 0;
   virtual sc_core::sc_time   until_setedge       ( Clock_count_t cycles = 0U ) const = 0;
-  // Calculate the delay till... (use for temporal offset)...never returns SC_ZERO_TIME
+  // Calculate the delay till... (use for temporal offset)...NEVER returns SC_ZERO_TIME
   virtual sc_core::sc_time   next_posedge       ( Clock_count_t cycles = 0U ) const = 0;
   virtual sc_core::sc_time   next_negedge       ( Clock_count_t cycles = 0U ) const = 0;
   virtual sc_core::sc_time   next_anyedge       ( Clock_count_t cycles = 0U ) const = 0;

@@ -12,6 +12,7 @@
 #define ASYNC_KIND_ENUMS(ENUM)\
   ENUM( command  )\
   ENUM( stream   )\
+  ENUM( tlm2     )\
   ENUM( parallel )\
   ENUM( packet   )\
   ENUM( graphic  )\

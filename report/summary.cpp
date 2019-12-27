@@ -1,6 +1,6 @@
 #include "report/summary.hpp"
 #define REQUIRES_CPP 14
-#include "common/require_cxx_version.hpp"
+#include "common/require_version.hpp"
 #include "report/report.hpp"
 #include "top/wallclock.hpp"
 #include <string>

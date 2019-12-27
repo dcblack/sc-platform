@@ -45,5 +45,5 @@ struct Async_if: Async_rx_if<T>, Async_tx_if<T> { }
 
 //------------------------------------------------------------------------------
 // Copyright 2019 by Doulos. All rights reserved.
-// For licensing information concerning this document see LICENSE-{:LICENSE:}.txt.
+// For licensing information concerning this document see LICENSE-APACHE.txt.
 //END async_if.hpp @(#)$Id$

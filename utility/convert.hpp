@@ -2,7 +2,7 @@
 #define CONVERT_HPP
 
 #define REQUIRES_CPP 14
-#include "common/require_cxx_version.hpp"
+#include "common/require_version.hpp"
 #include "report/report.hpp"
 #include <string>
 #include <exception>

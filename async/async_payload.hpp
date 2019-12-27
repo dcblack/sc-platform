@@ -65,6 +65,10 @@ struct Async_payload
   , m_time ( time   )
   , m_kind ( kind   )
   , m_attr ( attr   )
+  , m_size ( size   )
+  , m_strw ( strw   )
+  , m_pwid ( pwid   )
+  , m_lane ( lane   )
   , m_has_data( false )
   , m_has_kind( true )
   {
@@ -75,6 +79,10 @@ struct Async_payload
     m_dest = UNDEFINED;
     m_time = UNDEFINED;
     m_attr = UNDEFINED;
+    m_size = UNDEFINED;
+    m_strw = UNDEFINED;
+    m_pwid = UNDEFINED;
+    m_lane = UNDEFINED;
     m_has_kind = false;
     m_has_data = false;
   }
@@ -101,6 +109,10 @@ struct Async_payload
       m_time     = rhs.m_time;
       m_kind     = rhs.m_kind;
       m_attr     = rhs.m_attr;
+      m_size     = rhs.m_size;
+      m_strw     = rhs.m_strw;
+      m_pwid     = rhs.m_pwid;
+      m_lane     = rhs.m_lane;
       m_data     = rhs.m_data;
       m_has_data = rhs.m_has_data;
       m_has_kind = rhs.m_has_kind;
@@ -117,6 +129,10 @@ struct Async_payload
   void       set_time ( uint64_t   time ) { m_time = time; }
   void       set_kind ( Async_kind kind ) { m_kind = kind; m_has_kind = true; }
   void       set_attr ( uint32_t   attr ) { m_attr = attr; }
+  void       set_size ( uint32_t   size ) { m_size = size; }
+  void       set_strw ( uint32_t   strw ) { m_strw = strw; }
+  void       set_pwid ( uint32_t   pwid ) { m_pwid = pwid; }
+  void       set_lane ( uint32_t   lane ) { m_lane = lane; }
   void       set_data ( const Data_t& data ) { m_data = data; m_has_data = true; }
   void       set_data ( Data_t&&   data ) { m_data = std::move(data); m_has_data = true; }
 
@@ -128,6 +144,10 @@ struct Async_payload
   uint64_t   get_time ( void ) const { return m_time; }
   Async_kind get_kind ( void ) const { return m_kind; }
   uint32_t   get_attr ( void ) const { return m_attr; }
+  uint32_t   get_size ( void ) const { return m_size; }
+  uint32_t   get_strw ( void ) const { return m_strw; }
+  uint32_t   get_pwid ( void ) const { return m_pwid; }
+  uint32_t   get_lane ( void ) const { return m_lane; }
   Data_t     get_data ( void ) const { return m_data; }
   bool       has_kind ( void ) const { return m_has_kind; }
   bool       has_data ( void ) const { return m_has_data; }
@@ -151,6 +171,10 @@ struct Async_payload
     out << YAML::Key << "dest" << YAML::Value << m_dest;
     out << YAML::Key << "time" << YAML::Value << m_time;
     out << YAML::Key << "attr" << YAML::Value << m_attr;
+    out << YAML::Key << "size" << YAML::Value << m_size;
+    out << YAML::Key << "strw" << YAML::Value << m_strw;
+    out << YAML::Key << "pwid" << YAML::Value << m_pwid;
+    out << YAML::Key << "lane" << YAML::Value << m_lane;
     if ( m_has_kind ) 
       out << YAML::Key << "kind" << YAML::Value << async_kind_str( m_kind );
     if ( m_has_data )
@@ -186,6 +210,14 @@ struct Async_payload
         m_time = elt.second.as<uint64_t>();
       } else if ( field == "attr" ) {
         m_attr = elt.second.as<uint32_t>();
+      } else if ( field == "size" ) {
+        m_size = elt.second.as<uint32_t>();
+      } else if ( field == "strw" ) {
+        m_strw = elt.second.as<uint32_t>();
+      } else if ( field == "pwid" ) {
+        m_pwid = elt.second.as<uint32_t>();
+      } else if ( field == "lane" ) {
+        m_lane = elt.second.as<uint32_t>();
       } else if ( field == "kind" ) {
         m_kind = to_Async_kind(elt.second.as<std::string>());
       } else if ( field == "data" ) {
@@ -207,13 +239,17 @@ private:
   uint32_t    m_id;
   uint32_t    m_vers{ 0x0001 };
   uint64_t    m_orig;  
-  uint64_t    m_dest;     
+  uint64_t    m_dest;  // TLM 2 address    
   uint64_t    m_time;
   Async_kind  m_kind;
   uint32_t    m_attr{ 0 };
-  Data_t      m_data;
+  uint32_t    m_size{ 0 };  // TLM 2 data length
+  uint32_t    m_strw{ 0 };  // TLM 2 streaming width (0 => same as length)
+  uint16_t    m_pwid{ 0 };  // TLM 2 port/socket width
+  uint16_t    m_lane{ 0 };  // TLM 2 byte lane count (0 => none)
   bool        m_has_data{ false };
   bool        m_has_kind{ false };
+  Data_t      m_data;  // TLM 2 data contents
 };
 
 template<typename Data_t>

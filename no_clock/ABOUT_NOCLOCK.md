@@ -56,6 +56,8 @@ Usage Example
 -------------
 
 ```cpp
+#include "no_clock.hpp"
+
 no_clock clk { "clk", 100_MHz };
 
 void main_thread( void )
@@ -63,9 +65,9 @@ void main_thread( void )
   // Delay 500 clocks
   clk.wait( 500 );
 
-  // Calculate
+  // Calculate temporal offset to negedge
   sc_time delay;
-  delay += 
+  delay += clk.next_negedge();
 }
 ```
 
