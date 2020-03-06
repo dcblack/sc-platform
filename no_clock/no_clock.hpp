@@ -248,9 +248,9 @@ inline void no_clock::set_time_shift (sc_core::sc_time tSHIFT) { m_tSHIFT = tSHI
 // Calculate the delay necessary to get to a particular time offset for a clock
 // Example: 
 //  wait(42,SC_NS); // from SC_ZERO_TIME
-//  assert(delay(sc_time(10,SC_NS)) == sc_time(8,SC_NS));
-//  assert(delay(sc_time(10,SC_NS),sc_time(3,SC_NS)) == sc_time(11,SC_NS));
-//  assert(delay(sc_time(10,SC_NS),sc_time(1,SC_NS)) == sc_time(9,SC_NS));
+//  sc_assert(delay(sc_time(10,SC_NS)) == sc_time(8,SC_NS));
+//  sc_assert(delay(sc_time(10,SC_NS),sc_time(3,SC_NS)) == sc_time(11,SC_NS));
+//  sc_assert(delay(sc_time(10,SC_NS),sc_time(1,SC_NS)) == sc_time(9,SC_NS));
 //  Returns a value (0..tPERIOD-) + tOFFSET -- thus may be zero
 inline sc_core::sc_time no_clock::delay 
 ( sc_core::sc_time tPERIOD // clock period
