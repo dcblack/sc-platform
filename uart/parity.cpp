@@ -31,7 +31,7 @@ bool odd( uint8_t octet )
 bool odd( uint8_t const * const data, std::size_t depth )
 {
   bool parity = false;
-  for( int i=0; i!=depth; ++i ) {
+  for( size_t i=0; i!=depth; ++i ) {
     parity ^= odd( data[i] );
   }
   return parity;

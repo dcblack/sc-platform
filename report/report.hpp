@@ -20,6 +20,7 @@
  */
 #include <systemc>
 #include <tlm>
+#include <string>
 #include <sstream>
 #include <iomanip>
 extern std::ostringstream mout;
@@ -29,8 +30,8 @@ extern std::ostringstream mout;
 #define REPORT(type,stream)                      \
 do {                                             \
   mout << DEC << stream << std::ends;            \
-  SC_REPORT_##type( MSGID, mout.str().c_str() ); \
-  mout.str( "" );                                \
+  std::string str = mout.str(); mout.str("");    \
+  SC_REPORT_##type( MSGID, str.c_str() );        \
 } while (0)
 
 // Use the following to (A) add more information in the event of failure, and
@@ -57,10 +58,12 @@ do {                                                                            
       id+=__FILE__ ; id+=":"; id+=std::to_string(__LINE__)+")";                     \
       size_t p0=id.find("/"),p1=id.find_last_of("/");                               \
       if(p1!=std::string::npos) id.erase(p0,p1-p0+1);                               \
-      SC_REPORT_INFO_VERB( id.c_str(), mout.str().c_str(), (sc_core::SC_##level) ); \
-    } else                                                                          \
-    SC_REPORT_INFO_VERB( MSGID, mout.str().c_str(), (sc_core::SC_##level) );        \
-    mout.str( "" );                                                                 \
+      std::string str = mout.str(); mout.str("");                                   \
+      SC_REPORT_INFO_VERB( id.c_str(), str.c_str(), (sc_core::SC_##level) );        \
+    } else {                                                                        \
+      std::string str = mout.str(); mout.str("");                                   \
+      SC_REPORT_INFO_VERB( MSGID, str.c_str(), (sc_core::SC_##level) );             \
+    }                                                                               \
   }                                                                                 \
 } while (0)
 
@@ -68,8 +71,8 @@ do {                                                                            
 #define MEND(level) do {                                                            \
   if( sc_core::sc_report_handler::get_verbosity_level() >= (sc_core::SC_##level) ) {\
     mout << std::ends;                                                              \
-    SC_REPORT_INFO_VERB( MSGID, mout.str().c_str(), (sc_core::SC_##level));         \
-    mout.str( "" );                                                                 \
+    std::string str = mout.str(); mout.str("");    \
+    SC_REPORT_INFO_VERB( MSGID, str.c_str(), (sc_core::SC_##level));         \
   }                                                                                 \
 } while (0)
 #define RULER(c) MESSAGE( std::string( 80, c ) << "\n" )

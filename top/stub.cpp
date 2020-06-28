@@ -33,7 +33,8 @@ Stub_module::Stub_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: m_target_size             { target_size     }
+: sc_module                 { instance_name   }
+, m_target_size             { target_size     }
 //m_target_base not needed
 , m_dmi_allowed             { dmi_allowed     }
 , m_access                  { access          }
@@ -169,8 +170,8 @@ Stub_module::nb_transport_fw
 //------------------------------------------------------------------------------
 bool
 Stub_module::get_direct_mem_ptr
-( tlm_generic_payload& trans
-, tlm_dmi& dmi_data
+( tlm_generic_payload& trans    [[maybe_unused]]
+, tlm_dmi&             dmi_data [[maybe_unused]]
 )
 {
   return false;
@@ -248,14 +249,14 @@ Stub_module::send_end_req( Stub_module::tlm_payload_t& trans )
   bw_phase = END_REQ;
   delay = SC_ZERO_TIME;
 
-  tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
+  tlm_sync_enum status [[maybe_unused]] = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
   delay = SC_ZERO_TIME; // Latency
   m_target_done_event.notify( delay );
 
-  assert( m_transaction_in_progress == nullptr );
+  sc_assert( m_transaction_in_progress == nullptr );
   m_transaction_in_progress = &trans;
 }
 
@@ -375,7 +376,7 @@ Stub_module::transport
 {
   REPORT( WARNING, name() << " not yet implemented - stubbed out." );
   Addr_t     adr = trans.get_address();
-  uint8_t*   ptr = trans.get_data_ptr();
+  uint8_t*   ptr [[maybe_unused]] = trans.get_data_ptr(); //< TODO: ? remove if implemented ?
   Depth_t    sbw = targ_socket.get_bus_width()/8;
   sc_assert( adr+len < m_target_size );
   delay += clk.period( m_addr_clocks );

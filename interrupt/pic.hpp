@@ -50,8 +50,6 @@ struct Pic_module: sc_core::sc_module
   , uint32_t                read_clocks  = 1
   , uint32_t                write_clocks = 1
   );
-  Pic_module( Pic_module&& ) = default;
-  Pic_module& operator=( Pic_module&& ) = default;
   ~Pic_module( void ); //< Destructor
   const char* kind( void ) const override { return "Pic_module"; }
 

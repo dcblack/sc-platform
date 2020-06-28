@@ -56,8 +56,6 @@ struct Gpio_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 3
   );
-  Gpio_module( Gpio_module&& ) = default;
-  Gpio_module& operator=( Gpio_module&& ) = default;
   ~Gpio_module( void ); //< Destructor
   virtual const char* kind( void ) const override { return "Gpio_module"; }
 

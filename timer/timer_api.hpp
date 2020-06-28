@@ -32,7 +32,7 @@ struct Timer_api
 
   void start( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     Addr_t timer_addr = m_base + m_timer*TIMER_REGS_SIZE;
     m_cpu.write32( timer_addr + TIMER_CTRLSET_REG, TIMER_START );
   }

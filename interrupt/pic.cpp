@@ -267,7 +267,7 @@ Pic_module::send_end_req( tlm_payload_t& trans )
   delay += clk.period( 1 ); // Latency
   m_target_done_event.notify( delay );
 
-  assert( m_transaction_in_progress == nullptr );
+  sc_assert( m_transaction_in_progress == nullptr );
   m_transaction_in_progress = &trans;
 }
 
@@ -488,9 +488,9 @@ void Pic_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
     case /*write*/ PIC_TARGET_REG :
     {
       // Set corresponding bits
-      m_target_irq[ iTarget ].clearall = ( reg.target && PIC_CLEARALL_MASK ) ? 1 : 0;
-      m_target_irq[ iTarget ].enabled  = ( reg.target && PIC_ENABLEIF_MASK ) ? 1 : 0;
-      m_target_irq[ iTarget ].mask = reg.target && PIC_PRI_MASK;
+      m_target_irq[ iTarget ].clearall = ( reg.target & PIC_CLEARALL_MASK ) ? 1 : 0;
+      m_target_irq[ iTarget ].enabled  = ( reg.target & PIC_ENABLEIF_MASK ) ? 1 : 0;
+      m_target_irq[ iTarget ].mask = reg.target & PIC_PRI_MASK;
       if( not m_target_level[ iTarget ].empty() ) {
         m_target_level[ iTarget ].pop_back();
       }
@@ -523,9 +523,9 @@ void Pic_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
     case /*write*/ PIC_SOURCE_REG :
     {
       // Set corresponding bits (except active)
-      m_source_irq[ iSource ].pending = ( reg.source & PIC_PENDING_MASK ) ? 1 : 0;
-      m_source_irq[ iSource ].enabled = ( reg.source & PIC_ENABLED_MASK ) ? 1 : 0;
-      m_source_irq[ iSource ].priority = reg.source & PIC_PRI_MASK;
+      m_source_irq[ iSource ].pending  = ( reg.source & PIC_PENDING_MASK ) ? 1 : 0;
+      m_source_irq[ iSource ].enabled  = ( reg.source & PIC_ENABLED_MASK ) ? 1 : 0;
+      m_source_irq[ iSource ].priority =   reg.source & PIC_PRI_MASK;
       break;
     }
     case /*write*/ PIC_TARGETS_REG:

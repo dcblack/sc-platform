@@ -43,7 +43,8 @@ namespace {
 ///////////////////////////////////////////////////////////////////////////////
 // Constructor
 Top_module::Top_module( sc_module_name instance_name )
-  : pImpl{ std::make_unique<Impl>() }
+  : sc_module( instance_name )
+  , pImpl{ std::make_unique<Impl>() }
 {
   // Nothing to do
 }

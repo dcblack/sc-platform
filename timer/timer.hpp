@@ -53,8 +53,6 @@ struct Timer_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 2
   );
-  Timer_module( Timer_module&& ) = default;
-  Timer_module& operator=( Timer_module&& ) = default;
   ~Timer_module( void ); //< Destructor
   const char* kind( void ) const override { return "Timer_module"; }
 
@@ -87,7 +85,7 @@ private:
 
   //----------------------------------------------------------------------------
   // Timer Helpers
-  Timer_reg_t& timer_reg_vec( int index );
+  Timer_reg_t& timer_reg_vec( size_t index );
   uint32_t scale( uint32_t status )
   {
     return (( status & TIMER_SCALE_MASK ) >> TIMER_SCALE_LSB) + 1;

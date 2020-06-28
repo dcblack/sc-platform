@@ -16,7 +16,7 @@
 #include <cmath>
 
 namespace sc_core {
-enum sc_freq_units : int { SC_HZ, SC_KHZ, SC_MHZ, SC_GHZ, SC_THZ };
+enum sc_freq_units : unsigned int { SC_HZ, SC_KHZ, SC_MHZ, SC_GHZ, SC_THZ };
 struct sc_freq
 {
 
@@ -57,10 +57,10 @@ struct sc_freq
     if( divisor == 0.0 ) {
       return sc_max_time();
     } else {
-      return sc_time( std::abs( 1.0 / divisor ), sc_core::SC_SEC );
+      return sc_time( std::fabs( 1.0 / divisor ), sc_core::SC_SEC );
     }
   }
-  std::string to_string( int w=0, unsigned int f=3, char c=' ' ) const {
+  std::string to_string( size_t w=0, unsigned int f=3, char c=' ' ) const {
     std::string result(std::to_string( m_value ));
     size_t p = result.find('.');
     if( p != std::string::npos ) {

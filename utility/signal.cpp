@@ -23,7 +23,13 @@ using namespace sc_core;
 namespace {
   const char* const MSGID{ "/Doulos/Example/Signal" };
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma GCC   diagnostic push
+#pragma GCC   diagnostic ignored "-Wunused-parameter"
   void my_stop( int sig )
+#pragma clang diagnostic pop
+#pragma GCC   diagnostic pop
   {
     static int level = 0;
     if( level++ ) sc_set_stop_mode(SC_STOP_IMMEDIATE);
@@ -34,7 +40,7 @@ namespace {
     REPORT( FATAL, "Aborting on signal " << sig );
   }
 }
-void my_interrupt( int sig )
+void my_interrupt( int sig ) //< TODO: ? fix unused parameter ?
 {
    INFO( ALWAYS, "Interrupted" );
    sc_interrupt_here( "Interrupted", SC_INFO );

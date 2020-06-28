@@ -46,8 +46,6 @@ struct Memory_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 3
   );
-  Memory_module( Memory_module&& ) = default;
-  Memory_module& operator=( Memory_module&& ) = default;
   ~Memory_module( void ); //< Destructor
   const char* kind( void ) const override { return "Memory_module"; }
   // Forward interface

@@ -185,7 +185,6 @@ struct no_clock
   bool at_setedge_time ( void ) const override;
   // For compatibility if you really have/want to (with an extra feature)
   // - specify N > 0 to delay further out
-  sc_core::sc_event& default_event       ( size_t events = 0 ) override;
   sc_core::sc_event& posedge_event       ( size_t events = 0 ) override;
   sc_core::sc_event& negedge_event       ( size_t events = 0 ) override;
   sc_core::sc_event& sample_event        ( size_t events = 0 ) override;
@@ -204,7 +203,7 @@ private:
   no_clock& operator= (const no_clock& ) = delete; // Copy assignment
   no_clock& operator= (no_clock&& ) = delete; // Move assignment
   // Attributes - internal data
-  get_time_t          m_get_time;// callback that returns current time
+  get_time_t          m_get_time{nullptr};// callback that returns current time
   const char *        m_clock_name;// clock name
   sc_core::sc_time    m_tPERIOD; // clock period
   double              m_duty;    // clock duty cycle (fraction high)
@@ -413,12 +412,6 @@ inline bool no_clock::at_sample_time  ( void ) const
 inline bool no_clock::at_setedge_time ( void ) const
 {
   return until_sample(0) == sc_core::SC_ZERO_TIME;
-}
-
-// For compatibility if you really have/want to
-inline sc_core::sc_event& no_clock::default_event       ( size_t events )
-{
-  return value_changed_event(events);
 }
 
 inline sc_core::sc_event& no_clock::posedge_event       ( size_t events )

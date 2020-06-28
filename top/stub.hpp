@@ -42,8 +42,6 @@ struct Stub_module: sc_core::sc_module
   , uint32_t                read_clocks  = 1
   , uint32_t                write_clocks = 1
   );
-  Stub_module( Stub_module&& ) = default;
-  Stub_module& operator=( Stub_module&& ) = default;
   ~Stub_module( void ); //< Destructor
   const char* kind( void ) const override { return "Stub_module"; }
   // Forward interface
@@ -79,7 +77,7 @@ private:
   uint32_t             m_read_clocks;   // time per bus beat to respond with data
   uint32_t             m_write_clocks;  // time per bus beat to write data
   tlm_peq_t            m_targ_peq;
-  bool                 m_dmi_granted             { false };
+  bool                 m_dmi_granted             { false }    [[maybe_unused]];
   tlm_payload_t*       m_transaction_in_progress { nullptr };
   bool                 m_response_in_progress    { false };
   tlm_payload_t*       m_next_response_pending   { nullptr };

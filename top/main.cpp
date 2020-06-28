@@ -17,7 +17,7 @@ using namespace sc_core;
 using namespace std;
 
 //------------------------------------------------------------------------------
-int sc_main(int argc, char *argv[])
+int sc_main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[])
 {
   unique_ptr<Top_module> top;
   News improved;

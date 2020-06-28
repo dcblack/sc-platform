@@ -21,12 +21,14 @@ project( platform
 
 include( cmake/BuildTypes.cmake )
 include( cmake/SystemC.cmake )
+include( cmake/strict.cmake )
 find_package( yaml-cpp CONFIG REQUIRED )
 find_package( Boost 1.65 REQUIRED filesystem )
 
 add_compile_definitions( SC_INCLUDE_FX SC_INCLUDE_DYNAMIC_PROCESSES )
 include_directories( ${Boost_INCLUDE_DIRS} )
 include_directories( . )
+include_directories( BEFORE /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ )
 
 # add a target to generate API documentation with Doxygen
 find_package( Doxygen REQUIRED dot )

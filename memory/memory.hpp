@@ -44,8 +44,6 @@ struct Memory_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 3
   );
-  Memory_module( Memory_module&& ) = default;
-  Memory_module& operator=( Memory_module&& ) = default;
   ~Memory_module( void ); //< Destructor
   const char* kind( void ) const override { return "Memory_module"; }
   // Forward interface
@@ -66,7 +64,7 @@ private:
   void send_response( tlm_payload_t& trans );
   void execute_transaction_process( void );
   bool configure( tlm_payload_t& trans );
-  void resize( int depth, int pattern=0xEAU );
+  void resize( size_t depth, int pattern=0xEAU );
 
   // Attributes
   no_clock&            clk { no_clock::global( "system_clock" ) };

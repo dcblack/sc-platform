@@ -43,11 +43,17 @@ inline Platform operator++(Platform& x) {
 inline Platform operator*(Platform c) {
   return c;
 }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma GCC   diagnostic push
+#pragma GCC   diagnostic ignored "-Wunused-parameter"
 inline Platform begin(Platform r) {
   return (Platform)std::underlying_type<Platform>::type(0);
 }
 inline Platform end(Platform r) {
   return Platform::end;
 }
+#pragma clang diagnostic pop
+#pragma GCC   diagnostic pop
 
 #endif /*PLATFORM_ENUM_HPP*/

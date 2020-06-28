@@ -1,12 +1,38 @@
-// The following makes sure the appropriately specified version of C++ is
-// available. Must define REQUIRES_CPP to specify the minimum required version.
-//
-// Currently recognizes:
-//   03 => 199711L
-//   11 => 201103L
-//   14 => 201402L
-//   17 => 201703L
-//
+/******************************************************************************
+
+   Include this file to guarantee the minimum versions of both C++ and SystemC
+   needed to compile your code.
+
+   Here is an example of how to require C++17 with SystemC 2.3.4
+
+     #define REQUIRES_CPP 17
+     #define REQUIRES_SC  234
+     #include <require_version.hpp>
+
+   REQUIRES_CPP currently recognizes:
+  
+     03 => 199711L (aka C++03)
+     11 => 201103L (aka C++11)
+     14 => 201402L (aka C++14)
+     17 => 201703L (aka C++17)
+
+   If successful, defines CPP_VERSION.
+
+   REQUIRES_SYSTEMC currently recognizes:
+  
+     201 => 20020405L
+     211 => 20050714L
+     220 => 20070314L
+     230 => 20120701L
+     231 => 20140417L
+     232 => 20171012L
+     233 => 20181013L
+     240 => 20191203L
+
+   If successful, defines SYSC_VERSION.
+
+*******************************************************************************/
+
 // Warning: Defines CPP_VERSION only on first encounter (i.e. not defined)
 
 #ifdef REQUIRES_CPP
@@ -48,22 +74,12 @@
 #  endif
 #endif
 
-// The following makes sure the appropriately specified version of SystemC is
-// available. Must define REQUIRES_SYSTEMC to specify the minimum required version.
-//
-// Currently recognizes:
-// 201 => 20020405L
-// 211 => 20050714L
-// 220 => 20070314L
-// 230 => 20120701L
-// 231 => 20140417L
-// 232 => 20171012L
-// 233 => 20181013L
-//
 // Warning: Defines SYSC_VERSION only on first encounter (i.e. not defined)
 
-#ifdef REQUIRES_SYSTEMC
-#  if   (REQUIRES_SYSTEMC == 233) && (SYSTEMC_VERSION >= 20181013L)
+#if defined(REQUIRES_SYSTEMC) && defined(SYSTEMC_VERSION)
+#  if   (REQUIRES_SYSTEMC == 240) && (SYSTEMC_VERSION >= 20191203L)
+#    define SYSC_VERSION 2.3.4
+#  elif (REQUIRES_SYSTEMC == 233) && (SYSTEMC_VERSION >= 20181013L)
 #    define SYSC_VERSION 2.3.3
 #  elif (REQUIRES_SYSTEMC == 232) && (SYSTEMC_VERSION >= 20171012L)
 #    define SYSC_VERSION 2.3.2
@@ -82,10 +98,14 @@
 #    ifdef WIN32
 #      pragma message(SYSTEMC_VERSION # " does not meet minimum requirement of SystemC " # REQUIRES_SYSTEMC)
 #    else
-#      warning #SYSTEMC_VERSION does not meet minimum requirement of SystemC REQUIRES_SYSTEMC
+#      if CPP_VERSION >= 2011
+       static_assert( false, #SYSTEMC_VERSION " does not meet minimum requirement of SystemC " #REQUIRES_SYSTEMC );
+#      else
+#        warning SYSTEMC_VERSION does not meet minimum requirement of SystemC REQUIRES_SYSTEMC
+#      endif
 #    endif
 #  endif
-#else
+#elif defined(SYSTEMC_VERSION)
 #  ifndef SYSC_VERSION
 #    define SYSC_VERSION "unspecified"
 #  endif

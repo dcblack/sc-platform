@@ -48,7 +48,7 @@ struct Pic_api
 
   void enable_interface( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result;
     m_cpu.read32 ( pic_addr + PIC_TARGET_REG, result );
     result |= PIC_ENABLED_MASK;
@@ -57,7 +57,7 @@ struct Pic_api
 
   void     disable_interface( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result;
     m_cpu.read32 ( pic_addr + PIC_TARGET_REG, result );
     result &= ~PIC_ENABLED_MASK;
@@ -66,7 +66,7 @@ struct Pic_api
 
   uint32_t get_source( int intid )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result;
     m_cpu.write32( pic_addr + PIC_SELECT_REG, intid );
     m_cpu.read32 ( pic_addr + PIC_SOURCE_REG, result );
@@ -75,14 +75,14 @@ struct Pic_api
 
   void set_source( int intid, uint32_t source );
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     m_cpu.write32( pic_addr + PIC_SELECT_REG, intid );
     m_cpu.write32( pic_addr + PIC_SOURCE_REG, source );
   }
 
   bool     get_pending( int intid );
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result;
     m_cpu.write32( pic_addr + PIC_SELECT_REG, intid );
     m_cpu.read32 ( pic_addr + PIC_SOURCE_REG, result );
@@ -91,7 +91,7 @@ struct Pic_api
 
   void     set_pending( int intid, bool pending );
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result;
     m_cpu.write32( pic_addr + PIC_SELECT_REG, intid );
     m_cpu.read32 ( pic_addr + PIC_SOURCE_REG, result );
@@ -102,7 +102,7 @@ struct Pic_api
 
   bool     get_enabled( int intid );
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result;
     m_cpu.write32( pic_addr + PIC_SELECT_REG, intid );
     m_cpu.read32 ( pic_addr + PIC_SOURCE_REG, result );
@@ -111,7 +111,7 @@ struct Pic_api
 
   void     set_enabled( int intid, bool enabled );
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result;
     m_cpu.write32( pic_addr + PIC_SELECT_REG, intid );
     m_cpu.read32 ( pic_addr + PIC_SOURCE_REG, result );
@@ -122,7 +122,7 @@ struct Pic_api
 
   void     set_mask( uint8_t level )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result;
     m_cpu.read32 ( pic_addr + PIC_TARGET_REG, result );
     result &= ~PIC_PRI_MASK;
@@ -132,38 +132,38 @@ struct Pic_api
 
   uint8_t  get_mask( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     m_cpu.write32( pic_addr + {:REG:}, {:VAR:} );
   }
 
   int      get_next( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     m_cpu.write32( pic_addr + {:REG:}, {:VAR:} );
   }
 
   void     set_done( int intid = -1 )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     m_cpu.write32( pic_addr + {:REG:}, {:VAR:} );
   }
 
   void     set_targets( int intid, uint32_t targets )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     m_cpu.write32( pic_addr + {:REG:}, {:VAR:} );
   }
 
   uint32_t get_ident( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result = 0xDEADBEEF;
     m_cpu.write32( pic_addr + PIC_IDENT_REG, result );
     return  result;
   }
   uint32_t get_targetid( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result = 0xDEADBEEF;
     m_cpu.write32( pic_addr + PIC_TARGET_REG, result );
     return  GET_FIELD(PIC_TARGETID,result);
@@ -171,7 +171,7 @@ struct Pic_api
 
   uint16_t get_source_count( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result = 0xDEADBEEF;
     m_cpu.write32( pic_addr + PIC_CONFIG_REG, result );
     return  GET_FIELD(PIC_SOURCES,result);
@@ -179,7 +179,7 @@ struct Pic_api
 
   uint16_t get_target_count( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     uint32_t result = 0xDEADBEEF;
     m_cpu.write32( pic_addr + PIC_CONFIG_REG, result );
     return  GET_FIELD(PIC_TARGETS,result);
@@ -187,7 +187,7 @@ struct Pic_api
 
   void     clearall( void )
   {
-    assert( m_setup );
+    sc_assert( m_setup );
     m_cpu.write32( pic_addr + {:REG:}, {:VAR:} );
   }
 

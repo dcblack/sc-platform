@@ -298,7 +298,7 @@ Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )
   delay = delay + sc_time( distribution( generator ), SC_PS ); // Latency
   m_target_done_event.notify( delay );
 
-  assert( m_transaction_in_progress == nullptr );
+  sc_assert( m_transaction_in_progress == nullptr );
   m_transaction_in_progress = &trans;
 }
 

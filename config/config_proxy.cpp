@@ -31,7 +31,8 @@ Config_proxy::Config_proxy
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-  : targ_socket{ "targ_socket" }
+  : sc_module  { instance_name }
+  , targ_socket{ "targ_socket" }
   , init_socket{ "init_socket" }
 {
   targ_socket.bind(*this);

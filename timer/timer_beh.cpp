@@ -57,7 +57,7 @@ void Timer::start( sc_time delay )
 }
 
 //------------------------------------------------------------------------------
-void Timer::stop( sc_time delay )
+void Timer::stop( sc_time delay ) //< TODO: ? fix unused parameter ?
 {
   INFO( DEBUG, "Stopping timer " << name() << " at " << sc_time_stamp() );
   // Cancel outstanding event

@@ -308,7 +308,7 @@ Uart_module::send_end_req( tlm_payload_t& trans )
   delay += clk.period( 1 ); // Latency
   m_target_done_event.notify( delay );
 
-  assert( m_transaction_in_progress == nullptr );
+  sc_assert( m_transaction_in_progress == nullptr );
   m_transaction_in_progress = &trans;
 }
 

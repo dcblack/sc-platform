@@ -24,8 +24,8 @@ struct Config_proxy
   using tlm_payload_t = tlm::tlm_generic_payload;
 
   // Ports
-  tlm::tlm_initiator_socket<> init_socket;
   tlm::tlm_target_socket<>    targ_socket;
+  tlm::tlm_initiator_socket<> init_socket;
 
   Config_proxy //< Constructor
   ( sc_core::sc_module_name instance_name
@@ -56,7 +56,7 @@ private:
 
   // Attributes
   Configuration m_configuration;
-  Config_extn*  m_extn{nullptr};
+  Config_extn*  m_extn{nullptr}; //< TODO: ? fix not used ?
 };
 
 #endif /*CONFIG_PROXY_HPP*/

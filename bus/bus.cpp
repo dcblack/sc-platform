@@ -31,7 +31,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 // Constructor
 Bus_module::Bus_module( sc_module_name instance_name )
-  : m_mm       { Memory_manager<>::instance() }
+  : sc_module( instance_name )
+  , m_mm       { Memory_manager<>::instance() }
 {
   targ_socket.register_b_transport( this, &Bus_module::b_transport );
   targ_socket.register_nb_transport_fw( this, &Bus_module::nb_transport_fw );
@@ -52,7 +53,7 @@ Bus_module::~Bus_module( void )
 
 //------------------------------------------------------------------------------
 void
-Bus_module::b_transport( int id, tlm_payload_t& trans, sc_time& delay )
+Bus_module::b_transport( int id [[maybe_unused]], tlm_payload_t& trans, sc_time& delay )
 {
   sc_dt::uint64 masked_address;
   unsigned int target = decode_address( trans.get_address(), masked_address );
@@ -151,7 +152,7 @@ Bus_module::get_direct_mem_ptr
 
 //------------------------------------------------------------------------------
 unsigned int
-Bus_module::transport_dbg( int id, tlm_payload_t& trans )
+Bus_module::transport_dbg( int id [[maybe_unused]], tlm_payload_t& trans )
 {
   uint64 address{ trans.get_address() };
 
@@ -187,7 +188,7 @@ Bus_module::transport_dbg( int id, tlm_payload_t& trans )
 //------------------------------------------------------------------------------
 tlm_sync_enum
 Bus_module::nb_transport_bw
-( int            id
+( int            id [[maybe_unused]]
 , tlm_payload_t& trans
 , tlm_phase&     phase
 , sc_time&       delay
@@ -370,7 +371,7 @@ Bus_module::build_port_map( void )
     config_extn->configuration.set_defaults();
   }
 
-  for ( int port = 0; port < init_socket.size(); ++port ) {
+  for ( size_t port = 0; port < init_socket.size(); ++port ) {
     // Initialize fields that need refreshing on every transaction
     probe_trans.set_address( BAD_ADDR );
     probe_trans.set_response_status( TLM_INCOMPLETE_RESPONSE );
@@ -378,7 +379,7 @@ Bus_module::build_port_map( void )
     // Make sure data is cleared to compel receiver to fill
     config_extn->configuration.clear_data();
     INFO( DEBUG, "Probing port " << port << " from " << name() );
-    int count = init_socket[port]->transport_dbg( probe_trans );
+    int count [[maybe_unused]] = init_socket[port]->transport_dbg( probe_trans );
     INFO( DEBUG, "Got\n" << config_extn->configuration );
 
     if( probe_trans.get_response_status() == TLM_OK_RESPONSE ) {
@@ -439,8 +440,8 @@ Bus_module::dump_port_map( int level )
 
   // Iterate backwards over map to get ascending addresses
   for( auto rit = m_addr_map.rbegin(); rit!=m_addr_map.rend(); ++rit ) {
-    const Addr_t&      addr{ rit->first  };
-    const Target_info& info{ rit->second };
+    const Addr_t& addr [[maybe_unused]]{ rit->first  };
+    const Target_info&             info{ rit->second };
     if( info.port == BAD_PORT and not Options::has_flag("-v") ) continue;
     MESSAGE( HEX << "  - {"
              << " base: " << setw(10) << info.base

@@ -35,7 +35,8 @@ Memory_module::Memory_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: m_target_size             { target_size     }
+: sc_module                 { instance_name   }
+, m_target_size             { target_size     }
 //m_target_base not needed
 , m_dmi_allowed             { dmi_allowed     }
 , m_access                  { access          }
@@ -158,7 +159,7 @@ bool Memory_module::configure( tlm_payload_t& trans )
 }
 
 //------------------------------------------------------------------------------
-void Memory_module::resize( int depth, int pattern )
+void Memory_module::resize( size_t depth, int pattern )
 {
   sc_assert( depth > 0 and depth <= m_target_size );
   m_mem_vec.resize( depth, pattern );
@@ -193,7 +194,7 @@ Memory_module::nb_transport_fw
 //------------------------------------------------------------------------------
 bool
 Memory_module::get_direct_mem_ptr
-( tlm_generic_payload& trans
+( tlm_generic_payload& trans [[maybe_unused]]
 , tlm_dmi& dmi_data
 )
 {
@@ -289,14 +290,14 @@ Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )
   bw_phase = END_REQ;
   delay = sc_time( distribution( generator ), SC_PS ); // Accept delay
 
-  tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
+  tlm_sync_enum status [[maybe_unused]] = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
   delay = delay + sc_time( distribution( generator ), SC_PS ); // Latency
   m_target_done_event.notify( delay );
 
-  assert( m_transaction_in_progress == nullptr );
+  sc_assert( m_transaction_in_progress == nullptr );
   m_transaction_in_progress = &trans;
 }
 
@@ -353,7 +354,7 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
 {
   tlm_command cmd = trans.get_command();
   Addr_t      adr = trans.get_address();
-  uint8_t*    ptr = trans.get_data_ptr();
+  uint8_t*    ptr [[maybe_unused]] = trans.get_data_ptr();
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
 

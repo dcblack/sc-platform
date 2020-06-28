@@ -120,7 +120,7 @@ load(const string& vhex_filename, vector<uint8_t>& mem )
 
   string line;
   string token;
-  int byte;
+  int byte; //< TODO: fix ? not used ?
   size_t lineno{0U};
 
   while ( not ifile.eof() ) {
@@ -162,7 +162,7 @@ load(const string& vhex_filename, vector<uint8_t>& mem )
           token.insert( 0, "0" );
         }
         // For every two hex characters
-        for ( int i = 0; i < token.size(); i += 2 ) {
+        for ( size_t i = 0; i < token.size(); i += 2 ) {
           // Set offset if unset
           if ( offset == MAX_ADDR ) {
             offset = address;

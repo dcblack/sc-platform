@@ -22,7 +22,7 @@ namespace {
   const char * const MSGID{ "/Doulos/Example/Options" };
 }
 
-Options* const Options::instance( void )
+Options* Options::instance( void )
 {
   static Options options{};
   return &options;

@@ -60,8 +60,6 @@ struct Uart_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 3
   );
-  Uart_module( Uart_module&& ) = default;
-  Uart_module& operator=( Uart_module&& ) = default;
   ~Uart_module( void ); //< Destructor
   virtual const char* kind( void ) const override { return "Uart_module"; }
 
