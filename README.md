@@ -26,10 +26,7 @@ About the Platform Project
 
 [Back to Table of Contents](#ToC)
 
-This directory contains a basic SystemC design using TLM-2.0 with a single
-top-level module and a practical main implementation that validates each step,
-and provides an execution summary including timing/performance information.
-If errors are detected, main exists with a non-zero status.
+This directory contains a basic SystemC design using TLM-2.0 with a single top-level module and a practical main implementation that validates each step, and provides an execution summary including timing/performance information.  If errors are detected, main exists with a non-zero status.
 
 This project has several goals:
 
@@ -43,24 +40,15 @@ This project has several goals:
 4. Provide the basis for "Easier SystemC" templates.
 5. Several approaches to configuration
 
-At any point in time, this project represents a set of ideas in the making, and
-not expected to be complete. Various authors may contribute to this effort, and
-as such, coding guidelines have bee provided here-in. It is important that this
-code be *model code* and meet high levels of documentation and formatting to
-make it easy to understand. Comment blocks are highly encouraged.
+At any point in time, this project represents a set of ideas in the making, and not expected to be complete. Various authors may contribute to this effort, and as such, coding guidelines have bee provided here-in. It is important that this code be *model code* and meet high levels of documentation and formatting to make it easy to understand. Comment blocks are highly encouraged.
 
-Definition: Modern C++ means use of features introduced in the C++ standards
-from 2011, 2014 and 2017. Of course, we do not mean to be completely
-indiscriminate in this. Features should be used when they provide some
-advantage. Any one of the following may be deemed an advantage.
+Definition: Modern C++ means use of features introduced in the C++ standards from 2011, 2014 and 2017. Of course, we do not mean to be completely indiscriminate in this. Features should be used when they provide some advantage. Any one of the following may be deemed an advantage.
 
 1. Simplify the code and make it easier to understand
 2. Provide coding safety against mistakes
 3. Improve performance or functionality
 
-Of course there may occasionally be some disagreement in which case there
-should proceed some discussion and perhaps even more comments in the code to
-help the reader.
+Of course there may occasionally be some disagreement in which case there should proceed some discussion and perhaps even more comments in the code to help the reader.
 
 <br/>
 __________________________________________________________________________________
@@ -299,19 +287,23 @@ To Do List
 
 In order of priority:
 
- 1. Finish `pic_api.h` and add `pic_test.cpp`.
- 2. Add `gpio_api.h` and add `gpio_test.cpp`.
- 3. Finish `Uart_module`
- 4. Add `Dma_module`
- 5. Add `dma_api.h` and `dma_test.cpp`
- 6. Add power-down capability (?use CCI?) with reset
- 7. Add timing to AT mode of `Bus_module` with analysis port support
- 8. Implement filter interconnect
- 9. Implement a CPU emulation (e.g. armv6m or Mini32)
-10. Modify configuration to support CCI parameters
-11. Update licensing/copyright info (Doulos Inc.)
-12. Update doxygen
-13. Add static checking (?cccc)
+  1. Abstract TLM connetivity into protocol specific submodules with simpler API
+       1. Base_protocol
+       2. APB_protocol
+       3. AXI_protocol
+  2. Finish `pic_api.h` and add `pic_test.cpp`.
+  3. Add `gpio_api.h` and add `gpio_test.cpp`.
+  4. Finish `Uart_module`
+  5. Add `Dma_module`
+  6. Add `dma_api.h` and `dma_test.cpp`
+  7. Add power-down capability (?use CCI?) with reset
+  8. Add timing to AT mode of `Bus_module` with analysis port support
+  9. Implement filter interconnect
+  10. Implement a CPU emulation (e.g. armv6m or Mini32)
+ 11. Modify configuration to support CCI parameters
+ 12. Update licensing/copyright info (Doulos Inc.)
+ 13. Update doxygen
+ 14. Add static checking (?cccc)
 
 ### Optional
 
@@ -353,17 +345,13 @@ Rules, Conventions, and Guidelines
 - C++14 standard will be the minimum C++ standard level used.
 - Header filenames have suffix `.hpp` unless purely C11 compatible.
 - Compiled C++ filenames have suffix `.cpp` unless purely C11 compatible.
-- Raw pointers and arrays will be avoided. Instead use `std::unique_ptr<>`,
-  `std::shared_ptr<>`, `std::vector<>`, etc. when possible. References are
-  better than pointers of any type.
+- Raw pointers and arrays will be avoided. Instead use `std::unique_ptr<>`, `std::shared_ptr<>`, `std::vector<>`, etc. when possible. References are better than pointers of any type.
 - `cstdint` will be preferred over built-in types.
-- Destructors will be defined. `default` is allowed if no allocations need to be
-  managed.
+- Destructors will be defined. `default` is allowed if no allocations need to be managed.
 - TLM Base Protocol will be preferred.
 - Ignorable extensions will be preferred.
 - Underscores will be used to separate words.
-- User-defined types (e.g. classes, structs, enums) will start.
-  with use Name case.
+- User-defined types (e.g. classes, structs, enums) will start.  with use Name case.
 - `enum class` will be preferred over simple `enum`
 - Methods and variables will be lowercase.
 - UPPERCASE may be used for labels, enumeration values and constants only.
@@ -402,12 +390,9 @@ Rules, Conventions, and Guidelines
 
 Numerous extras have been added including:
 
-- `report.h` is provided to simplify message reporting. See `report.h` comments
-  for more information.
-- `configuration.h` and `config/configuration.cpp` provide a generalized configuration mechanism that
-  used to configure memory maps and other features.
-- `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `Configuration`
-  built in.
+- `report.h` is provided to simplify message reporting. See `report.h` comments for more information.
+- `configuration.h` and `config/configuration.cpp` provide a generalized configuration mechanism that used to configure memory maps and other features.
+- `proxy.h` and `proxy.cpp` supply a proxy for modules that do not have `Configuration` built in.
 
 <br/>
 __________________________________________________________________________________
@@ -439,11 +424,7 @@ If you would like to contribute, you should also have:
 4. Alternately, build and run with `make run`
 5. To pass arguments to run, use `env ARGS="-your args" make run`
 6. To cleanup after running, use `make clean`
-
-A slightly more automated approach uses some scripts located in the `bin/` directory.
-A `setup.profile` bash script should be sourced to set environment variables; however, it will
-need some tweaking. For one thing, it uses `modulecmd` to setup C++ (clang), SystemC and
-Boost environment.
+A slightly more automated approach uses some scripts located in the `bin/` directory.  A `setup.profile` bash script should be sourced to set environment variables; however, it will need some tweaking. For one thing, it uses [`modulecmd`](https://modules.readthedocs.io/en/latest/module.html) to setup C++ (clang), SystemC and Boost environment.
 
 ### Windows
 
@@ -460,16 +441,11 @@ About Markdown
 
 This document is maintained with the rest of the project on GitHub at <https://github.com/dcblack/sc-platform>.
 
-Tip: If you are reading this document in raw text, you will notice unique
-labels in this document. For instance, this section starts an HTML anchor
-with an attribute value inside double quotes. If you are in Vim (vi or gvim too),
-you can place the cursor on the word and press asterisk `*`, which will take you
-to the table of contents.  Another press will bring you back. So you can quickly
-navigate anywhere from the table of contents! :-)
+Tip: If you are reading this document in VIM (or any variant) text, you will notice unique labels in this document. For instance, this section starts an HTML anchor with an attribute value inside double quotes. If you are in Vim (vi or gvim too), you can place the cursor on the word and press asterisk `*`, which will take you to the table of contents.  Another press will bring you back. So you can quickly navigate anywhere from the table of contents! :-)
 
 This document was created as a MarkDown text file.
 
-- Best viewed with a Markdown rendering tool (e.g. MacDown, ReText or Atom).
+- Best viewed with a Markdown rendering tool (e.g. [Typora](https://www.typora.io), [ReText](https://www.fossmint.com/retext-a-powerful-text-editor-for-markdown-and-restructuredtext/) or [Atom](https://www.atom.io)).
 - Or generate HTML, PDF or DOC using pandoc <http://pandoc.org/installing.html>
 - Do not edit derived files
 - For apps that view/edit markdown see <https://github.com/karthik/markdown_science/wiki/Tools-to-support-your-markdown-authoring>.
