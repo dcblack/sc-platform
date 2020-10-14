@@ -1,41 +1,59 @@
 #!/bin/bash
-#
-# $Info: Invoke cmake/make in build directory if present and generate logfile. $
-version=1.2
+###
+### $Info: Invoke cmake/make in build directory if present and generate logfile. $
+t='
+```bash
+'
+version=1.3
+
 function Do_Help() {
-cat >/dev/null <<HELP_TEXT
-Purpose
--------
+cat >/dev/null <<'HELP_TEXT'
+```
+# build manpage
 
-Build and optionally run the specified target.
+## Name
 
-Syntax 
--------
+**build** - build and optionally run the specified target. Focused on cmake.
 
-  build [OPTIONS] TARGET
+## Synopsis 
 
-Options
--------
+**build** [OPTIONS] TARGET
 
-+ -- ............ pass remaining arguments to executable (implies -run)
-+ -B _dir_ ...... specify build directory
-+ -check ........ run cppcheck
-+ -clean ........ make clean before building
-+ -clear ........ clear out cmake intermediary files for rebuild
-+ -clearup ...... clear and exit
-+ -d ............ debug mode
-+ --help ........ display this help text and exit
-+ -gdb .......... invoke with gdb
-+ --list ........ list executable targets and exit
-+ -M _maker_ .... specify a maker from: make, gmake, ninja
-+ -n ............ not really -- just parse arguments
-+ -rel .......... release
-+ -run .......... execute after compile
-+ -v ............ verbose compile
-+ --version ..... report version
+## DESCRIPTION
 
-Requires
---------
+This script automates the process of running **cmake**, **make**, and ultimately running the resultant executable.
+
+In the process of doing its job, a `build/` directory is created to keep the generated files separated from the source files. Log files are created in the local directory as a convenience to record what was done.
+
+## OPTIONS
+
+  - `--`         -- pass remaining arguments to executable (implies -run)
+  - `-B _dir_`   -- specify build directory
+  - `-check`     -- run cppcheck
+  - `-clean`     -- make clean before building
+  - `-clear`     -- clear out cmake intermediary files for rebuild
+  - `-clearup`   -- clear and exit
+  - `-d`         -- debug mode
+  - `--help`     -- display this help text and exit (aka -h)
+  - `-gdb`       -- invoke with gdb
+  - `--list`     -- list executable targets and exit
+  - `-M _maker_` -- specify a maker from: make, gmake, ninja
+  - `-n`         -- not really -- just parse arguments
+  - `-rel`       -- release
+  - `-run`       -- execute after compile
+  - `-v`         -- verbose compile
+  - `--version`  -- report version
+
+## FILES
+
+  - `$HOME/.buildrc` -- this option files provides default command-line options for the user
+  - `CMakeLists.txt` -- this input contains cmake configuration information required to run cmake.
+  - Source files     -- as indicated by the CMakeLists.
+  - `build/`         -- created to hold generated files.
+  - `build.log`      -- captures all the output during configuring, compiling and linking.
+  - `run.log`        -- captures all the output if `-run` is selected.
+
+## REQUIREMENTS
 
 + bash
 + perl
@@ -45,10 +63,26 @@ Requires
 + cppcheck
 + filter-mlog
 + filter-sclog
-+ realpath
 + header
 + ruler
 
+## ABOUT
+
+Created by David C Black <david.black@doulos.com>.
+
+## LICENSE
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+  - https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License.
+
+
+## SEE ALSO
+
+All tools referenced under REQUIREMENTS section in the preceding.
+```bash
 HELP_TEXT
 perl -ne 'if(m{^cat.*<<HELP} .. m{^HELP}){print unless m/HELP_TEXT/;}' $0
 exit 0
@@ -60,9 +94,53 @@ fi
 #-------------------------------------------------------------------------------
 # Support functions
 #-------------------------------------------------------------------------------
+NO_COLOR=0
+COLOR_EMPTY=''
+if [[ $NO_COLOR == 0 ]]; then
+  COLOR_NORM_BLK='[01;30m'
+  COLOR_NORM_RED='[01;31m'
+  COLOR_NORM_GRN='[01;32m'
+  COLOR_NORM_YLW='[01;33m'
+  COLOR_NORM_BLU='[01;34m'
+  COLOR_NORM_MAG='[01;35m'
+  COLOR_NORM_CYN='[01;36m'
+  COLOR_NORM_WHT='[01;37m'
+  COLOR_BOLD_BLK='[01;30m'
+  COLOR_BOLD_RED='[01;31m'
+  COLOR_BOLD_GRN='[01;32m'
+  COLOR_BOLD_YLW='[01;33m'
+  COLOR_BOLD_BLU='[01;34m'
+  COLOR_BOLD_MAG='[01;35m'
+  COLOR_BOLD_CYN='[01;36m'
+  COLOR_BOLD_WHT='[01;37m'
+  COLOR_BOLD='[01m'
+  COLOR_NONE='[00m'
+else
+  COLOR_NORM_BLK=''
+  COLOR_NORM_RED=''
+  COLOR_NORM_GRN=''
+  COLOR_NORM_YLW=''
+  COLOR_NORM_BLU=''
+  COLOR_NORM_MAG=''
+  COLOR_NORM_CYN=''
+  COLOR_NORM_WHT=''
+  COLOR_BOLD_BLK=''
+  COLOR_BOLD_RED=''
+  COLOR_BOLD_GRN=''
+  COLOR_BOLD_YLW=''
+  COLOR_BOLD_BLU=''
+  COLOR_BOLD_MAG=''
+  COLOR_BOLD_CYN=''
+  COLOR_BOLD_WHT=''
+  COLOR_BOLD=''
+  COLOR_NONE=''
+fi
 let error_count=0
+function Info() { # Call this with message to report errors
+  echo "${COLOR_EMPTY}Info: $@"${COLOR_EMPTY}
+}
 function Error() { # Call this with message to report errors
-  echo "ERROR: $@" 1>&2
+  printf "${COLOR_BOLD_RED}Error:${COLOR_NORM_RED} $*${COLOR_NONE}\n" 1>&2
   let error_count++
 }
 function firstreal () { # returns first argument that is a real file or directory
@@ -82,15 +160,28 @@ function findbin() {
   echo ""
 }
 
+function Realpath () {
+  test -z "$*" && echo "" || \
+  perl '-MCwd(abs_path)' -le "print abs_path(qq($*))"
+}
+
 #-------------------------------------------------------------------------------
 # Determine build directory (may be overridden later)
 #-------------------------------------------------------------------------------
 BUILD_DIRNAME='build'
 BUILD_LOGNAME='build.log'
 RUN_LOGNAME='run.log'
-CMAKELIST="$(realpath $(firstreal $(add_suffix /CMakeLists.txt . .. ../.. ../../..)))"
+CMAKELIST="$(Realpath $(firstreal $(add_suffix /CMakeLists.txt . .. ../.. ../../..)))"
+if [[ "$CMAKELIST" == "" ]]; then
+  Error "Unable to find 'CMakeLists.txt' -- To create try:\n\tscc new sc-cmake YourTarget 'SRCS=\"\$(echo *.cpp)\"'"
+  echo "Please fix and retry."
+  exit 1
+fi
 ROOT_DIR=$(dirname "$CMAKELIST")
-BUILD_DIR="$(realpath $(firstreal $(add_suffix /$BUILD_DIRNAME . .. ../.. ../../..) .))"
+BUILD_DIR="$(Realpath $(firstreal $(add_suffix /$BUILD_DIRNAME . .. ../.. ../../..) build))"
+if [[ "$SYSTEMC_HOME" != "" ]]; then
+  export SYSTEMC="$SYSTEMC_HOME"
+fi
 
 #-------------------------------------------------------------------------------
 # Check for proper environment variables
@@ -149,7 +240,7 @@ while [[ "$1" =~ -.* ]]; do
   if [[ "$1" == "-v" ]]; then
     MAKE_OPTS="${MAKE_OPTS} VERBOSE=1"
     RUN_OPTS="${RUN_OPTS} -v"
-    VERBOSE=1
+    export VERBOSE=1
     shift
   elif [[ "$1" == '-h' || "$1" == '--help' ]]; then
     Do_Help
@@ -196,7 +287,7 @@ while [[ "$1" =~ -.* ]]; do
     shift
   elif [[ "$1" == '-B' ]]; then
     if [[ $# -ge 2 && -d "$2" ]]; then
-      BUILD_DIR="$(realpath $2)"
+      BUILD_DIR="$(Realpath $2)"
       shift
     else
       Error "Must supply existing directory name with $1 option."
@@ -219,7 +310,7 @@ while [[ "$1" =~ -.* ]]; do
     RUN_OPTS="${RUN_OPTS} -debug"
     shift
   elif [[ "$1" == '--version' ]]; then
-    echo "INFO: 'build' tool version $version"
+    Info "'build' tool version $version"
     shift
   elif [[ "$1" == '--' ]]; then
     RUN_FLAG=1
@@ -227,7 +318,7 @@ while [[ "$1" =~ -.* ]]; do
     ARGS="$@"
     # Remove remaining arguments
     while [[ $# != 0 ]]; do
-    shift
+      shift
     done
   else
     break
@@ -240,9 +331,9 @@ if [[ $# > 0 ]]; then
   TARGET="$1"
   shift
 elif [[ "$TARGET" == "" ]]; then
-  echo "INFO: Using default target - all"
+  Info "Using default target - all"
 else
-  echo "INFO: Using default target - $TARGET"
+  Info "Using default target - $TARGET"
 fi
 sleep 2
 
@@ -282,6 +373,10 @@ if [[ error_count -gt 0 ]]; then
   exit 1
 fi
 
+if [[ "$BUILD_DIR" == "" ]]; then
+  BUILD_DIR="$ROOT_DIR/$BUILD_DIRNAME"
+fi
+
 if [[ $NAH == 1 ]]; then
   echo "MAKER=$MAKER"
   echo "TARGET=$TARGET"
@@ -307,7 +402,7 @@ rm -f "$BUILD_LOGNAME" $RUN_LOGNAME "$ROOT_DIR/$BUILD_LOGNAME" "$ROOT_DIR/$RUN_L
 if [[ -r $CMAKELIST ]]; then
   if [[ $CLEAR_FLAG != 0 && -r CMakeCache.txt ]]; then
     for f in .??* *; do
-      if [[ "$(git ls-files $f)" == "" ]]; then
+      if [[ "$(git ls-files $f 2>/dev/null)" == "" ]]; then
         rm -fr "$f";
       fi
     done
@@ -344,11 +439,11 @@ if [[ $RUN_FLAG == 1 ]]; then
   cd "$ROOT_DIR";
   echo "% export DEBUG=1" | tee -a "$BUILD_DIR/$RUN_LOGNAME"
   echo "% export LD_LIBRARY_PATH=$SYSTEMC/lib" | tee -a "$BUILD_DIR/$RUN_LOGNAME"
-  echo "% $GDBP '$BUILD_DIR/$TARGET' -- $RUN_OPTS $ARGS 2>&1" | tee -a "$BUILD_DIR/$RUN_LOGNAME"
+  echo "% $GDBP '$BUILD_DIR/$TARGET' - $RUN_OPTS $ARGS 2>&1" | tee -a "$BUILD_DIR/$RUN_LOGNAME"
   env DEBUG=1\
     LD_LIBRARY_PATH=$SYSTEMC/lib \
     DYLD_LIBRARY_PATH=$SYSTEMC/lib \
-  $GDBP "$BUILD_DIR/$TARGET" -- $RUN_OPTS $ARGS 2>&1 \
+  $GDBP "$BUILD_DIR/$TARGET" - $RUN_OPTS $ARGS 2>&1 \
   | tee -a "$BUILD_DIR/$RUN_LOGNAME";
 
   if [[ "$ROOT_DIR" != "$BUILD_DIR" ]]; then
@@ -360,12 +455,15 @@ if [[ $RUN_FLAG == 1 ]]; then
   fi
 fi
 if [[ -r $BUILD_LOGNAME ]]; then
-  echo "Info: Created $BUILD_LOGNAME"
+  Info "Created $BUILD_LOGNAME"
 fi
 if [[ -r $RUN_LOGNAME ]]; then
-  echo "Info: Created $RUN_LOGNAME"
+  Info "Created $RUN_LOGNAME"
 fi
-
+exit 0
 #-------------------------------------------------------------------------------
 # The end
 #-------------------------------------------------------------------------------
+#\
+​```
+```
