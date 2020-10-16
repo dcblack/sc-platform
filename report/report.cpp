@@ -1,12 +1,14 @@
 #include <sstream>
 #include <string>
-#include <systemc>
-#include <tlm>
+#include <systemcc>
+#include <tlmc>
 using namespace sc_core;
 using namespace std;
 using namespace tlm;
 
-std::ostringstream mout;
+#if __cplusplus <= 201700L
+  std::ostringstream Report::mout;
+#endif
 
 /**
  * @func convert tlm_command enum to string

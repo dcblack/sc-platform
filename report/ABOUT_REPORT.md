@@ -13,6 +13,7 @@ Syntax
 - `ASSERT(expression, message_stream)`
 - `REPORT(message_type, message_stream);`
 - `INFO(verbosity_level, message_stream);`
+- `DEBUG(message_stream);`
 - `MESSAGE(message_stream);`
 - `MEND(verbosity_level);`
 - `RULER(char);`
@@ -23,10 +24,11 @@ Message types are: FATAL, ERROR, WARNING, and INFO
 
 Verbosity levels are: ALWAYS, LOW, MEDIUM, HIGH, DEBUG
 
-The MESSAGE macro doesn't output anything, but rather builds up
-a message to be emitted by REPORT, INFO or MEND.
+The MESSAGE macro doesn't output anything, but rather builds up a message to
+be emitted by REPORT, INFO or MEND.
 
-Assumes you define in every implementation file (i.e. .cpp):
+The DEBUG macro is a special shortcut to INFO(DEBUG,...) with add exclusions.
+These macros assume that every implementation file (i.e. .cpp) do the following:
 
 ```cpp
 #include "report/report.hpp"
