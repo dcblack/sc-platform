@@ -186,7 +186,7 @@ struct no_clock
   bool at_setedge_time ( void ) const override;
   // For compatibility if you really have/want to (with an extra feature)
   // - specify N > 0 to delay further out
-  sc_core::sc_event& default_event       ( size_t events = 0 ) override;
+  sc_core::sc_event& default_event       ( ) override;
   sc_core::sc_event& posedge_event       ( size_t events = 0 ) override;
   sc_core::sc_event& negedge_event       ( size_t events = 0 ) override;
   sc_core::sc_event& sample_event        ( size_t events = 0 ) override;
