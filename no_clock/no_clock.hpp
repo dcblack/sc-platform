@@ -169,12 +169,12 @@ struct no_clock
   sc_core::sc_time  next_sample   ( Clock_count_t cycles = 0U ) const override;
   sc_core::sc_time  next_setedge  ( Clock_count_t cycles = 0U ) const override;
   // Wait only if really necessary (for use in SC_THREAD)
-  void wait         ( Clock_count_t cycles = 0U ) override;
-  void wait_posedge ( Clock_count_t cycles = 0U ) override;
-  void wait_negedge ( Clock_count_t cycles = 0U ) override;
-  void wait_anyedge ( Clock_count_t cycles = 0U ) override;
-  void wait_sample  ( Clock_count_t cycles = 0U ) override;
-  void wait_setedge ( Clock_count_t cycles = 0U ) override;
+  void wait         ( Clock_count_t cycles = 0U ) const override;
+  void wait_posedge ( Clock_count_t cycles = 0U ) const override;
+  void wait_negedge ( Clock_count_t cycles = 0U ) const override;
+  void wait_anyedge ( Clock_count_t cycles = 0U ) const override;
+  void wait_sample  ( Clock_count_t cycles = 0U ) const override;
+  void wait_setedge ( Clock_count_t cycles = 0U ) const override;
   // Are we there? (use in SC_METHOD)
   bool at_posedge_time ( void ) const override;
   bool posedge         ( void ) const override { return at_posedge_time(); }
@@ -187,11 +187,11 @@ struct no_clock
   // For compatibility if you really have/want to (with an extra feature)
   // - specify N > 0 to delay further out
   const sc_core::sc_event& default_event       ( ) const override;
-  const sc_core::sc_event& posedge_event       ( size_t events = 0 ) const override;
-  const sc_core::sc_event& negedge_event       ( size_t events = 0 ) const override;
-  const sc_core::sc_event& sample_event        ( size_t events = 0 ) const override;
-  const sc_core::sc_event& setedge_event       ( size_t events = 0 ) const override;
   const sc_core::sc_event& value_changed_event ( size_t events = 0 ) const override;
+  const sc_core::sc_event& posedge_event       ( size_t events = 0 ) override;
+  const sc_core::sc_event& negedge_event       ( size_t events = 0 ) override;
+  const sc_core::sc_event& sample_event        ( size_t events = 0 ) override;
+  const sc_core::sc_event& setedge_event       ( size_t events = 0 ) override;
   bool                     read                ( void ) const override;
 
   virtual void             write  ( const bool& ) { SC_REPORT_ERROR(MSGID,"write() not allowed on clock"); }
@@ -215,7 +215,7 @@ private:
   bool                m_posedge; // start on posedge
   sc_core::sc_time    m_tSAMPLE; // when to read (usually tOFFSET+tHOLD)
   sc_core::sc_time    m_tSETEDGE; // when to write (usually after tSAMPLE, but at least tPERIOD-tSETUP)
-  sc_core::sc_event   m_anyedge_event;
+  mutable sc_core::sc_event m_anyedge_event;
   sc_core::sc_event   m_posedge_event;
   sc_core::sc_event   m_negedge_event;
   sc_core::sc_event   m_sample_event;
@@ -355,36 +355,36 @@ inline sc_core::sc_time  no_clock::next_setedge ( Clock_count_t cycles ) const
 }
 
 // Wait only if really necessary (for use in SC_THREAD) -- may be a NOP if cycles == 0
-inline void no_clock::wait ( Clock_count_t cycles )
+inline void no_clock::wait ( Clock_count_t cycles ) const
 {
   if ( cycles > 0) sc_core::wait( period(cycles) );
 }
 
-inline void no_clock::wait_posedge ( Clock_count_t cycles )
+inline void no_clock::wait_posedge ( Clock_count_t cycles ) const
 {
   sc_core::sc_time t(until_posedge(cycles));
   if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
-inline void no_clock::wait_negedge ( Clock_count_t cycles )
+inline void no_clock::wait_negedge ( Clock_count_t cycles ) const
 {
   sc_core::sc_time t(until_negedge(cycles));
   if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
-inline void no_clock::wait_anyedge ( Clock_count_t cycles )
+inline void no_clock::wait_anyedge ( Clock_count_t cycles ) const
 {
   sc_core::sc_time t(until_anyedge(cycles));
   if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
-inline void no_clock::wait_sample  ( Clock_count_t cycles )
+inline void no_clock::wait_sample  ( Clock_count_t cycles ) const
 {
   sc_core::sc_time t(until_sample(cycles));
   if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
 }
 
-inline void no_clock::wait_setedge ( Clock_count_t cycles )
+inline void no_clock::wait_setedge ( Clock_count_t cycles ) const
 {
   sc_core::sc_time t(until_setedge(cycles));
   if (sc_core::SC_ZERO_TIME != t) sc_core::wait(t);
@@ -417,40 +417,40 @@ inline bool no_clock::at_setedge_time ( void ) const
 }
 
 // For compatibility if you really have/want to
-inline sc_core::sc_event& no_clock::default_event       ( size_t events )
+inline const sc_core::sc_event& no_clock::default_event       ( void ) const
 {
-  return value_changed_event(events);
+  return value_changed_event();
 }
 
-inline sc_core::sc_event& no_clock::posedge_event       ( size_t events )
+inline const sc_core::sc_event& no_clock::posedge_event       ( size_t events )
 {
   wait_posedge(events);
   m_posedge_event.notify(sc_core::SC_ZERO_TIME);
   return m_posedge_event;
 }
 
-inline sc_core::sc_event& no_clock::negedge_event       ( size_t events )
+inline const sc_core::sc_event& no_clock::negedge_event       ( size_t events )
 {
   wait_negedge(events);
   m_negedge_event.notify(sc_core::SC_ZERO_TIME);
   return m_negedge_event;
 }
 
-inline sc_core::sc_event& no_clock::sample_event        ( size_t events )
+inline const sc_core::sc_event& no_clock::sample_event        ( size_t events )
 {
   wait_sample(events);
   m_sample_event.notify(sc_core::SC_ZERO_TIME);
   return m_sample_event;
 }
 
-inline sc_core::sc_event& no_clock::setedge_event       ( size_t events )
+inline const sc_core::sc_event& no_clock::setedge_event       ( size_t events )
 {
   wait_setedge(events);
   m_setedge_event.notify(sc_core::SC_ZERO_TIME);
   return m_setedge_event;
 }
 
-inline sc_core::sc_event& no_clock::value_changed_event ( size_t events )
+inline const sc_core::sc_event& no_clock::value_changed_event ( size_t events ) const
 {
   wait_anyedge(events);
   m_anyedge_event.notify(sc_core::SC_ZERO_TIME);

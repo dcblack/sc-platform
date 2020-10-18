@@ -52,12 +52,12 @@ struct no_clock_if
   virtual sc_core::sc_time   next_sample        ( Clock_count_t cycles = 0U ) const = 0;
   virtual sc_core::sc_time   next_setedge       ( Clock_count_t cycles = 0U ) const = 0;
   // Wait only if really necessary (for use in SC_THREAD)
-  virtual void               wait                ( Clock_count_t cycles = 0U ) = 0;
-  virtual void               wait_posedge        ( Clock_count_t cycles = 0U ) = 0;
-  virtual void               wait_negedge        ( Clock_count_t cycles = 0U ) = 0;
-  virtual void               wait_anyedge        ( Clock_count_t cycles = 0U ) = 0;
-  virtual void               wait_sample         ( Clock_count_t cycles = 0U ) = 0;
-  virtual void               wait_setedge        ( Clock_count_t cycles = 0U ) = 0;
+  virtual void               wait                ( Clock_count_t cycles = 0U ) const = 0;
+  virtual void               wait_posedge        ( Clock_count_t cycles = 0U ) const = 0;
+  virtual void               wait_negedge        ( Clock_count_t cycles = 0U ) const = 0;
+  virtual void               wait_anyedge        ( Clock_count_t cycles = 0U ) const = 0;
+  virtual void               wait_sample         ( Clock_count_t cycles = 0U ) const = 0;
+  virtual void               wait_setedge        ( Clock_count_t cycles = 0U ) const = 0;
   // Are we there? (use in SC_METHOD)
   virtual bool               at_posedge_time     ( void ) const = 0;
   virtual bool               posedge             ( void ) const = 0;
@@ -68,12 +68,12 @@ struct no_clock_if
   virtual bool               at_sample_time      ( void ) const = 0;
   virtual bool               at_setedge_time     ( void ) const = 0;
   // For compatibility if you really have/want to
-  virtual const sc_core::sc_event& posedge_event       const ( size_t events = 0 ) = 0;
-  virtual const sc_core::sc_event& negedge_event       const ( size_t events = 0 ) = 0;
-  virtual const sc_core::sc_event& sample_event        const ( size_t events = 0 ) = 0;
-  virtual const sc_core::sc_event& setedge_event       const ( size_t events = 0 ) = 0;
-  virtual const sc_core::sc_event& value_changed_event const ( size_t events = 0 ) = 0;
-  virtual bool                     read                      ( void ) const = 0;
+  virtual const sc_core::sc_event& posedge_event       ( size_t events = 0 ) = 0;
+  virtual const sc_core::sc_event& negedge_event       ( size_t events = 0 ) = 0;
+  virtual const sc_core::sc_event& sample_event        ( size_t events = 0 ) = 0;
+  virtual const sc_core::sc_event& setedge_event       ( size_t events = 0 ) = 0;
+  virtual const sc_core::sc_event& value_changed_event ( size_t events = 0 ) const = 0;
+  virtual bool                     read                ( void ) const = 0;
   // Utility
   virtual sc_core::sc_time delay  ( sc_core::sc_time tPERIOD, sc_core::sc_time tOFFSET=sc_core::SC_ZERO_TIME , sc_core::sc_time tSHIFT=sc_core::SC_ZERO_TIME) const = 0;
   virtual Clock_count_t    clocks ( sc_core::sc_time tPERIOD, sc_core::sc_time tZERO=sc_core::SC_ZERO_TIME, sc_core::sc_time tSHIFT=sc_core::SC_ZERO_TIME) const = 0;
