@@ -228,7 +228,7 @@ struct Top_module::Impl
 
   ~Impl( void ) = default;
 
-  Options* const options { nullptr };
+  Options& options;
 };
 
 void Top_module::end_of_elaboration( void )

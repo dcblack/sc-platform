@@ -43,10 +43,10 @@ inline Platform operator++(Platform& x) {
 inline Platform operator*(Platform c) {
   return c;
 }
-inline Platform begin(Platform r) {
+inline Platform begin([[maybe_unused]]Platform r) {
   return (Platform)std::underlying_type<Platform>::type(0);
 }
-inline Platform end(Platform r) {
+inline Platform end([[maybe_unused]]Platform r) {
   return Platform::end;
 }
 

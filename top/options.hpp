@@ -21,7 +21,7 @@
 // Singleton class
 struct Options
 {
-  static Options* const instance( void );
+  static Options& instance( void );
   Platform get_configuration( void ) const { return m_configuration; }
   const std::set<PlatformTest>& get_test_set( void ) const { return m_test_set; }
   static bool                   has_flag    ( std::string );
