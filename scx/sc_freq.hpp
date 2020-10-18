@@ -60,19 +60,19 @@ struct sc_freq
       return sc_time( std::abs( 1.0 / divisor ), sc_core::SC_SEC );
     }
   }
-  std::string to_string( int w=0, unsigned int f=3, char c=' ' ) const {
+  std::string to_string( size_t w=0, unsigned int f=3, char c=' ' ) const {
     std::string result(std::to_string( m_value ));
     size_t p = result.find('.');
     if( p != std::string::npos ) {
-      if( f > 0 and ( result.length() - p - 1 ) > 0 ) {
+      if( (f > 0) and (( result.length() - p - 1 ) > 0) ) {
         result.erase( p+f, std::string::npos );
       }
     }
-    if( w > 0 && result.length() < w ) {
+    if( w > 0 and result.length() < w ) {
       result.insert( 0, w - result.length(), c );
     }
     result += "_" + str( m_units );
-    if( w < 0 && result.length() < -w ) {
+    if( w < 0 and result.length() < -w ) {
       result.append( -w - result.length(), c );
     }
     return result;

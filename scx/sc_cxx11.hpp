@@ -2,8 +2,10 @@
 #define SC_CXX11_HPP
 
 #include <systemc>
-#include "scx/sc_time_literal.hpp"
+#include "scx/sc_time_literals.hpp"
 #include "scx/sc_freq.hpp"
+
+using namespace sc_core::literals;
 
 #if __cplusplus >= 201103L
 
