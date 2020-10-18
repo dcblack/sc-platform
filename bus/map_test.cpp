@@ -161,7 +161,7 @@ Addr_t find_address ( string path )
   list<string> device_path = { name(), path };
   auto target_info = Memory_map::get_target_path_info( device_path );
   sc_assert( target_info.base != BAD_ADDR );
-  MESSAGE( "Found address " << HEX << target_info.base );
+  MESSAGE( "Found address " << STREAM_HEX << target_info.base );
   MESSAGE( " from " << name() << " to " << path );
   MEND( DEBUG );
   return target_info.base;
@@ -174,7 +174,7 @@ Port_t decode_address ( Addr_t  address, Addr_t& masked_address )
     REPORT( ERROR, "Unable to decode BAD_ADDR" );
     return BAD_PORT;
   }
-  INFO( DEBUG, "Decoding address " << HEX << address );
+  INFO( DEBUG, "Decoding address " << STREAM_HEX << address );
 
   // In case of failure
   Addr_t base = BAD_ADDR;
@@ -244,7 +244,7 @@ void build_port_map( void )
       INFO( DEBUG, "Target mapped: " << mapped );
       if( mapped.name == config_name ) {
         ++matches;
-        INFO( DEBUG, "Found port match at " << HEX << addr );
+        INFO( DEBUG, "Found port match at " << STREAM_HEX << addr );
         mapped.port = port;
         mapped.kind = config_kind;
         if( config_size == UNASSIGNED ) {
@@ -270,11 +270,11 @@ void dump_port_map( int level )
   for( auto rit = m_addr_map.rbegin(); rit!=m_addr_map.rend(); ++rit ) {
     const Addr_t&      addr{ rit->first  };
     const Target_info& info{ rit->second };
-    MESSAGE( HEX << "  - {"
+    MESSAGE( STREAM_HEX << "  - {"
              << " base: " << setw(10) << info.base
              << " last: " << setw(10) << info.last
              << " size: " << setw(6) << info.size
-             << " port: " << setw(2) << DEC << info.port
+             << " port: " << setw(2) << STREAM_DEC << info.port
              << " name: " << info.name
              << " kind: " << info.kind
              << " }\n";
@@ -343,7 +343,7 @@ void check_port_map_and_update_configuration( void )
           MESSAGE( "Port map errors detected:" );
         }
 
-        MESSAGE( "\n  - Overlapping regions in Bus address map: " << HEX
+        MESSAGE( "\n  - Overlapping regions in Bus address map: " << STREAM_HEX
                  << info.kind << " " << info.name << " "
                  << addr << ".." << info.last
                  << " and "

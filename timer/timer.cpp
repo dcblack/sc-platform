@@ -449,7 +449,7 @@ Timer_module::transport
   uint8_t*   reg = m_register_vec.data();
   delay += clk.period( m_addr_clocks );
 
-  INFO( DEBUG+1, "Transport to address " << HEX << adr << " in " << name() );
+  INFO( DEBUG+1, "Transport to address " << STREAM_HEX << adr << " in " << name() );
   if ( trans.is_write() ) {
     memcpy( reg + adr, ptr, len );
     delay += clk.period( m_write_clocks ) * ( ( len + sbw - 1 ) / sbw );

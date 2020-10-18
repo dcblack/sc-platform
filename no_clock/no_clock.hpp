@@ -186,20 +186,20 @@ struct no_clock
   bool at_setedge_time ( void ) const override;
   // For compatibility if you really have/want to (with an extra feature)
   // - specify N > 0 to delay further out
-  sc_core::sc_event& default_event       ( ) override;
-  sc_core::sc_event& posedge_event       ( size_t events = 0 ) override;
-  sc_core::sc_event& negedge_event       ( size_t events = 0 ) override;
-  sc_core::sc_event& sample_event        ( size_t events = 0 ) override;
-  sc_core::sc_event& setedge_event       ( size_t events = 0 ) override;
-  sc_core::sc_event& value_changed_event ( size_t events = 0 ) override;
-  bool      read                ( void ) const override;
+  const sc_core::sc_event& default_event       ( ) const override;
+  const sc_core::sc_event& posedge_event       ( size_t events = 0 ) const override;
+  const sc_core::sc_event& negedge_event       ( size_t events = 0 ) const override;
+  const sc_core::sc_event& sample_event        ( size_t events = 0 ) const override;
+  const sc_core::sc_event& setedge_event       ( size_t events = 0 ) const override;
+  const sc_core::sc_event& value_changed_event ( size_t events = 0 ) const override;
+  bool                     read                ( void ) const override;
 
-  virtual void write( const bool& ) { SC_REPORT_ERROR(MSGID,"write() not allowed on clock"); }
-  virtual sc_core::sc_time delay( sc_core::sc_time tPERIOD, sc_core::sc_time tOFFSET, sc_core::sc_time tSHIFT) const override;
-  virtual Clock_count_t clocks( sc_core::sc_time tPERIOD, sc_core::sc_time tZERO, sc_core::sc_time tSHIFT) const override;
+  virtual void             write  ( const bool& ) { SC_REPORT_ERROR(MSGID,"write() not allowed on clock"); }
+  virtual sc_core::sc_time delay  ( sc_core::sc_time tPERIOD, sc_core::sc_time tOFFSET, sc_core::sc_time tSHIFT) const override;
+  virtual Clock_count_t    clocks ( sc_core::sc_time tPERIOD, sc_core::sc_time tZERO, sc_core::sc_time tSHIFT) const override;
 
 private:
-  // Don't allow copying
+  // Don't allow copying or moving
   no_clock(const no_clock& ) = delete; // Copy constructor
   no_clock(no_clock&& ) = delete; // Move constructor
   no_clock& operator= (const no_clock& ) = delete; // Copy assignment

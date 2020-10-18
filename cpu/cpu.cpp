@@ -426,8 +426,8 @@ Cpu_module::transport
         REPORT( ERROR, "Transaction returned with error, "
                 << "response status = " << trans.get_response_string()
                 << "\n  command: " << to_string(command)
-                << "\n  address: " << HEX << address
-                << "\n  datalen: " << DEC << data_len
+                << "\n  address: " << STREAM_HEX << address
+                << "\n  datalen: " << STREAM_DEC << data_len
                 << "\n  sc_time: " << sc_time_stamp()
                 << "\n  delayed: " << delay
         );

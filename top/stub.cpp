@@ -379,7 +379,7 @@ Stub_module::transport
   Depth_t    sbw = targ_socket.get_bus_width()/8;
   sc_assert( adr+len < m_target_size );
   delay += clk.period( m_addr_clocks );
-  INFO( DEBUG+1, "Transport to address " << HEX << adr << " in " << name() );
+  INFO( DEBUG+1, "Transport to address " << STREAM_HEX << adr << " in " << name() );
   if( trans.is_read() ) {
     delay += clk.period( m_read_clocks ) * ( ( len+sbw-1 )/sbw );
   }

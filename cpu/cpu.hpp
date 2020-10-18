@@ -114,9 +114,9 @@ public:
   void read     ( Addr_t address, std::vector<T>& vec )
     { read ( address, reinterpret_cast<uint8_t*>( vec.data() ), vec.size()*sizeof(T) ); }
   void write    ( Addr_t address, uint8_t* const data, Depth_t len )
-    { transport( tlm::TLM_WRITE_COMMAND, address, data, len ); INFO( DEBUG, "Wrote " << to_string( data, len ) << " to " << HEX << address ); }
+    { transport( tlm::TLM_WRITE_COMMAND, address, data, len ); INFO( DEBUG, "Wrote " << to_string( data, len ) << " to " << STREAM_HEX << address ); }
   void read     ( Addr_t address, uint8_t* const data, Depth_t len )
-    { transport( tlm::TLM_READ_COMMAND, address, data, len );  INFO( DEBUG, "Read  " << to_string( data, len ) << " fm " << HEX << address ); }
+    { transport( tlm::TLM_READ_COMMAND, address, data, len );  INFO( DEBUG, "Read  " << to_string( data, len ) << " fm " << STREAM_HEX << address ); }
 
   //----------------------------------------------------------------------------
   // Transport debug conveniences

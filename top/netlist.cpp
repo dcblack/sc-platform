@@ -36,7 +36,7 @@ namespace {
           interface_ptr = port_ptr->get_interface();
         }
         if( interface_ptr != nullptr ) {
-          INFO( DEBUG, "Inteface points to " << HEX << interface_ptr ); 
+          INFO( DEBUG, "Inteface points to " << STREAM_HEX << interface_ptr ); 
           auto object_ptr = dynamic_cast< const sc_object* >( interface_ptr );
           if( object_ptr != nullptr ) {
             channel_name = object_ptr->name();

@@ -9,14 +9,14 @@ namespace {
 }
 using namespace std;
 
-#define VALUE(v) DEC << int(v) << HEX << " (" << int(v) << ")"
+#define VALUE(v) STREAM_DEC << int(v) << STREAM_HEX << " (" << int(v) << ")"
 #define TEST_RAM(w,addr,value) do {                             \
   cpu->write##w( RAM_BASE+addr, value );                        \
   data##w = int##w##_t(~value);                                 \
   cpu->read##w ( RAM_BASE+addr, data##w );                      \
   if( value != data##w ) REPORT( WARNING, "Data mismatch!" );   \
   MESSAGE( "wrote " << addr << ":" << VALUE(value) );           \
-  MESSAGE( "read "  << addr << ":" << HEX << int(data##w) );    \
+  MESSAGE( "read "  << addr << ":" << STREAM_HEX << int(data##w) );    \
   MEND( MEDIUM );                                               \
 } while(0)
 
@@ -49,7 +49,7 @@ void memory_test(void)
   INFO( MEDIUM, "read 0:" << VALUE(data32) );
   vector<short> v1( 8 );
   v1 = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80 };
-  INFO( MEDIUM, "v1 = " << HEX << v1 );
+  INFO( MEDIUM, "v1 = " << STREAM_HEX << v1 );
   cpu->write( RAM_BASE + 0x100, v1 );
   vector<int> v2( 4 );
   cpu->read( RAM_BASE + 0x100, v2 );

@@ -10,11 +10,11 @@ namespace {
 }
 using namespace std;
 
-#define VALUE(v) DEC << int(v) << HEX << " (" << int(v) << ")"
+#define VALUE(v) STREAM_DEC << int(v) << STREAM_HEX << " (" << int(v) << ")"
 #define TEST_TIMER(mesg,t) do {                                        \
   MESSAGE( mesg << " timer " << t.timer() << "\n" ); \
   MESSAGE( "  " << (t.is_running()?"Running.":"Halted.")<<"\n" );   \
-  MESSAGE( "  Current status is " << HEX << t.status() << "\n" ); \
+  MESSAGE( "  Current status is " << STREAM_HEX << t.status() << "\n" ); \
   MESSAGE( "  Current count  is " << VALUE(t.value()) << "\n" );  \
   MEND( MEDIUM );                                                 \
 } while(0)
@@ -34,9 +34,9 @@ void timer_test(void)
   MESSAGE( "\n" );
   RULER( 'B' );
   MESSAGE( "Timer constants\n" );
-  MESSAGE( "  TIMER_QTY_MASK   =" << HEX << TIMER_QTY_MASK );
-  MESSAGE( "  TIMER_SCALE_MASK =" << HEX << TIMER_SCALE_MASK );
-  MESSAGE( "  TIMER_IRQ_MASK   =" << HEX << TIMER_IRQ_MASK );
+  MESSAGE( "  TIMER_QTY_MASK   =" << STREAM_HEX << TIMER_QTY_MASK );
+  MESSAGE( "  TIMER_SCALE_MASK =" << STREAM_HEX << TIMER_SCALE_MASK );
+  MESSAGE( "  TIMER_IRQ_MASK   =" << STREAM_HEX << TIMER_IRQ_MASK );
   MEND( MEDIUM );
 
   MESSAGE( "\n" );

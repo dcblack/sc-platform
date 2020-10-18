@@ -222,7 +222,7 @@ Mmu_module::decode_address
   uint64_t& masked_address
 )
 {
-  INFO( DEBUG+1, "Decoding address " << HEX << address );
+  INFO( DEBUG+1, "Decoding address " << STREAM_HEX << address );
   masked_address = address;
   unsigned int port = 0;
 

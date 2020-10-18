@@ -22,10 +22,10 @@ namespace {
 std::ostream& operator<<( std::ostream& os, const Target_info& rhs )
 {
   os << "{ name: " << rhs.name << " kind: " << rhs.kind;
-  os << " port: " << DEC;
+  os << " port: " << STREAM_DEC;
   if( rhs.port == BAD_PORT ) os << "BAD_PORT";
   else                       os << rhs.port;
-  os << " base: " << HEX;
+  os << " base: " << STREAM_HEX;
   if( rhs.base == BAD_ADDR ) os << "BADD_ADDR";
   else                       os << rhs.base;
   os << " last: " << rhs.last
@@ -52,7 +52,7 @@ Memory_map::Origin_map& Memory_map::origin_map( void ) {
 namespace {
 void dump_path( int lineno, const list<string>& device_path )
 {
-  MESSAGE( __FILE__ << ":" << DEC << lineno << "\ndevice_path =" );
+  MESSAGE( __FILE__ << ":" << STREAM_DEC << lineno << "\ndevice_path =" );
   for( const auto& device : device_path ) MESSAGE( " " << device );
   MEND( DEBUG );
 }
@@ -65,7 +65,7 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
   list<string> device_path = { from_initiator, to_target };
   auto target_info = find_target_info( device_path );
   sc_assert( target_info.base != BAD_ADDR );
-  MESSAGE( "Found address " << HEX << target_info.base );
+  MESSAGE( "Found address " << STREAM_HEX << target_info.base );
   MESSAGE( " from " << from_initiator << " to " << to_target );
   MEND( DEBUG );
   return target_info.base;
@@ -178,7 +178,7 @@ Addr_t Memory_map::find_address ( string from_initiator, string to_target )
   for( const auto& entry : instance().m_origin_map[ origin_name ].target_map ) {
     Addr_t base = entry.second.base;
     if( the_address_map.count( base ) != 0 ) { // unique
-      REPORT( ERROR, "\n- Duplicated address " << HEX << base << " in memory map for " << origin_name
+      REPORT( ERROR, "\n- Duplicated address " << STREAM_HEX << base << " in memory map for " << origin_name
                   << ".\n- Duplicate is " << entry.first
                   << ".\n- Orignal was " << the_address_map[ base ].name
                   << "."

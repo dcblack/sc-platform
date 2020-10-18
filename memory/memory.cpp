@@ -427,7 +427,7 @@ Memory_module::transport
   }
   uint8_t*   mem = m_mem_vec.data();
   delay += clk.period( m_addr_clocks );
-  INFO( DEBUG+1, "Transport to address " << HEX << adr << " in " << name() );
+  INFO( DEBUG+1, "Transport to address " << STREAM_HEX << adr << " in " << name() );
   if( trans.is_read() ) {
     // TODO: Add byte enable support
     memcpy( ptr, mem+adr, len );

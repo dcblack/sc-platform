@@ -231,10 +231,10 @@ Bus_module::invalidate_direct_mem_ptr
 bool
 Bus_module::mask_if_fits( Addr_t& address, Addr_t start, Depth_t depth ) const
 {
-  INFO( DEBUG+1, "Testing address " << HEX << address << " against " << start << ".." << ( start+depth ) );
+  INFO( DEBUG+1, "Testing address " << STREAM_HEX << address << " against " << start << ".." << ( start+depth ) );
   if( ( address >= start ) and ( address < ( start + depth ) ) ) {
     address -= start;
-    INFO( DEBUG+1, "Matched! Returning masked address " << HEX << address );
+    INFO( DEBUG+1, "Matched! Returning masked address " << STREAM_HEX << address );
     return true;
   }
   else {
@@ -279,7 +279,7 @@ Bus_module::decode_address
     REPORT( ERROR, "Unable to decode BAD_ADDR" );
     return BAD_PORT;
   }
-  INFO( DEBUG, "Decoding address " << HEX << address );
+  INFO( DEBUG, "Decoding address " << STREAM_HEX << address );
 
   // In case of failure
   Addr_t base = BAD_ADDR;
@@ -400,7 +400,7 @@ Bus_module::build_port_map( void )
           Target_info& mapped{ mapping.second };
           if( mapped.name == config_name ) {
             ++matches;
-            INFO( DEBUG, "Found port match at " << HEX << addr );
+            INFO( DEBUG, "Found port match at " << STREAM_HEX << addr );
             mapped.port = port;
             mapped.kind = config_kind;
             if( config_size == UNASSIGNED ) {
@@ -442,11 +442,11 @@ Bus_module::dump_port_map( int level )
     const Addr_t&      addr{ rit->first  };
     const Target_info& info{ rit->second };
     if( info.port == BAD_PORT and not Options::has_flag("-v") ) continue;
-    MESSAGE( HEX << "  - {"
+    MESSAGE( STREAM_HEX << "  - {"
              << " base: " << setw(10) << info.base
              << " last: " << setw(10) << info.last
              << " size: " << setw(6) << info.size
-             << " port: " << setw(2) << DEC << info.port
+             << " port: " << setw(2) << STREAM_DEC << info.port
              << " name: " << info.name
              << " kind: " << info.kind
              << " }\n";
@@ -516,7 +516,7 @@ Bus_module::check_port_map_and_update_configuration( void )
           MESSAGE( "Port map errors detected:" );
         }
 
-        MESSAGE( "\n  - Overlapping regions in Bus address map: " << HEX
+        MESSAGE( "\n  - Overlapping regions in Bus address map: " << STREAM_HEX
                  << info.kind << " " << info.name << " "
                  << addr << ".." << info.last
                  << " and "
