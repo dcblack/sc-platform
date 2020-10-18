@@ -20,7 +20,7 @@
 
 using Addr_t  = sc_dt::uint64;
 using Depth_t = uint32_t; //< accommodate address map
-using Port_t = int; //< for port/socket identification
+using Port_t  = int; //< for port/socket identification
 using byte_t  = uint8_t;
 
 // Following are less common, but useful
