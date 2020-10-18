@@ -162,7 +162,7 @@ Cpu_module::transport_dbg
   trans.set_dmi_allowed    ( false    );
   trans.set_response_status( tlm::TLM_INCOMPLETE_RESPONSE );
 
-  int count = init_socket->transport_dbg( trans );
+  size_t count = init_socket->transport_dbg( trans );
   if ( count != data_len ) {
     REPORT( WARNING, "Only transferred " << count << "bytes of "
                      << data_len << " requested " );
