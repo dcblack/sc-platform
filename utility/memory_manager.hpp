@@ -28,7 +28,7 @@
 
 #include "report/report.hpp"
 #define REQUIRES_CPP 11
-#include "common/require_cxx_version.hpp"
+#include "common/require_version.hpp"
 #include <tlm>
 #include <forward_list>
 
