@@ -302,7 +302,7 @@ Uart_module::send_end_req( tlm_payload_t& trans )
   bw_phase = END_REQ;
   delay = clk.period( 1 ); // Accept delay
 
-  tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
+  [[maybe_unused]]tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
@@ -366,11 +366,12 @@ Uart_module::execute_transaction_process( void )
 bool Uart_module::payload_is_ok
 ( tlm_payload_t& trans, Depth_t len, Style coding_style )
 {
-  tlm_command cmd = trans.get_command();
   Addr_t      adr = trans.get_address();
   uint8_t*    ptr = trans.get_data_ptr();
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
+
+  sc_assert( ptr != nullptr );
 
   if ( ( adr + len ) >= m_target_size or ( adr & 3 ) != 0 ) {
     if ( g_error_at_target ) {
@@ -383,7 +384,7 @@ bool Uart_module::payload_is_ok
 
     return false;
   }
-  else if ( byt != 0 ) {
+  else if ( byt != nullptr ) {
     if ( g_error_at_target ) {
       REPORT( ERROR, "Attempt to unsupported use byte enables " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -587,7 +588,7 @@ void Uart_module::rx_thread( void )
 //   ## ##  #     ###   #   ###       #     #  ####    #  ###  ####  #   #  ####  
 //
 //////////////////////////////////////////////////////////////////////////////////
-void Uart_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
+void Uart_module::write_actions( tlm_payload_t& trans, [[maybe_unused]]const sc_time& delay )
 {
   // Make it easier to access data
   Uart_regs_t& reg{ *reinterpret_cast<Uart_regs_t*>( m_register_vec.data() ) };
@@ -612,7 +613,8 @@ void Uart_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
       //txctrl.fifoused - Read-only
       m_txctrl.baudrate = GET_FIELD(UART_BAUDRATE, reg.txctrl);
       m_txbits = 8 - (m_txctrl.databits?8:7) + (m_txctrl.parity?0:1) + (m_txctrl.stopbits?1:2);
-      if ( m_txctrl.baudrate < sizeof( m_baud ) ) {
+      // baudrate indexes into the m_baud array
+      if ( static_cast<size_t>(m_txctrl.baudrate) < sizeof( m_baud ) ) {
         m_uart.txclocks = sc_freq( m_baud[ m_txctrl.baudrate ], SC_HZ ) * clk.period() * m_txbits;
       }
       else if ( m_txctrl.running ) {
@@ -750,7 +752,7 @@ void Uart_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
 //  #    #  ###    ## #  ####      #     #  ####    #  ###  ####  #   #  ####    
 //
 ////////////////////////////////////////////////////////////////////////////////
-void Uart_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
+void Uart_module::read_actions( tlm_payload_t& trans, [[maybe_unused]]const sc_time& delay )
 {
   // Make it easier to access data
   Uart_regs_t& reg{ *reinterpret_cast<Uart_regs_t*>( m_register_vec.data() ) };
@@ -790,7 +792,7 @@ void Uart_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
     {
       REPORT( WARNING, "Attempt to read write-data ignored\n" );
       reg.txdata = 0;
-      m_register_vec[UART_TXDATA_REG] = uint8_t('\0xFF');
+      m_register_vec[UART_TXDATA_REG] = uint8_t( 0xFF );
       break;
     }
     case /*read*/ UART_RXCTRL_REG:
@@ -830,7 +832,7 @@ void Uart_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
         ++m_rxcount;
       }
       else {
-        m_register_vec[ UART_RXDATA_REG ] = uint8_t('\0xFF');
+        m_register_vec[ UART_RXDATA_REG ] = uint8_t( 0xFF );
       }
       break;
     }

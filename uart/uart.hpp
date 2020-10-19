@@ -118,8 +118,8 @@ private:
   Speed                m_rxspeed;
   std::deque<uint8_t>  m_txfifo;
   std::deque<uint8_t>  m_rxfifo;
-  int                  m_txfifo_capacity{ 16 }; // Configured maximum
-  int                  m_rxfifo_capacity{ 16 }; // Configured maximum
+  uint32_t             m_txfifo_capacity{ 16 }; // Configured maximum
+  uint32_t             m_rxfifo_capacity{ 16 }; // Configured maximum
   Uart_ctrl_t          m_txctrl;
   Uart_ctrl_t          m_rxctrl;
   sc_event             m_txevent;

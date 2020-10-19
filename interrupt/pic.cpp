@@ -447,7 +447,7 @@ void Pic_module::pic_thread( void )
 }//end Pic_module::pic_thread()
 
 //------------------------------------------------------------------------------
-void Pic_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
+void Pic_module::write_actions( tlm_payload_t& trans, [[maybe_unused]]const sc_time& delay )
 {
   Addr_t     address = trans.get_address();
 
@@ -543,7 +543,7 @@ void Pic_module::write_actions( tlm_payload_t& trans, const sc_time& delay )
 }
 
 //------------------------------------------------------------------------------
-void Pic_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
+void Pic_module::read_actions( tlm_payload_t& trans, [[maybe_unused]]const sc_time& delay )
 {
   Addr_t     address = trans.get_address();
 

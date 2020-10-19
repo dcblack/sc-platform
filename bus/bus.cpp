@@ -188,10 +188,10 @@ Bus_module::transport_dbg( [[maybe_unused]]int id, tlm_payload_t& trans )
 //------------------------------------------------------------------------------
 tlm_sync_enum
 Bus_module::nb_transport_bw
-( int            id
-, tlm_payload_t& trans
-, tlm_phase&     phase
-, sc_time&       delay
+( [[maybe_unused]]int id
+, tlm_payload_t&      trans
+, tlm_phase&          phase
+, sc_time&            delay
 )
 {
   Route_extn* route_extn;

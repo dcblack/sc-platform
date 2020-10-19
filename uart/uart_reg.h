@@ -67,20 +67,20 @@ enum UartField : uint32_t
 };
 
 // Convenience
-typedef struct { // Bits Posn Description
-  bool configok ;//   1  0x1A Configuration 0=>Error 1=>Ok -- Read-only
-  bool fifoerr  ;//   1  0x19 Transmitter overflow / Receiver underflow
-  bool dataerr  ;//   1  0x18 Bad parity
-  bool running  ;//   1  0x17 Enable function Tx/Rx
-  bool enadma   ;//   1  0x16 Enable DMA
-  bool enaintr  ;//   1  0x15 Enable interrupts
-  bool databits ;//   1  0x14 0 => 8, 1 => 7
-  bool stopbits ;//   1  0x13 0 => 1, 1 => 2
-  bool parity   ;//   1  0x12 Enable parity
-  bool odd      ;//   1  0x11 0 => even, 1 => odd
-  bool depthend ;//   1  0x10 Rx => full, Tx => empty - Read-only
-  int  fifoused ;//   8  0x 8 number of occupied locations - Read-only
-  int  baudrate ;//   8  0x 0 see Uart_baud
+typedef struct {      // Bits Posn Description
+  bool      configok ;//   1  0x1A Configuration 0=>Error 1=>Ok -- Read-only
+  bool      fifoerr  ;//   1  0x19 Transmitter overflow / Receiver underflow
+  bool      dataerr  ;//   1  0x18 Bad parity
+  bool      running  ;//   1  0x17 Enable function Tx/Rx
+  bool      enadma   ;//   1  0x16 Enable DMA
+  bool      enaintr  ;//   1  0x15 Enable interrupts
+  bool      databits ;//   1  0x14 0 => 8, 1 => 7
+  bool      stopbits ;//   1  0x13 0 => 1, 1 => 2
+  bool      parity   ;//   1  0x12 Enable parity
+  bool      odd      ;//   1  0x11 0 => even, 1 => odd
+  bool      depthend ;//   1  0x10 Rx => full, Tx => empty - Read-only
+  uint8_t   fifoused ;//   8  0x 8 number of occupied locations - Read-only
+  uint8_t   baudrate ;//   8  0x 0 see Uart_baud
 } Uart_ctrl_t;
 
 enum Uart_baud
