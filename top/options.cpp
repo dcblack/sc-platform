@@ -30,13 +30,13 @@ Options& Options::instance( void )
 
 inline bool Options::has_flag( std::string flag_name )
 {
-  return instance()->m_flag_map.count( flag_name ) != 0;
+  return instance().m_flag_map.count( flag_name ) != 0;
 }
 
 std::string Options::get_flag( std::string flag_name )
 {
   if( has_flag( flag_name ) ) {
-    return instance()->m_flag_map[flag_name];
+    return instance().m_flag_map[flag_name];
   } else {
     REPORT( WARNING, "Missing option: " << flag_name );
     return std::string();
@@ -183,7 +183,7 @@ Options::Options( void )
       else {
         MESSAGE( "Unknown platform configuration: " << arg << "\n" );
         MESSAGE( "Choices are:\n" );
-        for( const auto& p : Platform() ) {
+        for( auto p : Platform() ) {
           MESSAGE( "  " << p );
         }
         REPORT( ERROR, "" );
@@ -219,7 +219,7 @@ Options::Options( void )
       }
       if ( unknown ) {
         MESSAGE( "Choices are:\n" );
-        for( const auto& t : PlatformTest() ) {
+        for( auto t : PlatformTest() ) {
           MESSAGE( "  " << t );
         }
         REPORT( ERROR, "" );

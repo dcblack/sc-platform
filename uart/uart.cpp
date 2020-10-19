@@ -30,7 +30,8 @@ Uart_module::Uart_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: m_addr_clocks             { addr_clocks     }
+: sc_module                 { instance_name   }
+, m_addr_clocks             { addr_clocks     }
 , m_read_clocks             { read_clocks     }
 , m_write_clocks            { write_clocks    }
 , m_targ_peq                { this, &Uart_module::targ_peq_cb }
@@ -849,8 +850,8 @@ void Uart_module::read_actions( tlm_payload_t& trans, const sc_time& delay )
       SET_FIELD( UART_RXBITS,   reg.misc, m_rxbits );
       SET_FIELD( UART_TXBITS,   reg.misc, m_txbits );
       bool    rxselect = IS_NONZERO( UART_RXSELECT, reg.misc );
-      uint8_t peekaddr = GET_FIELD( UART_PEEKADDR, reg.misc );
-      uint8_t peekdata = uint8_t('\0xFF');
+      auto    peekaddr = GET_FIELD( UART_PEEKADDR, reg.misc );
+      auto    peekdata = uint8_t( 0xFF );
       if ( rxselect and peekaddr < m_rxfifo_capacity ) {
         peekdata = m_rxfifo[ peekaddr ];
       }

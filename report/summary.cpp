@@ -1,4 +1,5 @@
 #include "report/summary.hpp"
+#include <systemcc>
 #define REQUIRES_CPP      14
 #define REQUIRES_SYSTEMC 233
 #include "common/require_version.hpp"

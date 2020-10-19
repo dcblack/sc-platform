@@ -43,7 +43,8 @@ namespace {
 ///////////////////////////////////////////////////////////////////////////////
 // Constructor
 Top_module::Top_module( sc_module_name instance_name )
-  : pImpl{ std::make_unique<Impl>() }
+: sc_module{ instance_name }
+, pImpl{ std::make_unique<Impl>() }
 {
   // Nothing to do
 }
@@ -82,7 +83,7 @@ struct Top_module::Impl
   : options( Options::instance() )
   {
     // Instantiation
-    switch ( options->get_configuration() ) { // Fall-thru intentional
+    switch ( options.get_configuration() ) { // Fall-thru intentional
       case Platform::DMA:
         dma  = std::make_unique<Stub_module>  ( "dma" );
       case Platform::VirtualUART:
@@ -113,7 +114,7 @@ struct Top_module::Impl
     }
 
     // Connectivity
-    switch ( options->get_configuration() ) {
+    switch ( options.get_configuration() ) {
       case Platform::TRIVIAL:
         cpu->init_socket.bind( ram->targ_socket );
         break;

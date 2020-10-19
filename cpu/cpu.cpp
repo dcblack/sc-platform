@@ -27,9 +27,10 @@ using namespace std;
 //------------------------------------------------------------------------------
 // Constructor
 Cpu_module::Cpu_module( sc_module_name instance_name )
-: m_mm                  { Memory_manager<>::instance()   }
+: sc_module             { instance_name }
+, m_mm                  { Memory_manager<>::instance() }
 , m_init_peq            { "init_peq", this, &Cpu_module::init_peq_cb }
-, m_request_in_progress { nullptr                        }
+, m_request_in_progress { nullptr }
 , m_cpuid               { new Cpuid_extn(this) }
 , cpu_task_mgr          { "cpu", this }
 {

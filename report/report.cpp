@@ -6,9 +6,7 @@ using namespace sc_core;
 using namespace std;
 using namespace tlm;
 
-#if __cplusplus <= 201700L
-  std::ostringstream Report::mout;
-#endif
+std::ostringstream Report::mout;
 
 /**
  * @func convert tlm_command enum to string

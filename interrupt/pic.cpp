@@ -31,7 +31,8 @@ Pic_module::Pic_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: m_addr_clocks             { addr_clocks     }
+: sc_module                 { instance_name   }
+, m_addr_clocks             { addr_clocks     }
 , m_read_clocks             { read_clocks     }
 , m_write_clocks            { write_clocks    }
 , m_targ_peq                { this, &Pic_module::targ_peq_cb }
@@ -260,7 +261,7 @@ Pic_module::send_end_req( tlm_payload_t& trans )
   bw_phase = END_REQ;
   delay = clk.period( 1 ); // Accept delay
 
-  tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
+  [[maybe_unused]]tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
@@ -324,11 +325,12 @@ Pic_module::execute_transaction_process( void )
 bool Pic_module::payload_is_ok
 ( tlm_payload_t& trans, Depth_t len, Style coding_style )
 {
-  tlm_command cmd = trans.get_command();
   Addr_t      adr = trans.get_address();
   uint8_t*    ptr = trans.get_data_ptr();
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
+
+  sc_assert( ptr != nullptr );
 
   if ( ( adr + len ) >= m_target_size or ( adr & 3 ) != 0 ) {
     if ( g_error_at_target ) {
@@ -341,7 +343,7 @@ bool Pic_module::payload_is_ok
 
     return false;
   }
-  else if ( byt != 0 ) {
+  else if ( byt != nullptr ) {
     if ( g_error_at_target ) {
       REPORT( ERROR, "Attempt to unsupported use byte enables " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -424,7 +426,7 @@ void Pic_module::pic_thread( void )
           << " from " << source << " at "   << sc_time_stamp()
     );
     // Look up the interrupt assignment
-    int iSource = Memory_map::find_irq( source );
+    size_t iSource = Memory_map::find_irq( source );
     sc_assert( iSource >= 0 and iSource < m_source_irq.size() );
 
     // Set interrupt pending

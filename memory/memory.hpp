@@ -44,19 +44,18 @@ struct Memory_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 3
   );
-  Memory_module( Memory_module&& ) = default;
-  Memory_module& operator=( Memory_module&& ) = default;
   ~Memory_module( void ); //< Destructor
   const char* kind( void ) const override { return "Memory_module"; }
+
+  //----------------------------------------------------------------------------
   // Forward interface
   void b_transport( tlm_payload_t& trans, sc_time& delay );
   Depth_t transport_dbg( tlm_payload_t& trans );
   tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );
-  bool get_direct_mem_ptr( tlm_payload_t& trans, tlm::tlm_dmi& dmi_data );
+  bool get_direct_mem_ptr( [[maybe_unused]]tlm_payload_t& trans, tlm::tlm_dmi& dmi_data );
 private:
-  Memory_module( const Memory_module& ) = delete;
-  Memory_module& operator=( const Memory_module& ) = delete;
 
+  //----------------------------------------------------------------------------
   // Helpers
   void targ_peq_cb( tlm_payload_t& trans, const tlm_phase_t& phase );
   bool payload_is_ok( tlm_payload_t& trans, Depth_t len, Style coding_style );
@@ -66,11 +65,14 @@ private:
   void send_response( tlm_payload_t& trans );
   void execute_transaction_process( void );
   bool configure( tlm_payload_t& trans );
-  void resize( int depth, int pattern=0xEAU );
+  void resize( size_t depth, int pattern=0xEAU );
 
+  //----------------------------------------------------------------------------
   // Attributes
   no_clock&            clk { no_clock::global( "system_clock" ) };
   Configuration        m_configuration;
+
+  //----------------------------------------------------------------------------
   // Internal attributes
   Depth_t              m_target_size;
   Feature              m_dmi_allowed;

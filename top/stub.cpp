@@ -33,7 +33,8 @@ Stub_module::Stub_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: m_target_size             { target_size     }
+: sc_module                 { instance_name   }
+, m_target_size             { target_size     }
 //m_target_base not needed
 , m_dmi_allowed             { dmi_allowed     }
 , m_access                  { access          }
@@ -169,8 +170,8 @@ Stub_module::nb_transport_fw
 //------------------------------------------------------------------------------
 bool
 Stub_module::get_direct_mem_ptr
-( tlm_generic_payload& trans
-, tlm_dmi& dmi_data
+( [[maybe_unused]]tlm_generic_payload& trans
+, [[maybe_unused]]tlm_dmi& dmi_data
 )
 {
   return false;
@@ -248,7 +249,7 @@ Stub_module::send_end_req( Stub_module::tlm_payload_t& trans )
   bw_phase = END_REQ;
   delay = SC_ZERO_TIME;
 
-  tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
+  [[maybe_unused]]tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
@@ -316,6 +317,8 @@ bool Stub_module::payload_is_ok( Stub_module::tlm_payload_t& trans, Depth_t len,
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
 
+  sc_assert( ptr != nullptr );
+
   if( ( adr+len ) >= m_target_size ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << adr );
@@ -325,7 +328,7 @@ bool Stub_module::payload_is_ok( Stub_module::tlm_payload_t& trans, Depth_t len,
     }
     return false;
   }
-  else if( byt != 0 ) {
+  else if( byt != nullptr ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Attempt to unsupported use byte enables " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
@@ -375,7 +378,6 @@ Stub_module::transport
 {
   REPORT( WARNING, name() << " not yet implemented - stubbed out." );
   Addr_t     adr = trans.get_address();
-  uint8_t*   ptr = trans.get_data_ptr();
   Depth_t    sbw = targ_socket.get_bus_width()/8;
   sc_assert( adr+len < m_target_size );
   delay += clk.period( m_addr_clocks );

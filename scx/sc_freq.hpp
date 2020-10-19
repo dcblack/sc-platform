@@ -16,7 +16,7 @@
 #include <cmath>
 
 namespace sc_core {
-enum sc_freq_units : int { SC_HZ, SC_KHZ, SC_MHZ, SC_GHZ, SC_THZ };
+enum sc_freq_units : unsigned int { SC_HZ, SC_KHZ, SC_MHZ, SC_GHZ, SC_THZ };
 struct sc_freq
 {
 

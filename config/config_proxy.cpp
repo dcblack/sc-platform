@@ -31,11 +31,10 @@ Config_proxy::Config_proxy
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-  : targ_socket{ "targ_socket" }
-  , init_socket{ "init_socket" }
+: sc_module { instance_name }
 {
-  targ_socket.bind(*this);
   init_socket.bind(*this);
+  targ_socket.bind(*this);
   m_configuration.set( "name",         string(name())  );
   m_configuration.set( "kind",         string(kind())  );
   m_configuration.set( "object_ptr",   uintptr_t(this) );

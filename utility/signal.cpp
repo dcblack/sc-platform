@@ -23,7 +23,7 @@ using namespace sc_core;
 namespace {
   const char* const MSGID{ "/Doulos/Example/Signal" };
 
-  void my_stop( int sig )
+  void my_stop( [[maybe_unused]]int sig )
   {
     static int level = 0;
     if( level++ ) sc_set_stop_mode(SC_STOP_IMMEDIATE);
@@ -34,7 +34,7 @@ namespace {
     REPORT( FATAL, "Aborting on signal " << sig );
   }
 }
-void my_interrupt( int sig )
+void my_interrupt( [[maybe_unused]]int sig )
 {
    INFO( ALWAYS, "Interrupted" );
    sc_interrupt_here( "Interrupted", SC_INFO );

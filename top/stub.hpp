@@ -42,8 +42,6 @@ struct Stub_module: sc_core::sc_module
   , uint32_t                read_clocks  = 1
   , uint32_t                write_clocks = 1
   );
-  Stub_module( Stub_module&& ) = default;
-  Stub_module& operator=( Stub_module&& ) = default;
   ~Stub_module( void ); //< Destructor
   const char* kind( void ) const override { return "Stub_module"; }
   // Forward interface
@@ -51,10 +49,9 @@ struct Stub_module: sc_core::sc_module
   Depth_t transport_dbg( tlm_payload_t& trans );
   tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );
   bool get_direct_mem_ptr( tlm_payload_t& trans, tlm::tlm_dmi& dmi_data );
-private:
-  Stub_module( const Stub_module& ) = delete;
-  Stub_module& operator=( const Stub_module& ) = delete;
 
+private:
+  //----------------------------------------------------------------------------
   // Helpers
   void targ_peq_cb( tlm_payload_t& trans, const tlm_phase_t& phase );
   bool payload_is_ok( tlm_payload_t& trans, Depth_t len, Style coding_style );
@@ -79,7 +76,6 @@ private:
   uint32_t             m_read_clocks;   // time per bus beat to respond with data
   uint32_t             m_write_clocks;  // time per bus beat to write data
   tlm_peq_t            m_targ_peq;
-  bool                 m_dmi_granted             { false };
   tlm_payload_t*       m_transaction_in_progress { nullptr };
   bool                 m_response_in_progress    { false };
   tlm_payload_t*       m_next_response_pending   { nullptr };

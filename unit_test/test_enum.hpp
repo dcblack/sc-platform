@@ -37,10 +37,10 @@ inline PlatformTest operator++(PlatformTest& x) {
 inline PlatformTest operator*(PlatformTest c) {
   return c;
 }
-inline PlatformTest begin(PlatformTest r) {
+inline PlatformTest begin([[maybe_unused]]PlatformTest r) {
   return (PlatformTest)std::underlying_type<PlatformTest>::type(0);
 }
-inline PlatformTest end(PlatformTest r) {
+inline PlatformTest end([[maybe_unused]]PlatformTest r) {
   return PlatformTest::end;
 }
 

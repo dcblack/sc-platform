@@ -24,9 +24,6 @@
 #include <sstream>
 #include <iomanip>
 struct Report {
-#if __cplusplus >= 201711L
-  inline // Obliviates the need for report.cpp
-#endif
   static std::ostringstream mout;
 };
 #define STREAM_HEX std::hex << std::showbase

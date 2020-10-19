@@ -50,8 +50,6 @@ struct Pic_module: sc_core::sc_module
   , uint32_t                read_clocks  = 1
   , uint32_t                write_clocks = 1
   );
-  Pic_module( Pic_module&& ) = default;
-  Pic_module& operator=( Pic_module&& ) = default;
   ~Pic_module( void ); //< Destructor
   const char* kind( void ) const override { return "Pic_module"; }
 
@@ -67,10 +65,8 @@ private:
   Depth_t transport_dbg( tlm_payload_t& trans );
   tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );
   bool get_direct_mem_ptr( tlm_payload_t& trans, tlm::tlm_dmi& dmi_data );
-private:
-  Pic_module( const Pic_module& ) = delete;
-  Pic_module& operator=( const Pic_module& ) = delete;
 
+  //----------------------------------------------------------------------------
   // Helpers
   void targ_peq_cb( tlm_payload_t& trans, const tlm_phase_t& phase );
   void execute_transaction( tlm_payload_t& trans );

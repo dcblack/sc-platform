@@ -53,8 +53,6 @@ struct Timer_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 2
   );
-  Timer_module( Timer_module&& ) = default;
-  Timer_module& operator=( Timer_module&& ) = default;
   ~Timer_module( void ); //< Destructor
   const char* kind( void ) const override { return "Timer_module"; }
 
@@ -69,9 +67,6 @@ private:
   void b_transport( tlm_payload_t& trans, sc_time& delay );
   Depth_t transport_dbg( tlm_payload_t& trans );
   tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );
-private:
-  Timer_module( const Timer_module& ) = delete;
-  Timer_module& operator=( const Timer_module& ) = delete;
 
   //----------------------------------------------------------------------------
   // Timer Helpers
@@ -87,7 +82,7 @@ private:
 
   //----------------------------------------------------------------------------
   // Timer Helpers
-  Timer_reg_t& timer_reg_vec( int index );
+  Timer_reg_t& timer_reg_vec( size_t index );
   uint32_t scale( uint32_t status )
   {
     return (( status & TIMER_SCALE_MASK ) >> TIMER_SCALE_LSB) + 1;
@@ -95,8 +90,8 @@ private:
   bool irq_enabled( int index ) {
     return TIMER_IRQ_ENABLE == ( timer_reg_vec( index ).status & TIMER_INTERRUPT_MASK );
   }
-  uint32_t get_timer_status( unsigned int index );
-  void     set_timer_status( unsigned int index, const sc_time& delay );
+  uint32_t get_timer_status( size_t index );
+  void     set_timer_status( size_t index, const sc_time& delay );
   void  write_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay );
   void   read_actions( Addr_t address, uint8_t* data_ptr, Depth_t len, const sc_time& delay );
 

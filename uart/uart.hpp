@@ -60,8 +60,6 @@ struct Uart_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 3
   );
-  Uart_module( Uart_module&& ) = default;
-  Uart_module& operator=( Uart_module&& ) = default;
   ~Uart_module( void ); //< Destructor
   virtual const char* kind( void ) const override { return "Uart_module"; }
 
@@ -78,10 +76,8 @@ private:
   Depth_t transport_dbg( tlm_payload_t& trans );
   tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );
   bool get_direct_mem_ptr( tlm_payload_t& trans, tlm::tlm_dmi& dmi_data );
-private:
-  Uart_module( const Uart_module& ) = delete;
-  Uart_module& operator=( const Uart_module& ) = delete;
 
+  //----------------------------------------------------------------------------
   // Helpers
   void targ_peq_cb( tlm_payload_t& trans, const tlm_phase_t& phase );
   void execute_transaction( tlm_payload_t& trans );

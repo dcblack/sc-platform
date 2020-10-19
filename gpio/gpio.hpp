@@ -56,8 +56,6 @@ struct Gpio_module: sc_core::sc_module
   , uint32_t                read_clocks  = 2
   , uint32_t                write_clocks = 3
   );
-  Gpio_module( Gpio_module&& ) = default;
-  Gpio_module& operator=( Gpio_module&& ) = default;
   ~Gpio_module( void ); //< Destructor
   virtual const char* kind( void ) const override { return "Gpio_module"; }
 
@@ -74,10 +72,8 @@ private:
   Depth_t transport_dbg( tlm_payload_t& trans );
   tlm::tlm_sync_enum nb_transport_fw( tlm_payload_t& trans, tlm_phase_t& phase, sc_time& delay );
   bool get_direct_mem_ptr( tlm_payload_t& trans, tlm::tlm_dmi& dmi_data );
-private:
-  Gpio_module( const Gpio_module& ) = delete;
-  Gpio_module& operator=( const Gpio_module& ) = delete;
 
+  //----------------------------------------------------------------------------
   // Helpers
   void targ_peq_cb( tlm_payload_t& trans, const tlm_phase_t& phase );
   void execute_transaction( tlm_payload_t& trans );

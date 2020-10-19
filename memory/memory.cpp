@@ -35,7 +35,8 @@ Memory_module::Memory_module // Constructor
 , uint32_t       read_clocks
 , uint32_t       write_clocks
 )
-: m_target_size             { target_size     }
+: sc_module                 { instance_name   }
+, m_target_size             { target_size     }
 //m_target_base not needed
 , m_dmi_allowed             { dmi_allowed     }
 , m_access                  { access          }
@@ -158,7 +159,7 @@ bool Memory_module::configure( tlm_payload_t& trans )
 }
 
 //------------------------------------------------------------------------------
-void Memory_module::resize( int depth, int pattern )
+void Memory_module::resize( size_t depth, int pattern )
 {
   sc_assert( depth > 0 and depth <= m_target_size );
   m_mem_vec.resize( depth, pattern );
@@ -193,7 +194,7 @@ Memory_module::nb_transport_fw
 //------------------------------------------------------------------------------
 bool
 Memory_module::get_direct_mem_ptr
-( tlm_generic_payload& trans
+( [[maybe_unused]]tlm_generic_payload& trans
 , tlm_dmi& dmi_data
 )
 {
@@ -289,7 +290,7 @@ Memory_module::send_end_req( Memory_module::tlm_payload_t& trans )
   bw_phase = END_REQ;
   delay = sc_time( distribution( generator ), SC_PS ); // Accept delay
 
-  tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
+  [[maybe_unused]]tlm_sync_enum status = targ_socket->nb_transport_bw( trans, bw_phase, delay );
   // Ignore return value; initiator cannot terminate transaction at this point
 
   // Queue internal event to mark beginning of response
@@ -357,6 +358,8 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
   uint8_t*    byt = trans.get_byte_enable_ptr();
   Depth_t     wid = trans.get_streaming_width();
 
+  sc_assert( ptr != nullptr );
+
   if( ( adr+len ) >= m_target_size ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Out of range on device " << name() << " with address " << adr );
@@ -366,7 +369,7 @@ bool Memory_module::payload_is_ok( Memory_module::tlm_payload_t& trans, Depth_t 
     }
     return false;
   }
-  else if( byt != 0 ) {
+  else if( byt != nullptr ) {
     if( g_error_at_target ) {
       REPORT( ERROR, "Attempt to unsupported use byte enables " << name() << " with address " << adr );
       trans.set_response_status( TLM_OK_RESPONSE );
