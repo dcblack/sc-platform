@@ -21,6 +21,19 @@ Table of Contents
 __________________________________________________________________________________
 <a name="AbtMe"></a>
 
+Important notes
+===============
+
+Status
+------
+
+The current state of this project is Alpha! In other words, there are lots of potholes and several places I have intentions to do some rather major fixups. Notably, I will be refactoring the TLM-2.0 implementation to reflect a much simpler way of including bus interfacing for both the Initiator and Target. This project is being released now because it has been too long since I've updated it.
+
+Contributing
+------------
+
+If you have an interest in actively contributing to this project, please contact me directly. There are plenty of modules that need to be developed. A primary and important aspect of this project is to maintain the 
+
 About the Platform Project
 ==========================
 
