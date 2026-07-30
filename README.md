@@ -27,41 +27,43 @@ Important notes
 Status
 ------
 
-The current state of this project is Alpha! In other words, there are lots of potholes and several places I have intentions to do some rather major fixups. Notably, I will be refactoring the TLM-2.0 implementation to reflect a much simpler way of including bus interfacing for both the Initiator and Target. This project is being released now because it has been too long since I've updated it.
+The current state of this project is Alpha! In other words, there are lots of potholes and several places where I intend to do some rather major fixups. Notably, I will be refactoring the TLM-2.0 implementation to reflect a much simpler way of including bus interfacing for both the Initiator and Target. This project is being released now because it has been too long since I've updated it.
 
 Contributing
 ------------
 
-If you have an interest in actively contributing to this project, please contact me directly. There are plenty of modules that need to be developed. A primary and important aspect of this project is to maintain the 
+If you are interested in actively contributing to this project, please contact me directly. There are plenty of modules that need to be developed. A primary and important aspect of this project is to maintain the 
 
 About the Platform Project
 ==========================
 
+From https://github.com/dcblack/sc-platform
+
 [Back to Table of Contents](#ToC)
 
-This directory contains a basic SystemC design using TLM-2.0 with a single top-level module and a practical main implementation that validates each step, and provides an execution summary including timing/performance information.  If errors are detected, main exists with a non-zero status.
+This directory contains a basic SystemC design using TLM-2.0 with a single top-level module and a practical main implementation that validates each step and provides an execution summary including timing/performance information.  If errors are detected, `main` exits with a non-zero status.
 
 This project has several goals:
 
 1. Provide an example of a complete TLM-2 virtual platform for study using Modern C++.
-2. Should be able to demonstrate Blinky and Hello-world tests.
-3. Provide examples of different techniques of modeling.
-  1. Loosely-timed and Approximately-timed models of initiators, interconnect and targets
+2. Demonstrate Blinky and Hello-world tests.
+3. Provide examples of different modeling techniques.
+  1. Loosely-timed and Approximately-timed models of initiators, interconnect, and targets
   2. The absence of real clocks using the `no_clock` channel and the global distribution mechanism
   3. Resets and Power domain modeling
   4. Processor implementation with an ISS and support for interrupts
 4. Provide the basis for "Easier SystemC" templates.
 5. Several approaches to configuration
 
-At any point in time, this project represents a set of ideas in the making, and not expected to be complete. Various authors may contribute to this effort, and as such, coding guidelines have bee provided here-in. It is important that this code be *model code* and meet high levels of documentation and formatting to make it easy to understand. Comment blocks are highly encouraged.
+At any point in time, this project represents a set of ideas in the making, and not expected to be complete. Various authors may contribute to this effort, and as such, coding guidelines have been provided herein. It is important that this code be *model code* and meet high levels of documentation and formatting to make it easy to understand. Comment blocks are highly encouraged.
 
-Definition: Modern C++ means use of features introduced in the C++ standards from 2011, 2014 and 2017. Of course, we do not mean to be completely indiscriminate in this. Features should be used when they provide some advantage. Any one of the following may be deemed an advantage.
+Definition: Modern C++ means use of features introduced in the C++ standards from 2011, 2014, and 2017. Of course, we do not mean to be completely indiscriminate in this. Features should be used when they provide some advantage. Any one of the following may be deemed an advantage.
 
 1. Simplify the code and make it easier to understand
 2. Provide coding safety against mistakes
 3. Improve performance or functionality
 
-Of course there may occasionally be some disagreement in which case there should proceed some discussion and perhaps even more comments in the code to help the reader.
+Of course, there may occasionally be some disagreement, in which case there should be some discussion and perhaps even more comments in the code to help the reader.
 
 <br/>
 __________________________________________________________________________________
@@ -282,7 +284,7 @@ Each module will its status noted here. The following states are allowed:
 | `Wifi_module`       | WiFi using network to simulate               |  TBS  | Thought |
 | `Proc_module`       | Simple hierarchical wrapper                  |  TBS  | Thought |
 | `Mcu_module`        | Simple hierarchical wrapper                  |  TBS  | Thought |
-| `Mailbox_module`    | Mailbox for heterogenous interconnect        |  TBS  | Thought |
+| `Mailbox_module`    | Mailbox for heterogeneous interconnect       |  TBS  | Thought |
 | `SystemMgr_module`  | System manager for clocks/power/resets       |  TBS  | Thought |
 | `News`              | report handler extensions                    |  TBS  | Started |
 | `RgbLED_module`     | Simulate a single RGB LED. Not TLM-2         |   N   | Basic   |
@@ -420,8 +422,8 @@ Dependencies
 ------------
 
 + Cmake is used to configure.
-+ SystemC version 2.3.2 or better
-+ C++14 or better
++ SystemC version 3.0 or better
++ C++17 or better
 + Boost libraries
 
 If you would like to contribute, you should also have:
@@ -434,10 +436,10 @@ If you would like to contribute, you should also have:
 1. Open a terminal and navigate into the `build/` directory located where this file is located.
 2. Configure by typing `cmake ..`
 3. Build code with `make` or `make all`
-4. Alternately, build and run with `make run`
+4. Alternatively, build and run with `make run`
 5. To pass arguments to run, use `env ARGS="-your args" make run`
-6. To cleanup after running, use `make clean`
-A slightly more automated approach uses some scripts located in the `bin/` directory.  A `setup.profile` bash script should be sourced to set environment variables; however, it will need some tweaking. For one thing, it uses [`modulecmd`](https://modules.readthedocs.io/en/latest/module.html) to setup C++ (clang), SystemC and Boost environment.
+6. To clean up after running, use `make clean`
+A slightly more automated approach uses some scripts located in the `bin/` directory.  A `setup.profile` bash script should be sourced to set environment variables; however, it will need some tweaking. For one thing, it uses [`modulecmd`](https://modules.readthedocs.io/en/latest/module.html) to set up C++ (clang), SystemC, and Boost environments.
 
 ### Windows
 
@@ -456,12 +458,12 @@ This document is maintained with the rest of the project on GitHub at <https://g
 
 Tip: If you are reading this document in VIM (or any variant) text, you will notice unique labels in this document. For instance, this section starts an HTML anchor with an attribute value inside double quotes. If you are in Vim (vi or gvim too), you can place the cursor on the word and press asterisk `*`, which will take you to the table of contents.  Another press will bring you back. So you can quickly navigate anywhere from the table of contents! :-)
 
-This document was created as a MarkDown text file.
+This document was created as a Markdown text file.
 
 - Best viewed with a Markdown rendering tool (e.g. [Typora](https://www.typora.io), [ReText](https://www.fossmint.com/retext-a-powerful-text-editor-for-markdown-and-restructuredtext/) or [Atom](https://www.atom.io)).
 - Or generate HTML, PDF or DOC using pandoc <http://pandoc.org/installing.html>
 - Do not edit derived files
-- For apps that view/edit markdown see <https://github.com/karthik/markdown_science/wiki/Tools-to-support-your-markdown-authoring>.
+- For apps that view/edit markdown, see <https://github.com/karthik/markdown_science/wiki/Tools-to-support-your-markdown-authoring>.
 - Same syntax as used for GitHub README's etc. Very popular among programmers.
 
 Reasons for GitHub Markdown include:
@@ -469,9 +471,9 @@ Reasons for GitHub Markdown include:
 - Very simple - relatively intuitive and easy to learn
 - No special tools - works for any text editor across platforms (Linux, Windows, Mac, iPhone)
 - Supports code syntax highlighting
-- Easy to integrate into web-pages
+- Easy to integrate into web pages
 - Easy to convert to Word, PDF, Pod, Tex, HTML
-- Wide spread support in the programming community
+- Widespread support in the programming community
 - Small files
 - VERY portable
 
